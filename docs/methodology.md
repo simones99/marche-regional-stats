@@ -61,6 +61,7 @@ All inputs are downloaded by `marche-stats download`: the Eurostat data through 
 - Active companies count registered businesses, not employment or output. One large firm and one sole trader weigh the same.
 - It has not been checked whether Eurostat's NUTS 3 population for Pesaro e Urbino before 2021 was recalculated for the transfer of Montecopiolo and Sassofeltrio (together about 2,500 residents). If it was not, part of the 2010–2025 population decline of ITI31 (up to about 0.7 points) is a boundary effect.
 - The forecast assumes that the trend and seasonal pattern of the last years continue. Administrative clean-ups of the register (see above) are not modelled.
+- Interval coverage is measured on only 24 test months, forecast from a single origin, so the months are not independent checks. A coverage of 100 % is compatible with the nominal 95 % (with independent months, all 24 would fall inside about 29 % of the time), but it does not show that the intervals are well calibrated. It may also mean that they are too wide, especially at long horizons where they widen with each step.
 
 ## Earlier exploration
 
