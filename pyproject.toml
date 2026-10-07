@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "marche-stats"
+version = "0.1.0"
+description = "Regional statistics for the Marche region: business demography, NUTS 3 demography and forecasting"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+
+[project.scripts]
+marche-stats = "marche_stats.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
