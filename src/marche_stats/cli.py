@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from marche_stats import eurostat, report
+from marche_stats import companies, eurostat, report
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -30,6 +30,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.step in ("download", "run"):
+        companies.download(args.companies)
         eurostat.download(args.eurostat_dir)
     if args.step in ("report", "run"):
         report.build(args.companies, args.eurostat_dir, args.docs, holdout=args.holdout)

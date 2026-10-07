@@ -10,12 +10,12 @@ Generated 2026-10-07 by `marche-stats run`. Methods and caveats: [methodology no
 | Known province codes | pass | unknown: none |
 | Counts are non-negative integers | pass | 0 missing values |
 | TOTAL row equals the sum of sections | pass | 0 territories differ in at least one month |
-| No missing months | pass | 192 months from 2009-03 to 2025-02 |
+| No missing months | pass | 193 months from 2009-03 to 2025-03 |
 | No month identical to the previous one | FAIL | identical: 28/02/2025; regional total unchanged in 1 month(s) |
 | Municipalities merged inside the region (no correction needed) | pass | 18 territories fall to zero and are absorbed by a successor |
 | Municipalities transferred to another region (removed from all months) | pass | 9 territories, 2,184 active companies in 31/03/2009 |
 
-Months identical to the previous one in every cell are treated as not updated and excluded: 2025-02. The analysed series runs from 2009-03 to 2025-01 (191 months).
+Months identical to the previous one in every cell are treated as not updated: 2025-02. The time series stops before the first of them, because SARIMA needs consecutive months, so it runs from 2009-03 to 2025-01 (191 months) and later months in the file are not used.
 
 ## 2. Provinces (NUTS 3)
 

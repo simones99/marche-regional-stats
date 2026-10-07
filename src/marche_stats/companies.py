@@ -12,13 +12,20 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import pandas as pd
+import requests
+
+# Camera di Commercio delle Marche, Open Data Imprese Italia (CC BY 4.0): active companies by
+# municipality and ATECO 2007 section, monthly, 2009-2025 (archive of the ATECO 2007 series).
+SOURCE_URL = "https://opendata.marche.camcom.it/data/Stock-Imprese-Attive-Marche-2009-2025.csv"
+TIMEOUT_SECONDS = 180
 
 TERRITORY = "Territorio"
 SECTOR = "Settore Ateco 2007"
 TOTAL = "TOTAL"
 
 # Province code in the territory label -> NUTS 2024 level-3 region.
-# "PS" is the former vehicle-plate code of Pesaro e Urbino, used for unclassified records.
+# "PS" is the former vehicle-plate code of Pesaro e Urbino; older downloads of the file use it
+# for the unclassified records, which current downloads label "PU".
 PROVINCE_TO_NUTS3 = {
     "PU": "ITI31",
     "PS": "ITI31",
@@ -54,6 +61,13 @@ class Check:
     name: str
     passed: bool
     detail: str
+
+
+def download(path: Path) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    response = requests.get(SOURCE_URL, timeout=TIMEOUT_SECONDS)
+    response.raise_for_status()
+    path.write_bytes(response.content)
 
 
 def read_wide(path: Path) -> pd.DataFrame:

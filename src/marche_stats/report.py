@@ -96,10 +96,11 @@ def build(companies_csv: Path, eurostat_dir: Path, docs: Path, holdout: int = 24
         "## 1. Source data checks (active companies file)",
         "",
         _table(checks_table),
-        f"Months identical to the previous one in every cell are treated as not updated and "
-        f"excluded: {', '.join(f'{d:%Y-%m}' for d in stale) or 'none'}. The analysed series "
-        f"runs from {series.index[0]:%Y-%m} to {series.index[-1]:%Y-%m} "
-        f"({len(series)} months).",
+        f"Months identical to the previous one in every cell are treated as not updated: "
+        f"{', '.join(f'{d:%Y-%m}' for d in stale) or 'none'}. The time series stops before "
+        f"the first of them, because SARIMA needs consecutive months, so it runs from "
+        f"{series.index[0]:%Y-%m} to {series.index[-1]:%Y-%m} ({len(series)} months) and later "
+        f"months in the file are not used.",
         "",
         "## 2. Provinces (NUTS 3)",
         "",

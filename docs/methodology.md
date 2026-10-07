@@ -8,12 +8,12 @@ This project describes the business and demographic structure of the Marche regi
 
 | Source | Content | Geography | Period |
 |---|---|---|---|
-| Business register, active companies (see the README for the source) | Active companies at month end, by municipality and ATECO 2007 section | 254 municipal codes, 5 provinces | March 2009 – February 2025 |
+| Camera di Commercio delle Marche, Open Data Imprese Italia (business register, CC BY 4.0) | Active companies (registered offices) at month end, by municipality and ATECO 2007 section | 254 municipal codes, 5 provinces | March 2009 – March 2025 |
 | Eurostat `demo_r_pjanaggr3` | Population on 1 January, total and aged 65+ | NUTS 3, Marche, Italy | 2009 onwards |
 | Eurostat `demo_r_magec3` | Deaths | NUTS 3, Marche, Italy | 2009 onwards |
 | GISCO, NUTS 2024 level 3 (1:3 million) | Province boundaries | NUTS 3 | — |
 
-Eurostat data are downloaded through the SDMX 2.1 API (`marche-stats download`).
+All inputs are downloaded by `marche-stats download`: the Eurostat data through the SDMX 2.1 API, and the business register file from the [Chamber of Commerce open data portal](https://opendata.marche.camcom.it/data/Stock-Imprese-Attive-Marche-2009-2025.csv). That file is the archive of the ATECO 2007 series. From April 2025 the portal publishes the series in ATECO 2025, which is not directly comparable by sector. Older downloads of the file label the unclassified records of Pesaro e Urbino `PS`, current ones `PU`. Both are handled.
 
 ## Processing of the business register file
 
@@ -24,7 +24,7 @@ Eurostat data are downloaded through the SDMX 2.1 API (`marche-stats download`).
    - no missing months;
    - each municipality's `TOTAL` row equals the sum of its sections.
 2. **Totals.** Totals come from the `TOTAL` rows only. Summing every row would count each company twice: once in its section and once in the total.
-3. **Stale months.** A month identical to the previous one in every cell is treated as not updated and excluded. This is the case for February 2025, which repeats January 2025.
+3. **Stale months.** A month identical to the previous one in every cell is treated as not updated. This is the case for February 2025, which repeats January 2025 in the published file. The time series stops before that month, because SARIMA needs consecutive months, so March 2025 is not used either.
 4. **Constant boundaries.** Nine municipalities moved from the province of Pesaro e Urbino to Emilia-Romagna:
    - the Alta Valmarecchia under Law 117/2009 (they leave the file after January 2010);
    - Montecopiolo and Sassofeltrio under Law 84/2021 (after May 2021).
@@ -72,5 +72,6 @@ Eurostat data are downloaded through the SDMX 2.1 API (`marche-stats download`).
 
 ## Sources and reuse
 
+- Business register data: Camera di Commercio delle Marche, Open Data Imprese Italia (data from the Registro delle Imprese; rights holder Unioncamere), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Aggregated and transformed by the author.
 - Eurostat data: © European Union, reused under the [Eurostat copyright notice](https://ec.europa.eu/eurostat/about-us/policies/copyright).
 - NUTS boundaries: © EuroGeographics for the administrative boundaries, distributed by [GISCO](https://ec.europa.eu/eurostat/web/gisco).

@@ -44,16 +44,21 @@ tests/              pytest suite on synthetic data in the same layout as the sou
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements-dev.txt -e .
 
-marche-stats download   # Eurostat population and deaths (NUTS 3), GISCO boundaries
+marche-stats download   # business register file, Eurostat population and deaths (NUTS 3), GISCO boundaries
 marche-stats report     # checks, indicators, SARIMA, figures -> docs/results.md
 pytest -q
 ```
 
-The active companies file is not redistributed in this repository. Place it at `data/raw/active_companies_marche.csv` (semicolon-separated, one column per month-end date) to run the report.
+`marche-stats download` also fetches the active companies file from the Chamber of Commerce open data portal into `data/raw/` (see Data sources). Data files are not committed. The tests run on synthetic data in the same layout.
 
 ## Data sources
 
-- Active companies by municipality and ATECO 2007 section: [SOURCE].
+- **Active companies by municipality and ATECO 2007 section, monthly:** Camera di Commercio delle Marche, *Open Data Imprese Italia*, dataset "Imprese Attive nelle Marche per Comune, Settore Ateco e Tempo (frequenza mensile) – Anni dal 2009 al 2025".
+  - Data come from the Chambers of Commerce business register (Registro delle Imprese), with Unioncamere as rights holder.
+  - Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+  - Portal: [opendata.marche.camcom.it](https://opendata.marche.camcom.it), file [`Stock-Imprese-Attive-Marche-2009-2025.csv`](https://opendata.marche.camcom.it/data/Stock-Imprese-Attive-Marche-2009-2025.csv).
+  - This archive covers ATECO 2007 up to March 2025. From April 2025 the portal publishes the series in ATECO 2025.
+  - The analysis aggregates and transforms the data as described in the methodology note.
 - Eurostat `demo_r_pjanaggr3` and `demo_r_magec3`: © European Union, reused under the Eurostat copyright notice.
 - NUTS boundaries: © EuroGeographics, distributed by GISCO.
 
