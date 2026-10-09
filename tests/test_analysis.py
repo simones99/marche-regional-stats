@@ -22,9 +22,19 @@ def test_sarima_beats_naive_on_trending_seasonal_series():
     assert (future["forecast"] <= future["upper_95"]).all()
 
 
-def test_report_end_to_end(companies_csv, tmp_path):
+def test_report_end_to_end(companies_csv, eurostat_dir, tmp_path):
     docs = tmp_path / "docs"
-    text = report.build(companies_csv, FIXTURES, docs, holdout=12)
-    assert "## 4. SARIMA model" in text
-    for name in ("nuts3_maps", "province_index", "decomposition", "forecast"):
+    text = report.build(companies_csv, eurostat_dir, docs, holdout=12)
+    for heading in ("## 4. SARIMA model", "## 5. Mortality", "## 6. Education", "## 7. Economy"):
+        assert heading in text
+    assert "| 2018 |" in text  # benchmark table
+    # EU27 deaths stop in 2023, so the 2024 table says it is missing instead of dropping it.
+    assert "No complete 2024 data (deaths and population in every age group) for: " in text
+    assert "European Union (27)." in text
+    assert "Left out for lack of complete data in 2020-2024: European Union (27)." in text
+    assert "European Union (27) only in 2013, 2014" in text
+    assert "nan" not in text
+    names = ("nuts3_maps", "province_index", "decomposition", "forecast")
+    names += ("mortality", "indicators", "enrolment_index")
+    for name in names:
         assert (docs / "figures" / f"{name}.png").stat().st_size > 0

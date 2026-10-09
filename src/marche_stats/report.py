@@ -7,17 +7,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from marche_stats import companies, eurostat, figures, timeseries
-
-
-def _table(frame: pd.DataFrame, floatfmt: str = "{:,.1f}") -> str:
-    header = "| " + " | ".join(str(c) for c in frame.columns) + " |"
-    divider = "|" + "|".join("---" for _ in frame.columns) + "|"
-    rows = []
-    for row in frame.itertuples(index=False):
-        cells = [floatfmt.format(v) if isinstance(v, float) else str(v) for v in row]
-        rows.append("| " + " | ".join(cells) + " |")
-    return "\n".join([header, divider, *rows]) + "\n"
+from marche_stats import companies, eurostat, figures, regional_report, timeseries
+from marche_stats.markdown import table as _table
 
 
 def build(companies_csv: Path, eurostat_dir: Path, docs: Path, holdout: int = 24) -> str:
@@ -143,6 +134,8 @@ def build(companies_csv: Path, eurostat_dir: Path, docs: Path, holdout: int = 24
         "12-month forecast, refitted on the full series:",
         "",
         _table(future_table, "{:,.0f}"),
+        "",
+        *regional_report.sections(eurostat_dir, figures_dir),
     ]
     text = "\n".join(lines)
     docs.mkdir(parents=True, exist_ok=True)

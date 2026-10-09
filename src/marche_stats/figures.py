@@ -195,3 +195,76 @@ def forecast_chart(
     ax.yaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(lambda v, _: f"{v:,.0f}"))
     ax.legend(loc="upper right", fontsize=8.5)
     _save(fig, path)
+
+
+# v0.2: the Marche against Italy and the EU27 (blue, orange, aqua in SERIES order).
+COMPARED = {"ITI3": "Marche", "IT": "Italy", "EU27_2020": "EU27"}
+
+
+def mortality_chart(fact_mortality: pd.DataFrame, path: Path) -> None:
+    """Standardised (with the Marche 95 % interval) and crude death rates, both sexes."""
+    total = fact_mortality[fact_mortality["sex_code"] == "T"]
+    fig, axes = plt.subplots(1, 2, figsize=(10, 4.2), sharey=True)
+    for color, (code, name) in zip(SERIES, COMPARED.items(), strict=False):
+        rows = total[total["geo_code"] == code]
+        axes[0].plot(rows["year"], rows["std_rate"], color=color, label=name)
+        axes[1].plot(rows["year"], rows["crude_rate"], color=color, label=name)
+        if code == "ITI3":
+            axes[0].fill_between(
+                rows["year"], rows["ci_low"], rows["ci_high"], color=color, alpha=0.18, linewidth=0
+            )
+    axes[0].set_title("Age-standardised (ESP 2013)")
+    axes[1].set_title("Crude")
+    axes[0].set_ylabel("Deaths per 100,000")
+    axes[0].legend(loc="upper left", fontsize=8.5)
+    fig.suptitle("Death rates, both sexes", x=0.01, ha="left", fontweight="bold")
+    _save(fig, path)
+
+
+def indicator_panels(fact_indicator: pd.DataFrame, path: Path) -> None:
+    """One panel per indicator: the Marche, Italy and the EU27, with the EU 2030 target.
+
+    Values flagged as low reliability (u) are drawn as hollow markers.
+    """
+    from marche_stats.indicators import INDICATORS
+
+    total = fact_indicator[fact_indicator["sex_code"] == "T"]
+    fig, axes = plt.subplots(2, 3, figsize=(11, 7))
+    fig.subplots_adjust(hspace=0.55, wspace=0.3)
+    for ax, indicator in zip(axes.flat, INDICATORS, strict=False):
+        data = total[total["indicator_code"] == indicator.code]
+        for color, (code, name) in zip(SERIES, COMPARED.items(), strict=False):
+            rows = data[data["geo_code"] == code]
+            ax.plot(rows["year"], rows["value"], color=color, label=name)
+            low = rows[rows["flag"].str.contains("u")]
+            ax.scatter(low["year"], low["value"], facecolors=SURFACE, edgecolors=color, zorder=3)
+        if indicator.eu_2030_target is not None:
+            ax.axhline(indicator.eu_2030_target, color=INK_MUTED, linestyle=":", linewidth=1)
+        ax.set_title(textwrap.fill(indicator.name, 34), fontsize=9.5)
+        ax.xaxis.set_major_locator(matplotlib.ticker.MaxNLocator(integer=True, nbins=5))
+    axes.flat[0].legend(loc="best", fontsize=8)
+    axes.flat[-1].axis("off")
+    axes.flat[-1].text(
+        0,
+        0.5,
+        "Dotted line: EU 2030 target.\nHollow marker: low reliability (u).",
+        color=INK_MUTED,
+        fontsize=9,
+    )
+    _save(fig, path)
+
+
+def enrolment_index_chart(index: pd.DataFrame, path: Path) -> None:
+    """Enrolment index (2013 = 100) for ISCED 0-3: the Marche against Italy."""
+    levels = {"ED0": "Early childhood", "ED1": "Primary", "ED2": "Lower secondary"}
+    levels["ED3"] = "Upper secondary"
+    fig, axes = plt.subplots(1, 4, figsize=(11, 3.4), sharey=True)
+    for ax, (level, label) in zip(axes, levels.items(), strict=True):
+        for color, code in zip(SERIES, ("ITI3", "IT"), strict=False):
+            rows = index[(index["geo_code"] == code) & (index["isced_code"] == level)]
+            ax.plot(rows["year"], rows["index"], color=color, label=COMPARED[code])
+        ax.axhline(100, color=INK_MUTED, linewidth=0.8)
+        ax.set_title(label, fontsize=9.5)
+    axes[0].set_ylabel("Index, 2013 = 100")
+    axes[0].legend(loc="lower left", fontsize=8)
+    _save(fig, path)
