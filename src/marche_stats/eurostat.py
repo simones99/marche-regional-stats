@@ -1,4 +1,4 @@
-"""Eurostat NUTS 3 demography for the Marche provinces and GISCO boundaries."""
+"""Eurostat data for the Marche provinces and regional comparisons, and GISCO boundaries."""
 
 from __future__ import annotations
 
@@ -32,26 +32,122 @@ DATASETS = {
     "deaths.csv": ("demo_r_magec3", "A.T.NR.TOTAL"),
 }
 
+# v0.2: the Marche against its neighbouring regions, Italy and the EU27.
+FOCUS_GEO = "ITI3"
+COMPARISON_GEOS = ("ITI3", "ITH5", "ITI1", "ITI2", "ITI4", "ITF1", "IT", "EU27_2020")
+REGIONS = COMPARISON_GEOS[:6]
+GEO_NAMES = {
+    "ITI3": "Marche",
+    "ITH5": "Emilia-Romagna",
+    "ITI1": "Toscana",
+    "ITI2": "Umbria",
+    "ITI4": "Lazio",
+    "ITF1": "Abruzzo",
+    "IT": "Italy",
+    "EU27_2020": "European Union (27)",
+}
+REGIONAL_START = 2013
 
-def dataset_url(code: str, key: str, start_period: int) -> str:
+# File name -> (dataset, SDMX series key without geo). Keys follow each dataset's DSD order;
+# an empty position selects every code of that dimension.
+REGIONAL_DATASETS = {
+    "regional_deaths.csv": ("demo_r_magec", "A.NR.T+M+F."),
+    "regional_population.csv": ("demo_r_pjangroup", "A.NR.T+M+F."),
+    "death_rate_benchmark.csv": ("hlth_cd_asdr2", "A.RT.T+M+F.TOTAL.A-R_V-Y"),
+    "enrolment.csv": ("educ_uoe_enra11", "A.NR..T+M+F"),
+    "early_leavers.csv": ("edat_lfse_16", "A.PC.T+M+F.Y18-24"),
+    "tertiary_attainment.csv": ("edat_lfse_04", "A.T+M+F.ED5-8.Y25-34.PC"),
+    "early_childhood.csv": ("educ_uoe_enra22", "A.PC"),
+    "gdp.csv": ("nama_10r_2gdp", "A.PPS_HAB_EU27_2020"),
+    "unemployment.csv": ("lfst_r_lfu3rt", "A.TOTAL.T+M+F.Y15-74.PC"),
+}
+
+# (file name, geo, year) combinations missing at the source, checked on 2026-10-09.
+KNOWN_GAPS = {
+    ("regional_deaths.csv", "EU27_2020", 2024),
+    ("enrolment.csv", "EU27_2020", 2017),
+}
+
+METADATA_COLUMNS = ("DATAFLOW", "LAST UPDATE", "freq", "CONF_STATUS")
+
+
+class DownloadError(RuntimeError):
+    """A request to Eurostat or GISCO failed."""
+
+
+class CoverageError(ValueError):
+    """A downloaded dataset lacks a geography or year that the analysis needs."""
+
+
+def dataset_url(code: str, key: str, start_period: int, geos: tuple[str, ...] = GEOS) -> str:
     return (
-        f"{SDMX_BASE}/data/{code}/{key}.{'+'.join(GEOS)}?format=SDMX-CSV&startPeriod={start_period}"
+        f"{SDMX_BASE}/data/{code}/{key}.{'+'.join(geos)}?format=SDMX-CSV&startPeriod={start_period}"
     )
+
+
+def _fetch(url: str, label: str) -> requests.Response:
+    try:
+        response = requests.get(url, timeout=TIMEOUT_SECONDS)
+        response.raise_for_status()
+    except requests.RequestException as error:
+        raise DownloadError(f"{label}: download failed from {url} ({error})") from error
+    return response
+
+
+def _fetch_sdmx(url: str, code: str) -> bytes:
+    """SDMX-CSV body; Eurostat reports some errors (e.g. EXTRACTION_TOO_BIG) as XML with 200."""
+    content = _fetch(url, code).content
+    if not content.startswith(b"DATAFLOW"):
+        snippet = content[:200].decode("utf-8", errors="replace")
+        raise DownloadError(f"{code}: expected SDMX-CSV from {url}, got: {snippet}")
+    return content
 
 
 def download(raw_dir: Path, start_period: int = 2009) -> None:
     raw_dir.mkdir(parents=True, exist_ok=True)
     for filename, (code, key) in DATASETS.items():
-        response = requests.get(dataset_url(code, key, start_period), timeout=TIMEOUT_SECONDS)
-        response.raise_for_status()
-        (raw_dir / filename).write_bytes(response.content)
+        content = _fetch_sdmx(dataset_url(code, key, start_period), code)
+        (raw_dir / filename).write_bytes(content)
 
-    response = requests.get(GISCO_NUTS3_URL, timeout=TIMEOUT_SECONDS)
-    response.raise_for_status()
+    for filename, (code, key) in REGIONAL_DATASETS.items():
+        url = dataset_url(code, key, REGIONAL_START, COMPARISON_GEOS)
+        (raw_dir / filename).write_bytes(_fetch_sdmx(url, code))
+        check_coverage(read_sdmx(raw_dir / filename), filename)
+
+    response = _fetch(GISCO_NUTS3_URL, "GISCO NUTS 3")
     features = [f for f in response.json()["features"] if f["properties"]["NUTS_ID"] in NUTS3_NAMES]
     (raw_dir / "marche_nuts3.geojson").write_text(
         json.dumps({"type": "FeatureCollection", "features": features}), encoding="utf-8"
     )
+
+
+def read_sdmx(path: Path) -> pd.DataFrame:
+    """Every dimension column, plus year, value (NaN when missing) and flag ('' when none)."""
+    frame = pd.read_csv(path, dtype=str, keep_default_na=False)
+    frame = frame.drop(columns=[c for c in METADATA_COLUMNS if c in frame.columns])
+    frame = frame.rename(columns={"TIME_PERIOD": "year", "OBS_VALUE": "value", "OBS_FLAG": "flag"})
+    frame["year"] = frame["year"].astype(int)
+    frame["value"] = pd.to_numeric(frame["value"].where(~frame["value"].isin(["", ":"])))
+    frame["flag"] = frame["flag"].astype(str).str.strip()
+    return frame
+
+
+def check_coverage(frame: pd.DataFrame, filename: str) -> None:
+    """Every comparison geography must have every year the focus region has, bar KNOWN_GAPS."""
+    observed = frame.dropna(subset=["value"])
+    present = set(zip(observed["geo"], observed["year"], strict=True))
+    focus_years = sorted({year for geo, year in present if geo == FOCUS_GEO})
+    if not focus_years:
+        raise CoverageError(f"{filename}: no data for {FOCUS_GEO}")
+    missing = [
+        (geo, year)
+        for geo in COMPARISON_GEOS
+        for year in focus_years
+        if (geo, year) not in present and (filename, geo, year) not in KNOWN_GAPS
+    ]
+    if missing:
+        listed = ", ".join(f"{geo} {year}" for geo, year in missing)
+        raise CoverageError(f"{filename}: missing {listed}")
 
 
 def read_sdmx_csv(path: Path) -> pd.DataFrame:

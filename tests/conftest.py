@@ -5,11 +5,13 @@ six municipalities, one per province (two in Ancona), plus one transferred munic
 sections and their TOTAL rows, monthly from March 2009, with trend and seasonality.
 """
 
+import shutil
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import pytest
+from regional_fixtures import write_regional_fixtures
 
 FIXTURES = Path(__file__).parent / "fixtures"
 MONTHS = pd.date_range("2009-03-31", periods=96, freq="ME")
@@ -59,3 +61,14 @@ def companies_csv(tmp_path: Path) -> Path:
     path = tmp_path / "companies.csv"
     synthetic_wide().to_csv(path, sep=";", index=False)
     return path
+
+
+@pytest.fixture
+def eurostat_dir(tmp_path: Path) -> Path:
+    """The v0.1 Eurostat fixtures plus synthetic v0.2 regional extracts."""
+    directory = tmp_path / "raw"
+    directory.mkdir()
+    for path in FIXTURES.iterdir():
+        shutil.copy(path, directory / path.name)
+    write_regional_fixtures(directory)
+    return directory
