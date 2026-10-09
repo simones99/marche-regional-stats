@@ -1,0 +1,6 @@
+indicator_code,indicator_name,unit,source_dataset,higher_is_better,eu_2030_target
+early_childhood,"Early childhood education, age 3 to compulsory school age",%,educ_uoe_enra22,True,96.0
+early_leavers,"Early leavers from education and training, 18-24",%,edat_lfse_16,False,9.0
+gdp_pps_index,GDP per inhabitant in PPS (EU27 = 100),index,nama_10r_2gdp,True,
+tertiary_25_34,"Tertiary attainment, 25-34",%,edat_lfse_04,True,45.0
+unemployment_15_74,"Unemployment rate, 15-74",%,lfst_r_lfu3rt,False,

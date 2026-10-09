@@ -1,0 +1,9 @@
+geo_code,geo_name,geo_level,role,sort_order
+EU27_2020,European Union (27),eu,benchmark,8
+IT,Italy,country,benchmark,7
+ITF1,Abruzzo,nuts2,neighbour,6
+ITH5,Emilia-Romagna,nuts2,neighbour,2
+ITI1,Toscana,nuts2,neighbour,3
+ITI2,Umbria,nuts2,neighbour,4
+ITI3,Marche,nuts2,focus,1
+ITI4,Lazio,nuts2,neighbour,5

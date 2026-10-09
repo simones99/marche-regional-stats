@@ -6,4 +6,8 @@ __pycache__/
 .DS_Store
 
 # Inputs are downloaded or provided locally; docs/ holds the committed results.
-data/
+data/raw/
+
+# Power BI Desktop local files
+powerbi/**/.pbi/localSettings.json
+powerbi/**/.pbi/cache.abf

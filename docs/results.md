@@ -1,6 +1,6 @@
 # Results
 
-Generated 2026-10-07 by `marche-stats run`. Methods and caveats: [methodology note](methodology.md).
+Generated 2026-10-09 by `marche-stats run`. Methods and caveats: [methodology note](methodology.md).
 
 ## 1. Source data checks (active companies file)
 
@@ -73,3 +73,74 @@ Share of test months inside the SARIMA 95 % prediction interval: **100 %** (nomi
 | 2025-11 | 129,701 | 126,986 | 132,415 |
 | 2025-12 | 129,235 | 126,308 | 132,161 |
 | 2026-01 | 127,833 | 124,700 | 130,965 |
+
+
+## 5. Mortality (age-standardised)
+
+Death rates per 100,000 in 2024, both sexes. Standardised rates use the European Standard Population 2013 with an open 85+ group and a Dobson 95 % interval.
+
+| Area | Crude | Standardised | 95 % low | 95 % high |
+|---|---|---|---|---|
+| Marche | 1,183.8 | 740.9 | 729.6 | 752.2 |
+| Emilia-Romagna | 1,136.2 | 760.7 | 753.9 | 767.5 |
+| Toscana | 1,214.5 | 760.2 | 752.9 | 767.5 |
+| Umbria | 1,243.4 | 755.9 | 741.1 | 770.9 |
+| Lazio | 1,069.6 | 794.8 | 788.4 | 801.2 |
+| Abruzzo | 1,171.5 | 790.8 | 778.0 | 803.9 |
+| Italy | 1,107.8 | 789.6 | 787.7 | 791.6 |
+
+No complete 2024 data (deaths and population in every age group) for: European Union (27).
+
+![Death rates](figures/mortality.png)
+
+Complete deaths and population by age group: European Union (27) only in 2021, 2022.
+
+Pooled five-year rate, 2020-2024 (the latest five years with complete data for the six regions and Italy):
+
+| Area | Standardised, 2020-2024 | 95 % low | 95 % high |
+|---|---|---|---|
+| Marche | 816.3 | 811.0 | 821.7 |
+| Emilia-Romagna | 835.2 | 832.0 | 838.4 |
+| Toscana | 817.4 | 814.0 | 820.8 |
+| Umbria | 807.1 | 800.2 | 814.0 |
+| Lazio | 848.7 | 845.7 | 851.7 |
+| Abruzzo | 862.3 | 856.2 | 868.4 |
+| Italy | 866.4 | 865.4 | 867.3 |
+
+Left out for lack of complete data in 2020-2024: European Union (27).
+
+Check against Eurostat's published standardised rate for the Marche:
+
+| Year | This project | Eurostat (hlth_cd_asdr2) | Difference (%) |
+|---|---|---|---|
+| 2018 | 766.29 | 767.95 | -0.22 |
+| 2019 | 765.00 | 767.15 | -0.28 |
+| 2020 | 869.89 | 873.21 | -0.38 |
+| 2021 | 861.50 | 864.86 | -0.39 |
+
+Deaths of unknown age, Marche: at most 0.00 % of the yearly total, redistributed in proportion to the known ages.
+
+## 6. Education
+
+Latest value of each indicator, both sexes. Gaps are in percentage points; rank 1 is the best of the six regions; distance to the EU 2030 target is positive when the target is met.
+
+| Indicator | Year | Marche | Italy | EU27 | Gap vs Italy | Gap vs EU27 | Rank | Change since | Change | Distance to EU target |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Early leavers from education and training, 18-24 | 2025 | 7.7 | 8.2 | 9.1 | -0.5 | -1.4 | 5 of 6 | 2013 | -5.5 | 1.3 |
+| Tertiary attainment, 25-34 | 2025 | 32.8 | 31.1 | 44.8 | 1.7 | -12.0 | 4 of 6 | 2013 | 6.9 | -12.2 |
+| Early childhood education, age 3 to compulsory school age | 2024 | 95.2 | 94.0 | 94.4 | 1.2 | 0.8 | 3 of 6 | 2014 | -0.4 | -0.8 |
+
+![Indicators](figures/indicators.png)
+
+Enrolment against Italy (the EU27 aggregate is incomplete in this dataset):
+
+![Enrolment index](figures/enrolment_index.png)
+
+## 7. Economy
+
+GDP per inhabitant in PPS compares areas within a year, not growth over time.
+
+| Indicator | Year | Marche | Italy | EU27 | Gap vs Italy | Gap vs EU27 | Rank | Change since | Change |
+|---|---|---|---|---|---|---|---|---|---|
+| GDP per inhabitant in PPS (EU27 = 100) | 2024 | 89.0 | 98.0 | 100.0 | -9.0 | -11.0 | 4 of 6 | 2013 | -3.0 |
+| Unemployment rate, 15-74 | 2025 | 5.1 | 6.1 | 6.0 | -1.0 | -0.9 | 4 of 6 | 2013 | -5.9 |

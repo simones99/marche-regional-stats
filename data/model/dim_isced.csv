@@ -1,0 +1,10 @@
+isced_code,isced_label,isced_group,sort_order
+ED0,Early childhood education,Early childhood,1
+ED1,Primary education,Primary,2
+ED2,Lower secondary education,Secondary,3
+ED3,Upper secondary education,Secondary,4
+ED4,Post-secondary non-tertiary education,Post-secondary non-tertiary,5
+ED5,Short-cycle tertiary education,Tertiary,6
+ED6,Bachelor's or equivalent level,Tertiary,7
+ED7,Master's or equivalent level,Tertiary,8
+ED8,Doctoral or equivalent level,Tertiary,9
