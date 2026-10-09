@@ -67,15 +67,26 @@ def age_group(age: str) -> str | None:
     return AGE_GROUPS[min(years // 5, len(AGE_GROUPS) - 1)]
 
 
+SINGLE_AGES = ["Y_LT1", *[f"Y{age}" for age in range(1, 100)], "Y_OPEN"]
+# Single years of age in each group: 5, and 16 for 85+ (85 to 99 and 100+).
+GROUP_SIZES = pd.Series([age_group(age) for age in SINGLE_AGES]).value_counts()
+
+
 def deaths_by_group(deaths: pd.DataFrame) -> pd.DataFrame:
     """Deaths by geo, sex, year and age group; unknown-age deaths are redistributed.
 
-    Deaths of unknown age are spread in proportion to the known-age deaths of the same geo,
-    sex and year, so the total is kept.
+    A group has deaths only when every single year of age in it has a value; otherwise its
+    deaths are NaN, so `standardise` drops that geo, sex and year. Deaths of unknown age are
+    spread in proportion to the known-age deaths of the same geo, sex and year, so the total
+    is kept.
     """
     known = deaths[~deaths["age"].isin(["TOTAL", "UNK"])]
     known = known.assign(age_group=known["age"].map(age_group))
-    grouped = known.groupby([*KEYS, "age_group"], as_index=False)["value"].sum(min_count=1)
+    grouped = known.groupby([*KEYS, "age_group"], as_index=False).agg(
+        value=("value", "sum"), ages=("value", "count")
+    )
+    complete = grouped["ages"] == grouped["age_group"].map(GROUP_SIZES)
+    grouped["value"] = grouped["value"].where(complete)
     unknown = deaths[deaths["age"] == "UNK"].groupby(KEYS)["value"].sum().rename("unknown")
     grouped = grouped.join(unknown, on=KEYS)
     known_total = grouped.groupby(KEYS)["value"].transform("sum")
@@ -196,10 +207,17 @@ def five_year_table(raw_dir: Path, years: int = 5) -> pd.DataFrame:
     return rates.rename(columns={"geo": "geo_code", "sex": "sex_code"})[FACT_MORTALITY_5Y_COLUMNS]
 
 
-def benchmark_differences(fact: pd.DataFrame, geo: str = FOCUS_GEO) -> pd.DataFrame:
-    """Years with a published Eurostat rate (both sexes): ours, Eurostat's, difference in %."""
-    rows = fact[(fact["geo_code"] == geo) & (fact["sex_code"] == "T")]
-    rows = rows.dropna(subset=["eurostat_std_rate"])
-    out = rows[["year", "std_rate", "eurostat_std_rate"]].reset_index(drop=True)
+def benchmark_differences(fact: pd.DataFrame, geos: tuple[str, ...] = (FOCUS_GEO,)) -> pd.DataFrame:
+    """Years with a published Eurostat rate, by area and sex: ours, Eurostat's, difference in %.
+
+    Rows are ordered by area (as in `geos`), year and sex (T, M, F).
+    """
+    rows = fact[fact["geo_code"].isin(geos)].dropna(subset=["eurostat_std_rate"])
+    rows = rows.assign(
+        geo_order=rows["geo_code"].map({geo: i for i, geo in enumerate(geos)}),
+        sex_order=rows["sex_code"].map({"T": 0, "M": 1, "F": 2}),
+    ).sort_values(["geo_order", "year", "sex_order"])
+    columns = ["geo_code", "year", "sex_code", "std_rate", "eurostat_std_rate"]
+    out = rows[columns].reset_index(drop=True)
     out["difference_pct"] = 100 * (out["std_rate"] / out["eurostat_std_rate"] - 1)
     return out

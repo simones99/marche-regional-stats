@@ -27,7 +27,10 @@ def test_report_end_to_end(companies_csv, eurostat_dir, tmp_path):
     text = report.build(companies_csv, eurostat_dir, docs, holdout=12)
     for heading in ("## 4. SARIMA model", "## 5. Mortality", "## 6. Education", "## 7. Economy"):
         assert heading in text
-    assert "| 2018 |" in text  # benchmark table
+    assert "| 2018 | Total |" in text  # benchmark table, by sex
+    assert "| 2018 | Males |" in text
+    assert "| 2018 | Females |" in text
+    assert "By sex, across every area with a published rate, the difference ranges from " in text
     # EU27 deaths stop in 2023, so the 2024 table says it is missing instead of dropping it.
     assert "No complete 2024 data (deaths and population in every age group) for: " in text
     assert "European Union (27)." in text

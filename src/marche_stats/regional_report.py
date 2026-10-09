@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from marche_stats import economy, education, figures, indicators, mortality
+from marche_stats import economy, education, figures, indicators, model, mortality
 from marche_stats.eurostat import COMPARISON_GEOS, FOCUS_GEO, GEO_NAMES, read_sdmx
 from marche_stats.markdown import table
 
@@ -52,6 +52,7 @@ def sections(eurostat_dir: Path, figures_dir: Path) -> list[str]:
     fact_mortality = mortality.mortality_table(eurostat_dir)
     five_year = mortality.five_year_table(eurostat_dir)
     benchmark = mortality.benchmark_differences(fact_mortality)
+    benchmark_all = mortality.benchmark_differences(fact_mortality, geos=COMPARISON_GEOS)
     unknown = mortality.unknown_age_share(read_sdmx(eurostat_dir / "regional_deaths.csv"))
     education_fact = education.education_indicators(eurostat_dir)
     economy_fact = economy.economy_indicators(eurostat_dir)
@@ -96,13 +97,30 @@ def sections(eurostat_dir: Path, figures_dir: Path) -> list[str]:
             "ci_high": "95 % high",
         }
     )
-    benchmark_table = benchmark.rename(
+    benchmark_table = benchmark.assign(sex_code=benchmark["sex_code"].map(model.SEX_LABELS))
+    benchmark_table = benchmark_table.drop(columns="geo_code").rename(
         columns={
             "year": "Year",
+            "sex_code": "Sex",
             "std_rate": "This project",
             "eurostat_std_rate": "Eurostat (hlth_cd_asdr2)",
             "difference_pct": "Difference (%)",
         }
+    )
+
+    def _extreme(row: pd.Series) -> str:
+        sex = model.SEX_LABELS[row["sex_code"]].lower()
+        where = f"{GEO_NAMES[row['geo_code']]}, {sex}, {row['year']}"
+        return f"{row['difference_pct']:+.1f} % ({where})"
+
+    by_sex = benchmark_all[benchmark_all["sex_code"] != "T"]
+    both = benchmark_all[benchmark_all["sex_code"] == "T"]["difference_pct"]
+    benchmark_note = (
+        "By sex, across every area with a published rate, the difference ranges from "
+        f"{_extreme(by_sex.loc[by_sex['difference_pct'].idxmin()])} to "
+        f"{_extreme(by_sex.loc[by_sex['difference_pct'].idxmax()])}; for both sexes it ranges "
+        f"from {both.min():+.1f} % to {both.max():+.1f} %. Errors of opposite sign for males "
+        "and females partly cancel in the total."
     )
     marche_years = set(total.loc[total["geo_code"] == FOCUS_GEO, "year"])
     partial = []
@@ -141,9 +159,11 @@ def sections(eurostat_dir: Path, figures_dir: Path) -> list[str]:
             else ""
         ),
         "",
-        "Check against Eurostat's published standardised rate for the Marche:",
+        "Check against Eurostat's published standardised rate for the Marche, by sex:",
         "",
         table(benchmark_table, "{:,.2f}"),
+        benchmark_note,
+        "",
         f"Deaths of unknown age, Marche: at most {unknown_max:.2f} % of the yearly total, "
         "redistributed in proportion to the known ages.",
         "",

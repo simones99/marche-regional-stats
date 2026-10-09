@@ -95,13 +95,35 @@ def _deaths(rows: list[tuple[str, float]]) -> pd.DataFrame:
 
 
 def test_unknown_age_deaths_are_redistributed_and_the_total_kept():
-    deaths = _deaths([("Y_LT1", 30), ("Y90", 70), ("UNK", 10), ("TOTAL", 110)])
+    # Complete 0-4 and 85+ groups: 30 deaths under 1 and 70 at 90, zero at the other ages.
+    young = [("Y_LT1", 30), *[(f"Y{age}", 0) for age in range(1, 5)]]
+    old = [(f"Y{age}", 70 if age == 90 else 0) for age in range(85, 100)] + [("Y_OPEN", 0)]
+    deaths = _deaths([*young, *old, ("UNK", 10), ("TOTAL", 110)])
     grouped = mortality.deaths_by_group(deaths).set_index("age_group")["deaths"]
     assert grouped.sum() == pytest.approx(110)
     assert grouped["Y_LT5"] == pytest.approx(33)
     assert grouped["Y_GE85"] == pytest.approx(77)
     share = mortality.unknown_age_share(deaths)["unknown_share"].iloc[0]
     assert share == pytest.approx(100 * 10 / 110)
+
+
+def test_group_missing_a_single_age_has_no_deaths():
+    # 0-4 lacks Y3 entirely and 5-9 has Y7 as missing (":"): neither group is complete.
+    rows = [(age, 1.0) for age in ("Y_LT1", "Y1", "Y2", "Y4")]
+    rows += [("Y5", 1.0), ("Y6", 1.0), ("Y7", float("nan")), ("Y8", 1.0), ("Y9", 1.0)]
+    rows += [(f"Y{age}", 2.0) for age in range(10, 15)]
+    grouped = mortality.deaths_by_group(_deaths(rows)).set_index("age_group")["deaths"]
+    assert math.isnan(grouped["Y_LT5"])
+    assert math.isnan(grouped["Y5-9"])
+    assert grouped["Y10-14"] == pytest.approx(10)
+
+
+def test_open_group_needs_every_age_from_85_to_100_plus():
+    ages = [f"Y{age}" for age in range(85, 100)]
+    without_open = mortality.deaths_by_group(_deaths([(age, 1.0) for age in ages]))
+    assert without_open["deaths"].isna().all()
+    with_open = mortality.deaths_by_group(_deaths([(age, 1.0) for age in [*ages, "Y_OPEN"]]))
+    assert with_open["deaths"].tolist() == [16.0]
 
 
 def test_unknown_share_is_zero_without_unknown_rows():
@@ -135,10 +157,20 @@ def test_mortality_table_on_synthetic_extracts(eurostat_dir):
     assert marche["eurostat_std_rate"].notna().sum() == 4  # 2018-2021
 
 
-def test_benchmark_differences_cover_published_years(eurostat_dir):
+def test_benchmark_differences_cover_published_years_and_both_sexes(eurostat_dir):
     table = mortality.benchmark_differences(mortality.mortality_table(eurostat_dir))
-    assert table["year"].tolist() == [2018, 2019, 2020, 2021]
+    assert table[["year", "sex_code"]].values.tolist() == [
+        [year, sex] for year in (2018, 2019, 2020, 2021) for sex in ("T", "M", "F")
+    ]
+    assert set(table["geo_code"]) == {"ITI3"}
     assert (table["difference_pct"].abs() < 3).all()
+
+
+def test_benchmark_differences_for_every_area(eurostat_dir):
+    fact = mortality.mortality_table(eurostat_dir)
+    table = mortality.benchmark_differences(fact, geos=COMPARISON_GEOS)
+    assert set(table["geo_code"]) == set(COMPARISON_GEOS)
+    assert len(table) == len(COMPARISON_GEOS) * 4 * 3
 
 
 def test_five_year_rate_is_pooled_not_averaged():
