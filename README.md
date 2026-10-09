@@ -18,7 +18,7 @@ The latest figures and every check are in [docs/results.md](docs/results.md).
 - Active companies in the region fell from about 160,000 in 2009 to about 130,000 in January 2025, on constant boundaries. The decline ranges from −12 % in Ascoli Piceno to −19 % in Pesaro e Urbino.
 - Seasonality is moderate (strength 0.56). Each January to March the stock drops by about 1,000 companies against trend, because closures are concentrated at the turn of the year.
 - On the last 24 months, held out from model selection, SARIMA has a mean absolute percentage error of about 1 %. The naive baseline reaches about 3 % and the seasonal naive baseline about 6 %.
-- The Marche population is older than Italy's, so its crude death rate is higher (1,184 against 1,108 per 100,000 in 2024) while its age-standardised rate is lower (741 against 790). The standardised rates agree with Eurostat's published ones within 0.4 %.
+- The Marche population is older than Italy's, so its crude death rate is higher (1,184 against 1,108 per 100,000 in 2024) while its age-standardised rate is lower (741 against 790). For both sexes, the Marche standardised rates agree with Eurostat's published ones within 0.4 %; by sex the gaps reach about 3 % (see the methodology).
 - In 2025, 7.7 % of 18–24-year-olds in the Marche left education early (Italy 8.2 %; EU 2030 target: below 9 %), and 32.8 % of 25–34-year-olds had a tertiary degree (EU27 44.8 %; target: 45 %).
 - GDP per inhabitant in PPS is 89 % of the EU27 average (2024; Italy 98 %). Unemployment is 5.1 % (2025; Italy 6.1 %, EU27 6.0 %).
 

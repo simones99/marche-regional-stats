@@ -109,14 +109,24 @@ Pooled five-year rate, 2020-2024 (the latest five years with complete data for t
 
 Left out for lack of complete data in 2020-2024: European Union (27).
 
-Check against Eurostat's published standardised rate for the Marche:
+Check against Eurostat's published standardised rate for the Marche, by sex:
 
-| Year | This project | Eurostat (hlth_cd_asdr2) | Difference (%) |
-|---|---|---|---|
-| 2018 | 766.29 | 767.95 | -0.22 |
-| 2019 | 765.00 | 767.15 | -0.28 |
-| 2020 | 869.89 | 873.21 | -0.38 |
-| 2021 | 861.50 | 864.86 | -0.39 |
+| Year | Sex | This project | Eurostat (hlth_cd_asdr2) | Difference (%) |
+|---|---|---|---|---|
+| 2018 | Total | 766.29 | 767.95 | -0.22 |
+| 2018 | Males | 932.15 | 956.21 | -2.52 |
+| 2018 | Females | 640.02 | 631.96 | 1.28 |
+| 2019 | Total | 765.00 | 767.15 | -0.28 |
+| 2019 | Males | 932.39 | 961.49 | -3.03 |
+| 2019 | Females | 638.62 | 629.20 | 1.50 |
+| 2020 | Total | 869.89 | 873.21 | -0.38 |
+| 2020 | Males | 1,059.82 | 1,095.72 | -3.28 |
+| 2020 | Females | 724.97 | 714.25 | 1.50 |
+| 2021 | Total | 861.50 | 864.86 | -0.39 |
+| 2021 | Males | 1,042.20 | 1,076.40 | -3.18 |
+| 2021 | Females | 722.77 | 713.64 | 1.28 |
+
+By sex, across every area with a published rate, the difference ranges from -6.5 % (Lazio, males, 2019) to +2.3 % (Umbria, females, 2020); for both sexes it ranges from -4.7 % to +0.4 %. Errors of opposite sign for males and females partly cancel in the total.
 
 Deaths of unknown age, Marche: at most 0.00 % of the yearly total, redistributed in proportion to the known ages.
 
