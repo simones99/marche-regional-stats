@@ -1,0 +1,31 @@
+name: refresh
+
+# Manual: downloads the data, rebuilds results and model tables, and fails if the committed
+# data/model/ is out of date. Not run on push, because it depends on the Eurostat service.
+on:
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install
+        run: pip install -r requirements-dev.txt -e .
+      - name: Download and rebuild
+        run: marche-stats run
+      - name: Upload the regenerated results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: results
+          path: |
+            docs/results.md
+            docs/figures/
+            data/model/
+      - name: Compare the model tables with the committed ones
+        run: git diff --stat --exit-code -- data/model
