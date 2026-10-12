@@ -149,8 +149,8 @@ table _Measures
 	/// Blank when the context mixes geographic levels (EU, country, region, province).
 	measure 'Crude death rate per 1,000' =
 			VAR d = [_Ref date Deaths]
-			VAR DeathsTotal = CALCULATE ( SUM ( Deaths[Count] ), Deaths[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "T", AgeGroup[Code] = "TOTAL" )
-			VAR Residents = CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "T", AgeGroup[Code] = "TOTAL" )
+			VAR DeathsTotal = CALCULATE ( SUM ( Deaths[Count] ), Deaths[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "T", REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL" )
+			VAR Residents = CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "T", REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL" )
 			RETURN IF ( HASONEVALUE ( Geo[Level] ), DIVIDE ( 1000 * DeathsTotal, Residents ) )
 		formatString: 0.0
 		displayFolder: Population & Health
@@ -202,7 +202,7 @@ table _Measures
 	measure 'Tertiary students per 1,000 residents' =
 			VAR d = CALCULATE ( [_Ref date Enrolment], REMOVEFILTERS ( ISCED ), ISCED[Group] = "ISCED 5-8" )
 			VAR Tertiary = CALCULATE ( SUM ( Enrolment[Students] ), Enrolment[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "T", REMOVEFILTERS ( ISCED ), ISCED[Group] = "ISCED 5-8" )
-			VAR Residents = CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "T", AgeGroup[Code] = "TOTAL" )
+			VAR Residents = CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "T", REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL" )
 			RETURN IF ( HASONEVALUE ( Geo[Level] ), DIVIDE ( 1000 * Tertiary, Residents ) )
 		formatString: 0.0
 		displayFolder: Education
@@ -235,7 +235,7 @@ table _Measures
 			VAR WithProvinces = UNION ( Areas, CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), TREATAS ( Areas, Geo[ParentCode] ) ) )
 			VAR LastDec = CALCULATE ( MAX ( Companies[Date] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ), Calendar[MonthNumber] = 12 )
 			VAR CompaniesAtDec = CALCULATE ( SUM ( Companies[Companies] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ), REMOVEFILTERS ( Calendar ), Companies[Date] = LastDec )
-			VAR Residents = CALCULATE ( SUM ( Population[Residents] ), REMOVEFILTERS ( Calendar ), Population[Date] = DATE ( YEAR ( LastDec ) + 1, 1, 1 ), REMOVEFILTERS ( Sex ), Sex[Code] = "T", AgeGroup[Code] = "TOTAL" )
+			VAR Residents = CALCULATE ( SUM ( Population[Residents] ), REMOVEFILTERS ( Calendar ), Population[Date] = DATE ( YEAR ( LastDec ) + 1, 1, 1 ), REMOVEFILTERS ( Sex ), Sex[Code] = "T", REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL" )
 			RETURN IF ( HASONEVALUE ( Geo[Level] ), DIVIDE ( 1000 * CompaniesAtDec, Residents ) )
 		formatString: 0.0
 		displayFolder: Business
@@ -249,7 +249,7 @@ table _Measures
 			        CONCATENATEX ( FILTER ( VALUES ( Population[Flag] ), NOT ISBLANK ( Population[Flag] ) && Population[Flag] <> "" ), Population[Flag], ", ", Population[Flag], ASC ),
 			        Population[Date] = d,
 			        REMOVEFILTERS ( Sex ), Sex[Code] = "T",
-			        AgeGroup[Code] = "TOTAL"
+			        REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL"
 			    )
 		displayFolder: Flags
 
@@ -262,7 +262,7 @@ table _Measures
 			        CONCATENATEX ( FILTER ( VALUES ( Deaths[Flag] ), NOT ISBLANK ( Deaths[Flag] ) && Deaths[Flag] <> "" ), Deaths[Flag], ", ", Deaths[Flag], ASC ),
 			        Deaths[Date] = d,
 			        REMOVEFILTERS ( Sex ), Sex[Code] = "T",
-			        AgeGroup[Code] = "TOTAL"
+			        REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL"
 			    )
 		displayFolder: Flags
 
@@ -367,7 +367,7 @@ table _Measures
 			    VAR Diff = [Reconciliation in model] - Expected
 			    RETURN IF ( NOT ISBLANK ( Expected ), IF ( Diff = 0, "✓", "✗ " & FORMAT ( Diff, "+#,0;-#,0" ) ) ),
 			    VAR Failed = COUNTROWS ( FILTER ( VALUES ( Reconciliation[Checkpoint] ), [Reconciliation in model] <> [Reconciliation expected] ) )
-			    RETURN IF ( Failed = 0, "✓ all", "✗ " & Failed & " failed" )
+			    RETURN IF ( COUNTROWS ( VALUES ( Reconciliation[Checkpoint] ) ) > 0, IF ( Failed = 0, "✓ all", "✗ " & Failed & " failed" ) )
 			)
 		displayFolder: Checks
 
