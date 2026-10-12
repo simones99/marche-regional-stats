@@ -1,0 +1,64 @@
+/// Out-of-sample errors of SARIMA and the naive baselines (powerbi/data/forecast_accuracy.csv).
+table ForecastAccuracy
+
+	column Method
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Method
+
+	column MAE
+		dataType: double
+		formatString: #,0
+		summarizeBy: none
+		sourceColumn: MAE
+
+	column MAPE
+		dataType: double
+		formatString: 0.00
+		summarizeBy: none
+		sourceColumn: MAPE
+
+	column Specification
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Specification
+
+	column IntervalCoverage
+		dataType: double
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: IntervalCoverage
+
+	column HoldoutStart
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: HoldoutStart
+		annotation UnderlyingDateTimeDataType = Date
+
+	column HoldoutEnd
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: HoldoutEnd
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition ForecastAccuracy = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(Web.Contents(RepoRawBase & "/powerbi/data/forecast_accuracy.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Blanks = Table.ReplaceValue(Promoted, "", null, Replacer.ReplaceValue, Table.ColumnNames(Promoted)),
+				    Renamed = Table.RenameColumns(Blanks, {
+				        {"method", "Method"}, {"mae", "MAE"}, {"mape_pct", "MAPE"}, {"specification", "Specification"},
+				        {"interval_coverage_pct", "IntervalCoverage"}, {"holdout_start", "HoldoutStart"}, {"holdout_end", "HoldoutEnd"}
+				    }),
+				    Typed = Table.TransformColumnTypes(Renamed, {
+				        {"Method", type text}, {"MAE", type number}, {"MAPE", type number}, {"Specification", type text},
+				        {"IntervalCoverage", type number}, {"HoldoutStart", type date}, {"HoldoutEnd", type date}
+				    }, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

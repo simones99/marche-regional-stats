@@ -1,0 +1,84 @@
+/// Active companies by province, ATECO 2007 section and month-end, on constant boundaries.
+/// Same rules as src/marche_stats/companies.py: section rows only (TOTAL rows equal their
+/// sum), the 9 municipalities transferred to Emilia-Romagna removed from every month, and
+/// months identical to the previous one in every row dropped as not updated.
+table Companies
+
+	column GeoCode
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: GeoCode
+
+	column SectorCode
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: SectorCode
+
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: Date
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Companies
+		dataType: int64
+		isHidden
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: Companies
+
+	partition Companies = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(Web.Contents(CompaniesSourceUrl), [Delimiter = ";", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Long = Table.UnpivotOtherColumns(Promoted, {"Territorio", "Settore Ateco 2007"}, "DateText", "Companies"),
+				    Typed = Table.TransformColumnTypes(Long, {{"Companies", Int64.Type}}, "en-US"),
+				    WithDate = Table.AddColumn(Typed, "Date", each Date.FromText([DateText], [Format = "dd/MM/yyyy", Culture = "en-US"]), type date),
+				    // Stale months: identical to the previous month in every row of the file.
+				    ByMonth = Table.Sort(
+				        Table.Group(
+				            WithDate,
+				            {"Date"},
+				            {{"Values", each Table.Sort(_, {{"Territorio", Order.Ascending}, {"Settore Ateco 2007", Order.Ascending}})[Companies], type list}}
+				        ),
+				        {{"Date", Order.Ascending}}
+				    ),
+				    MonthDates = List.Buffer(ByMonth[Date]),
+				    MonthValues = List.Buffer(ByMonth[Values]),
+				    StaleMonths = List.Select(
+				        List.Positions(MonthDates),
+				        each _ > 0 and MonthValues{_} = MonthValues{_ - 1}
+				    ),
+				    StaleDates = List.Buffer(List.Transform(StaleMonths, each MonthDates{_})),
+				    Updated = Table.SelectRows(WithDate, each not List.Contains(StaleDates, [Date])),
+				    // Municipalities moved to Emilia-Romagna (Law 117/2009, Law 84/2021).
+				    TransferredOut = {
+				        "PU-11 Casteldelci", "PU-24 Maiolo", "PU-39 Novafeltria", "PU-42 Pennabilli", "PU-53 San Leo",
+				        "PU-55 Sant'Agata Feltria", "PU-63 Talamello", "PU-33 Montecopiolo", "PU-60 Sassofeltrio"
+				    },
+				    Sections = Table.SelectRows(
+				        Updated,
+				        each [#"Settore Ateco 2007"] <> "TOTAL" and not List.Contains(TransferredOut, [Territorio])
+				    ),
+				    // Province code in the territory label -> NUTS 3. PS is the old code of Pesaro e Urbino.
+				    ProvinceToNuts3 = [PU = "ITI31", PS = "ITI31", AN = "ITI32", MC = "ITI33", AP = "ITI34", FM = "ITI35"],
+				    WithGeo = Table.AddColumn(Sections, "GeoCode", each Record.Field(ProvinceToNuts3, Text.Start([Territorio], 2)), type text),
+				    Grouped = Table.Group(
+				        WithGeo,
+				        {"GeoCode", "Settore Ateco 2007", "Date"},
+				        {{"Companies", each List.Sum([Companies]), Int64.Type}}
+				    ),
+				    Renamed = Table.RenameColumns(Grouped, {{"Settore Ateco 2007", "SectorCode"}}),
+				    // Calendar starts on 1 January of StartYear. Filtered last, so that the stale-month
+				    // rule still compares the first kept month with the one before it in the file.
+				    InRange = Table.SelectRows(Renamed, each [Date] >= #date(StartYear, 1, 1))
+				in
+				    InRange
+
+	annotation PBI_ResultType = Table

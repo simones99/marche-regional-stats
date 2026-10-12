@@ -1,0 +1,82 @@
+/// Regional active companies: series the SARIMA model is fitted on, holdout forecasts and
+/// the 12-month forecast with its 95 % interval (powerbi/data/forecast.csv).
+table Forecast
+
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: Date
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Actual
+		dataType: double
+		isHidden
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: Actual
+
+	column HoldoutSarima
+		dataType: double
+		isHidden
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: HoldoutSarima
+
+	column HoldoutNaive
+		dataType: double
+		isHidden
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: HoldoutNaive
+
+	column HoldoutSeasonalNaive
+		dataType: double
+		isHidden
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: HoldoutSeasonalNaive
+
+	column Forecast
+		dataType: double
+		isHidden
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: Forecast
+
+	column Lower95
+		dataType: double
+		isHidden
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: Lower95
+
+	column Upper95
+		dataType: double
+		isHidden
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: Upper95
+
+	partition Forecast = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(Web.Contents(RepoRawBase & "/powerbi/data/forecast.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Blanks = Table.ReplaceValue(Promoted, "", null, Replacer.ReplaceValue, Table.ColumnNames(Promoted)),
+				    Renamed = Table.RenameColumns(Blanks, {
+				        {"date", "Date"}, {"actual", "Actual"}, {"holdout_sarima", "HoldoutSarima"}, {"holdout_naive", "HoldoutNaive"},
+				        {"holdout_seasonal_naive", "HoldoutSeasonalNaive"}, {"forecast", "Forecast"}, {"lower_95", "Lower95"}, {"upper_95", "Upper95"}
+				    }),
+				    Typed = Table.TransformColumnTypes(Renamed, {
+				        {"Date", type date}, {"Actual", type number}, {"HoldoutSarima", type number}, {"HoldoutNaive", type number},
+				        {"HoldoutSeasonalNaive", type number}, {"Forecast", type number}, {"Lower95", type number}, {"Upper95", type number}
+				    }, "en-US"),
+				    // Calendar starts on 1 January of StartYear.
+				    InRange = Table.SelectRows(Typed, each [Date] >= #date(StartYear, 1, 1))
+				in
+				    InRange
+
+	annotation PBI_ResultType = Table
