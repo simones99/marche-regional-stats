@@ -1,0 +1,61 @@
+/// GDP per inhabitant as published by Eurostat: EUR_HAB (euro) and PPS_HAB_EU27_2020
+/// (purchasing power standard, EU = 100). nama_10r_2gdp for EU, country and regions,
+/// nama_10r_3gdp for provinces.
+table GDP
+
+	column GeoCode
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: GeoCode
+
+	column UnitCode
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: UnitCode
+
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: Date
+
+	column Value
+		dataType: double
+		isHidden
+		formatString: #,0.0
+		summarizeBy: sum
+		sourceColumn: Value
+
+	column Flag
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Flag
+
+	partition GDP = m
+		mode: import
+		source =
+				let
+				    Regions = fnEurostat("nama_10r_2gdp", "c[unit]=EUR_HAB,PPS_HAB_EU27_2020", {"EU", "Country", "NUTS2"}),
+				    Provinces = fnEurostat("nama_10r_3gdp", "c[unit]=EUR_HAB,PPS_HAB_EU27_2020", {"NUTS3"}),
+				    Combined = Table.Combine({
+				        Table.SelectColumns(Regions, {"geo", "unit", "TIME_PERIOD", "OBS_VALUE", "OBS_FLAG"}),
+				        Table.SelectColumns(Provinces, {"geo", "unit", "TIME_PERIOD", "OBS_VALUE", "OBS_FLAG"})
+				    }),
+				    NonEmpty = Table.SelectRows(Combined, each [OBS_VALUE] <> ""),
+				    WithDate = Table.AddColumn(NonEmpty, "Date", each #date(Number.FromText([TIME_PERIOD]), 1, 1), type date),
+				    Renamed = Table.RenameColumns(
+				        Table.RemoveColumns(WithDate, {"TIME_PERIOD"}),
+				        {{"geo", "GeoCode"}, {"unit", "UnitCode"}, {"OBS_VALUE", "Value"}, {"OBS_FLAG", "Flag"}}
+				    ),
+				    Typed = Table.TransformColumnTypes(
+				        Renamed,
+				        {{"GeoCode", type text}, {"UnitCode", type text}, {"Value", type number}, {"Flag", type text}},
+				        "en-US"
+				    )
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

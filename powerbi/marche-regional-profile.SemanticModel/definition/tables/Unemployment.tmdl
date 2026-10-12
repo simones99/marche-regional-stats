@@ -1,0 +1,50 @@
+/// Unemployment rate, age 15-74, all education levels (Eurostat lfst_r_lfu3rt), as a fraction.
+table Unemployment
+
+	column GeoCode
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: GeoCode
+
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: Date
+
+	column Rate
+		dataType: double
+		isHidden
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: Rate
+
+	column Flag
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Flag
+
+	partition Unemployment = m
+		mode: import
+		source =
+				let
+				    Source = fnEurostat(
+				        "lfst_r_lfu3rt",
+				        "c[isced11]=TOTAL&c[sex]=T&c[age]=Y15-74&c[unit]=PC",
+				        {"EU", "Country", "NUTS2"}
+				    ),
+				    Selected = Table.SelectColumns(Source, {"geo", "TIME_PERIOD", "OBS_VALUE", "OBS_FLAG"}),
+				    NonEmpty = Table.SelectRows(Selected, each [OBS_VALUE] <> ""),
+				    WithDate = Table.AddColumn(NonEmpty, "Date", each #date(Number.FromText([TIME_PERIOD]), 1, 1), type date),
+				    WithRate = Table.AddColumn(WithDate, "Rate", each Number.FromText([OBS_VALUE], "en-US") / 100, type number),
+				    Renamed = Table.RenameColumns(
+				        Table.RemoveColumns(WithRate, {"TIME_PERIOD", "OBS_VALUE"}),
+				        {{"geo", "GeoCode"}, {"OBS_FLAG", "Flag"}}
+				    ),
+				    Typed = Table.TransformColumnTypes(Renamed, {{"GeoCode", type text}, {"Flag", type text}})
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

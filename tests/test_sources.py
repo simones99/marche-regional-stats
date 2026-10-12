@@ -271,3 +271,15 @@ def test_geo_codes_rejects_empty_levels():
     params = sources.parameters(REAL_MODEL)
     with pytest.raises(ValueError, match="no levels"):
         sources.geo_codes(params, ())
+
+
+def test_real_model_eurostat_calls():
+    calls = {(c.table, c.dataset): c.levels for c in sources.eurostat_calls(REAL_MODEL)}
+    assert calls == {
+        ("Deaths", "demo_r_magec3"): ("EU", "Country", "NUTS2", "NUTS3"),
+        ("Enrolment", "educ_uoe_enra11"): ("EU", "Country", "NUTS2"),
+        ("GDP", "nama_10r_2gdp"): ("EU", "Country", "NUTS2"),
+        ("GDP", "nama_10r_3gdp"): ("NUTS3",),
+        ("Population", "demo_r_pjangrp3"): ("EU", "Country", "NUTS2", "NUTS3"),
+        ("Unemployment", "lfst_r_lfu3rt"): ("EU", "Country", "NUTS2"),
+    }

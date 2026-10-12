@@ -26,3 +26,8 @@ ref table AgeGroup
 ref table ISCED
 ref table Sector
 ref table _Measures
+ref table Population
+ref table Deaths
+ref table GDP
+ref table Unemployment
+ref table Enrolment

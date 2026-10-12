@@ -1,0 +1,65 @@
+/// Pupils and students enrolled by ISCED level and sex (Eurostat educ_uoe_enra11).
+table Enrolment
+
+	column GeoCode
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: GeoCode
+
+	column SexCode
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: SexCode
+
+	column IscedCode
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: IscedCode
+
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: Date
+
+	column Students
+		dataType: int64
+		isHidden
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: Students
+
+	column Flag
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Flag
+
+	partition Enrolment = m
+		mode: import
+		source =
+				let
+				    Source = fnEurostat(
+				        "educ_uoe_enra11",
+				        "c[unit]=NR&c[sex]=T,M,F&c[isced11]=ED02-8,ED0,ED1,ED2,ED3,ED4,ED5,ED6,ED7,ED8",
+				        {"EU", "Country", "NUTS2"}
+				    ),
+				    Selected = Table.SelectColumns(Source, {"geo", "sex", "isced11", "TIME_PERIOD", "OBS_VALUE", "OBS_FLAG"}),
+				    NonEmpty = Table.SelectRows(Selected, each [OBS_VALUE] <> ""),
+				    WithDate = Table.AddColumn(NonEmpty, "Date", each #date(Number.FromText([TIME_PERIOD]), 1, 1), type date),
+				    Renamed = Table.RenameColumns(
+				        Table.RemoveColumns(WithDate, {"TIME_PERIOD"}),
+				        {{"geo", "GeoCode"}, {"sex", "SexCode"}, {"isced11", "IscedCode"}, {"OBS_VALUE", "Students"}, {"OBS_FLAG", "Flag"}}
+				    ),
+				    Typed = Table.TransformColumnTypes(
+				        Renamed,
+				        {{"GeoCode", type text}, {"SexCode", type text}, {"IscedCode", type text}, {"Students", Int64.Type}, {"Flag", type text}},
+				        "en-US"
+				    )
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

@@ -1,0 +1,65 @@
+/// Deaths in the year by sex and five-year age group (Eurostat demo_r_magec3).
+table Deaths
+
+	column GeoCode
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: GeoCode
+
+	column SexCode
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: SexCode
+
+	column AgeCode
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: AgeCode
+
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: Date
+
+	column Count
+		dataType: int64
+		isHidden
+		formatString: #,0
+		summarizeBy: sum
+		sourceColumn: Count
+
+	column Flag
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Flag
+
+	partition Deaths = m
+		mode: import
+		source =
+				let
+				    Source = fnEurostat(
+				        "demo_r_magec3",
+				        "c[unit]=NR&c[sex]=T,M,F&c[age]=TOTAL,Y_LT5,Y5-9,Y10-14,Y15-19,Y20-24,Y25-29,Y30-34,Y35-39,Y40-44,Y45-49,Y50-54,Y55-59,Y60-64,Y65-69,Y70-74,Y75-79,Y80-84,Y85-89,Y_GE90,UNK",
+				        {"EU", "Country", "NUTS2", "NUTS3"}
+				    ),
+				    Selected = Table.SelectColumns(Source, {"geo", "sex", "age", "TIME_PERIOD", "OBS_VALUE", "OBS_FLAG"}),
+				    NonEmpty = Table.SelectRows(Selected, each [OBS_VALUE] <> ""),
+				    WithDate = Table.AddColumn(NonEmpty, "Date", each #date(Number.FromText([TIME_PERIOD]), 1, 1), type date),
+				    Renamed = Table.RenameColumns(
+				        Table.RemoveColumns(WithDate, {"TIME_PERIOD"}),
+				        {{"geo", "GeoCode"}, {"sex", "SexCode"}, {"age", "AgeCode"}, {"OBS_VALUE", "Count"}, {"OBS_FLAG", "Flag"}}
+				    ),
+				    Typed = Table.TransformColumnTypes(
+				        Renamed,
+				        {{"GeoCode", type text}, {"SexCode", type text}, {"AgeCode", type text}, {"Count", Int64.Type}, {"Flag", type text}},
+				        "en-US"
+				    )
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
