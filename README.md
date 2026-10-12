@@ -6,7 +6,7 @@ Regional statistics for the Marche region (Italy) and its five provinces. The pr
 - **Provincial indicators on NUTS 3 maps.** Companies per resident, population ageing and mortality, from Eurostat.
 - **Forecasting.** A SARIMA model of active companies, compared out of sample with naive baselines.
 
-It also contains a **Power BI report** on the region's demography, education, GDP and unemployment, built on the Eurostat API.
+It also contains a **Power BI report** on the region's demography, education, GDP, unemployment and active companies, built on the Eurostat API and the outputs of this pipeline.
 
 ![Indicators by province](docs/figures/nuts3_maps.png)
 

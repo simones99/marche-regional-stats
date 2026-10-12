@@ -3245,7 +3245,7 @@ Open `marche-regional-profile.pbip` in Power BI Desktop (Windows) and choose *Re
 Sources and query details: [sources.md](sources.md).
 ```
 
-- [ ] **Step 3: Replace `powerbi/sources.md`:**
+- [x] **Step 3: Replace `powerbi/sources.md`:**
 
 ````markdown
 # Data sources of the Power BI model
@@ -3278,7 +3278,7 @@ Other sources:
 | Forecast, ForecastAccuracy, Reconciliation | `powerbi/data/*.csv` in this repository, read from `RepoRawBase` (GitHub raw URL) |
 ````
 
-- [ ] **Step 4: Point `RepoRawBase` back to `main`.** In `.../definition/expressions.tmdl`, the `RepoRawBase` line must read exactly:
+- [x] **Step 4: Point `RepoRawBase` back to `main`.** In `.../definition/expressions.tmdl`, the `RepoRawBase` line must read exactly:
 
 ```tmdl
 expression RepoRawBase = "https://raw.githubusercontent.com/simones99/marche-regional-stats/main" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
@@ -3286,7 +3286,7 @@ expression RepoRawBase = "https://raw.githubusercontent.com/simones99/marche-reg
 
 Once the branch is merged, `main` serves `powerbi/data/` and the refresh works from a clean clone.
 
-- [ ] **Step 5: Run everything and commit**
+- [x] **Step 5: Run everything and commit**
 
 ```bash
 ruff check src tests && ruff format --check src tests && pytest -q
@@ -3319,3 +3319,24 @@ The spec leaves this open. Timebox it to 30 minutes and record the outcome eithe
 - The user refreshes `marche-regional-profile.pbip` in Desktop without errors (Task 16).
 - Every reconciliation row shows ✓, and the reference values of Task 16, Step 4 hold.
 - The two old projects are removed, and `powerbi/README.md` and `sources.md` describe the new one.
+
+## Outcome (recorded 2026-10-12)
+
+Tasks 0–17 are done; the user refreshed the model in Desktop with 12/12 reconciliation checkpoints ✓ and the expected values. Task 18 (Best Practice Analyzer in CI) is **deferred to Phase B**: not attempted in Phase A.
+
+Decided during execution (each from a review, details in the commits):
+- `ED02-8` is the enrolment total: Eurostat's `ED0-8` is missing after 2023.
+- Population and Deaths keep a (geo, sex, year)'s age bands only when they add up to TOTAL (EU27_2020 lacks 85+ in 2014–2020).
+- `Companies` is cleaned while the file is wide (about 20,000 rows to unpivot instead of a million).
+- Measures blank in contexts that mix geographic levels; per-inhabitant values and rates blank when several areas are in context.
+- `Compare to` items evaluate the measure under the Value item, so the result does not depend on how the engine applies items to nested measures.
+- Province rows are compared among provinces only (provincial GDP lags a year).
+
+Open items for Phase B:
+- Best Practice Analyzer in CI (Task 18); spec Verification item 4.
+- Show the forecast checks on a page: `MAPE SARIMA` ≈ 1.13 %, Forecast last date 2026-01-31 (no visual reads Forecast or ForecastAccuracy yet).
+- Use the flag measures in tooltips; filter age visuals on `AgeGroup[IsBand]`.
+- Desktop pruned the report's unused StaticResources (icons, `italy.regions.topo.json`); they are in git history at 352e7e0. The Provinces map needs a NUTS 3 shape.
+- Tests: CSV headers ↔ M `RenameColumns`; report filter aliases, conditional-formatting expressions and page/report-level filters in `test_report_fields_exist_in_model`.
+- `run` fits SARIMA twice (report and export); December checkpoints and the specification string are duplicated in `report.py` and `powerbi_export.py`.
+- GitHub disables scheduled workflows after 60 days without repository activity: check that `check-sources` still runs.

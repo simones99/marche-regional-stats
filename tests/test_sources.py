@@ -234,6 +234,8 @@ def test_real_model_parameters_are_complete():
     assert params["FocusRegion"] == "ITI3"
     assert params["ProvinceRegions"] == "ITI31,ITI32,ITI33,ITI34,ITI35"
     assert params["StartYear"] == "2009"
+    # Desktop saves the value set while testing a branch; the committed model reads main.
+    assert params["RepoRawBase"].endswith("/main")
     assert set(params) == {
         "FocusRegion",
         "PeerRegions",
