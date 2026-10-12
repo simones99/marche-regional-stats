@@ -119,6 +119,7 @@ def test_cli_export_powerbi_writes_three_files(companies_csv, tmp_path):
     assert reconciliation_raw["date"].str.match(iso_date).all()
     coverage = accuracy_raw["interval_coverage_pct"]
     sarima = accuracy_raw["method"] == "SARIMA"
+    assert sarima.sum() == 1
     assert (coverage[~sarima] == "").all()
     assert (coverage[sarima] != "").all()
     assert reconciliation_raw["active_companies"].str.match(r"^\d+$").all()

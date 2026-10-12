@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 import requests
 
-from marche_stats import sources
+from marche_stats import cli, sources
 
 EXPRESSIONS = """\
 expression FocusRegion = "ITI3" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
@@ -125,6 +125,8 @@ def test_check_passes_when_every_source_answers(definition):
     ]
     assert all(r.ok for r in results)
     assert "latest 2024" in results[2].detail
+    assert results[3].url == "https://opendata.example/stock.csv"
+    assert results[4].url == "https://raw.example/repo/main/powerbi/data/forecast.csv"
 
 
 def test_check_reports_the_eurostat_fault_message(definition):
@@ -190,11 +192,14 @@ def test_unknown_level_is_a_failing_result_not_a_crash(definition):
 
 def test_malformed_csv_is_a_failing_result(definition):
     routes = {**OK_ROUTES, "gisco": FakeResponse(200, "a,b\n1,2\n")}
-    routes["ESTAT"] = FakeResponse(200, "x,y\n1,2\n")
+    routes["ESTAT"] = FakeResponse(200, "geo,OBS_VALUE\nITI3,10\n")
     results = sources.check(definition, get=fake_get(routes))
     provinces = next(r for r in results if r.source.startswith("ProvinceRegions"))
     assert not provinces.ok
     assert "NUTS_ID" in provinces.detail
+    eurostat = next(r for r in results if r.source.startswith("Eurostat"))
+    assert not eurostat.ok
+    assert "unreadable response" in eurostat.detail
 
 
 def test_a_connection_error_fails_one_source_and_the_rest_still_run(definition):
@@ -210,3 +215,11 @@ def test_a_connection_error_fails_one_source_and_the_rest_still_run(definition):
     failing = [r for r in results if not r.ok]
     assert [r.source for r in failing] == ["Eurostat demo_r_pjangrp3 (Population)"]
     assert "boom" in failing[0].detail
+
+
+def test_cli_check_sources_fails_when_a_source_fails(monkeypatch, tmp_path, capsys):
+    monkeypatch.setattr(
+        sources, "check", lambda _definition: [sources.Result("X", False, "HTTP 404", "u")]
+    )
+    assert cli.main(["check-sources", "--powerbi", str(tmp_path)]) == 1
+    assert "FAIL  X: HTTP 404" in capsys.readouterr().out

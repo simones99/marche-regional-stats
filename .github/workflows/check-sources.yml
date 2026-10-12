@@ -1,0 +1,22 @@
+name: check-sources
+
+# Requests every data source of the Power BI model (Eurostat, GISCO, Chamber of Commerce,
+# files exported to powerbi/data/), so a changed source is found before the next refresh.
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install
+        run: pip install -r requirements.txt -e .
+      - name: Check sources
+        run: marche-stats check-sources
