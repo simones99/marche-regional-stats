@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "marche-regionali-2025"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "08d10921-a51a-4226-bf50-6365ee654d3a"
+  }
+}

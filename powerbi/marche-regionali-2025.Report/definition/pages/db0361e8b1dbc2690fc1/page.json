@@ -1,0 +1,23 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "db0361e8b1dbc2690fc1",
+  "displayName": "Tooltip 2",
+  "displayOption": "ActualSize",
+  "height": 720,
+  "width": 1280,
+  "pageBinding": {
+    "name": "6d7a2591c8e4ceeb4504",
+    "type": "Default",
+    "parameters": [],
+    "acceptsFilterContext": "None"
+  },
+  "visibility": "HiddenInViewMode",
+  "type": "Tooltip",
+  "visualInteractions": [
+    {
+      "source": "2204f822476093bbbebb",
+      "target": "c2908cc935aea05c5eed",
+      "type": "DataFilter"
+    }
+  ]
+}

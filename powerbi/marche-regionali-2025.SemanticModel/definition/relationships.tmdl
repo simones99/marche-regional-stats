@@ -1,0 +1,40 @@
+relationship 39fdbe82-4f65-2145-e0da-6fc3a888399a
+	fromColumn: fEnrollments.ISCED11
+	toColumn: 'ISCED 11'.ISCED11
+
+relationship 94742005-becb-a5f3-ac3a-fcde7c66899f
+	fromColumn: fEnrollments.Year
+	toColumn: Year.Year
+
+relationship 336482a4-95fb-5594-ee38-98276dcec684
+	fromColumn: dPopulation.Year
+	toColumn: Year.Year
+
+relationship c2fede07-ddf4-aa27-f758-1e72626bb5a4
+	fromColumn: dGDP.Entity
+	toColumn: Entities.Entity
+
+relationship f5db475c-3c57-74f0-010b-740194fdbef7
+	fromColumn: dDeaths.Entity
+	toColumn: Entities.Entity
+
+relationship c5b2e0cc-8da4-ba6b-8eed-34ed560f98fb
+	fromColumn: dPopulation.Entity
+	toColumn: Entities.Entity
+
+relationship 7f4be55b-5054-b941-897c-1e7338de2da8
+	fromColumn: dDeaths.Year
+	toColumn: Year.Year
+
+relationship dda7dae6-b47c-6b49-632f-01ae3052b158
+	fromColumn: dGDP.Year
+	toColumn: Year.Year
+
+relationship 1d4440b6-47b1-439a-41a1-889a9845d63c
+	fromColumn: 'dUnemployment Rate'.Year
+	toColumn: Year.Year
+
+relationship 14781ae1-c7da-f358-233e-3c37c93964c2
+	fromColumn: 'dUnemployment Rate'.Entity
+	toColumn: Entities.Entity
+

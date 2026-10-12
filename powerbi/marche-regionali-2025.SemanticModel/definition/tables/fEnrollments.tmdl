@@ -1,0 +1,91 @@
+table fEnrollments
+	lineageTag: c0ad9aef-92ef-4f64-9d10-f1e1086071e2
+
+	measure 'Total Enrollments' = ```
+			
+			[Male Enrollments] + [Female Enrollments]
+			
+			```
+		formatString: 0
+		lineageTag: e565d048-ffc0-4ba8-9bd6-172aa500e57b
+
+	measure 'Male Enrollments' =
+			
+			CALCULATE(
+			    SUM('fEnrollments'[Enrollments]),
+			    KEEPFILTERS('fEnrollments'[Sex] == "M")
+			)
+		formatString: 0
+		lineageTag: a87e1a2d-6a36-406f-bc1e-fcf5c023947a
+
+	measure 'Female Enrollments' =
+			
+			CALCULATE(
+			    SUM('fEnrollments'[Enrollments]),
+			    KEEPFILTERS('fEnrollments'[Sex] == "F")
+			)
+		formatString: 0
+		lineageTag: 38f2e273-350c-4ab2-bf11-7e48832c408c
+
+	column ISCED11
+		dataType: string
+		lineageTag: aa60ff2f-64eb-4a96-a258-4a2f0a4bab32
+		summarizeBy: none
+		sourceColumn: ISCED11
+
+		annotation SummarizationSetBy = Automatic
+
+	column Sex
+		dataType: string
+		lineageTag: 6632eef5-b755-42b8-ad2f-9f4326f461e1
+		summarizeBy: none
+		sourceColumn: Sex
+
+		annotation SummarizationSetBy = Automatic
+
+	column Geo
+		dataType: string
+		lineageTag: 80384c7f-972c-45f1-92c2-dd1cb29d7d09
+		summarizeBy: none
+		sourceColumn: Geo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: e1aa5991-d358-4451-b9c5-7d6aefb3e6ca
+		summarizeBy: none
+		sourceColumn: Year
+
+		annotation SummarizationSetBy = Automatic
+
+	column Enrollments
+		dataType: int64
+		formatString: 0
+		lineageTag: dd6bb158-10e7-44cc-819e-7ed544318dd0
+		summarizeBy: sum
+		sourceColumn: Enrollments
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fEnrollments = m
+		mode: import
+		source =
+				let
+				    Source = SDMX.Contents("https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0/data/dataflow/ESTAT/educ_uoe_enra11/1.0/*.*.*.*.*?c[freq]=A&c[unit]=NR&c[isced11]=ED0-8,ED0,ED1,ED2,ED3,ED4,ED5,ED6,ED7,ED8&c[sex]=T,M,F&c[geo]=ITI3&c[TIME_PERIOD]=ge:2013&compress=false&format=csvdata&formatVersion=1.0&lang=en&labels=label_only", "Show labels only", null),
+				    #"Changed Type" = Table.TransformColumnTypes(Source,{{"DATAFLOW", type text}, {"OBS_VALUE", Int64.Type}}),
+				    #"Removed Other Columns" = Table.SelectColumns(#"Changed Type",{"isced11", "sex", "geo", "TIME_PERIOD", "OBS_VALUE"}),
+				    #"Changed Type1" = Table.TransformColumnTypes(#"Removed Other Columns",{{"isced11", type text}, {"sex", type text}, {"geo", type text}, {"TIME_PERIOD", Int64.Type}}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Changed Type1",{{"isced11", "ISCED11"}, {"sex", "Sex"}, {"geo", "Geo"}, {"TIME_PERIOD", "Year"}, {"OBS_VALUE", "Enrollments"}}),
+				    #"Replaced Value" = Table.ReplaceValue(#"Renamed Columns","Females","F",Replacer.ReplaceText,{"Sex"}),
+				    #"Replaced Value1" = Table.ReplaceValue(#"Replaced Value","Males","M",Replacer.ReplaceText,{"Sex"}),
+				    #"Filtered Rows1" = Table.SelectRows(#"Replaced Value1", each ([Sex] <> "Total")),
+				    #"Filtered Rows" = Table.SelectRows(#"Filtered Rows1", each ([Geo] = "Marche"))
+				in
+				    #"Filtered Rows"
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "ba96aec4e7bce1add9a1",
+  "position": {
+    "x": 80,
+    "y": 55.630578191695768,
+    "z": 5000,
+    "height": 664,
+    "width": 1200,
+    "tabOrder": 2000
+  },
+  "visualGroup": {
+    "displayName": "Pop Visuals",
+    "groupMode": "ScaleMode"
+  },
+  "isHidden": true
+}

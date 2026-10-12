@@ -7,3 +7,7 @@ __pycache__/
 
 # Inputs are downloaded or provided locally; docs/ holds the committed results.
 data/
+
+# Power BI project files that are local to each machine
+**/.pbi/localSettings.json
+**/.pbi/cache.abf

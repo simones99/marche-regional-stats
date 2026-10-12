@@ -1,0 +1,6095 @@
+cultureInfo en-US
+
+	linguisticMetadata =
+			{
+			  "Version": "4.1.0",
+			  "Language": "en-US",
+			  "Entities": {
+			    "year": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Year"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "year": {
+			            "State": "Generated",
+			            "Weight": 0.87
+			          }
+			        },
+			        {
+			          "yr": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.736
+			          }
+			        }
+			      ]
+			    },
+			    "year.year": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Year",
+			          "ConceptualProperty": "Year"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "year": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "yr": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.736
+			          }
+			        }
+			      ],
+			      "SemanticType": "Time"
+			    },
+			    "isced_11": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "ISCED 11"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "isced 11": {
+			            "State": "Generated"
+			          }
+			        }
+			      ]
+			    },
+			    "isced_11.isced_11": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "ISCED 11",
+			          "ConceptualProperty": "ISCED11"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "isced 11": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "isced 11 name": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "ISCED11": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        }
+			      ],
+			      "NameType": "Name"
+			    },
+			    "isced_11.ISCED_code": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "ISCED 11",
+			          "ConceptualProperty": "ISCED_Code"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "ISCED code": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "ISCED_Code": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        },
+			        {
+			          "isced id": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.75
+			          }
+			        },
+			        {
+			          "isced key": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.727
+			          }
+			        }
+			      ]
+			    },
+			    "d_population": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dPopulation"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "d population": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "dPopulation": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        },
+			        {
+			          "d populace": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "d person": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        }
+			      ]
+			    },
+			    "d_population.sex": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dPopulation",
+			          "ConceptualProperty": "Sex"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "sex": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "masculinity": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "femininity": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "gender": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        }
+			      ]
+			    },
+			    "d_population.age": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dPopulation",
+			          "ConceptualProperty": "Age"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "age": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "oldness": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "stage": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "phase": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "era": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.466
+			          }
+			        },
+			        {
+			          "epoch": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.466
+			          }
+			        },
+			        {
+			          "period": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.452
+			          }
+			        }
+			      ]
+			    },
+			    "d_population.entity": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dPopulation",
+			          "ConceptualProperty": "Entity"
+			        }
+			      },
+			      "State": "Generated",
+			      "Visibility": {
+			        "Value": "Hidden"
+			      },
+			      "Terms": [
+			        {
+			          "entity": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "state or province": {
+			            "State": "Generated",
+			            "Weight": 0.7
+			          }
+			        },
+			        {
+			          "unit": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "thing": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "person": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "creature": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "object": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "article": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "being": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "individual": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "body": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        }
+			      ],
+			      "SemanticType": "Location"
+			    },
+			    "d_population.year": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dPopulation",
+			          "ConceptualProperty": "Year"
+			        }
+			      },
+			      "State": "Generated",
+			      "Visibility": {
+			        "Value": "Hidden"
+			      },
+			      "Terms": [
+			        {
+			          "year": {
+			            "Type": "Noun",
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "yr": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.736
+			          }
+			        }
+			      ],
+			      "SemanticType": "Time"
+			    },
+			    "d_population.population": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dPopulation",
+			          "ConceptualProperty": "Population"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "population": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "populace": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "person": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        }
+			      ]
+			    },
+			    "d_population.most_recent_total_population": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dPopulation",
+			          "ConceptualProperty": "Most Recent Total Population"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "most recent total population": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "most recent aggregate population": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.599
+			          }
+			        },
+			        {
+			          "most recent overall population": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.599
+			          }
+			        },
+			        {
+			          "most recent total populace": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.514
+			          }
+			        },
+			        {
+			          "most recent total person": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.514
+			          }
+			        }
+			      ]
+			    },
+			    "d_population.last_number_of_over_80": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dPopulation",
+			          "ConceptualProperty": "Last_Number_of_Over_80"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "last number of over 80": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "Last_Number_of_Over_80": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        },
+			        {
+			          "last quantity of over 80": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.8
+			          }
+			        },
+			        {
+			          "last amount of over 80": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.776
+			          }
+			        },
+			        {
+			          "last count of over 80": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.776
+			          }
+			        },
+			        {
+			          "last no of over 80": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.757
+			          }
+			        },
+			        {
+			          "end number of over 80": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "final number of over 80": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "closing number of over 80": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "concluding number of over 80": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "finishing number of over 80": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "former number of over 80": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        }
+			      ]
+			    },
+			    "d_population.percentage_of_under_15": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dPopulation",
+			          "ConceptualProperty": "Percentage_of_Under_15"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "percentage of under 15": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "Percentage_of_Under_15": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        },
+			        {
+			          "ratio of under 15": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.514
+			          }
+			        },
+			        {
+			          "measurement of under 15": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.514
+			          }
+			        },
+			        {
+			          "calculation of under 15": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.514
+			          }
+			        },
+			        {
+			          "fraction of under 15": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.499
+			          }
+			        },
+			        {
+			          "proportion of under 15": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.499
+			          }
+			        },
+			        {
+			          "part of under 15": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.499
+			          }
+			        },
+			        {
+			          "section of under 15": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.499
+			          }
+			        },
+			        {
+			          "entitlement of under 15": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.489
+			          }
+			        },
+			        {
+			          "take of under 15": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.474
+			          }
+			        },
+			        {
+			          "profit of under 15": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.474
+			          }
+			        }
+			      ]
+			    },
+			    "d_population.last_number_of_under_10": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dPopulation",
+			          "ConceptualProperty": "Last_Number_of_Under_10"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "last number of under 10": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "Last_Number_of_Under_10": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        },
+			        {
+			          "last quantity of under 10": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.8
+			          }
+			        },
+			        {
+			          "last amount of under 10": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.776
+			          }
+			        },
+			        {
+			          "last count of under 10": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.776
+			          }
+			        },
+			        {
+			          "last no of under 10": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.757
+			          }
+			        },
+			        {
+			          "end number of under 10": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "final number of under 10": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "closing number of under 10": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "concluding number of under 10": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "finishing number of under 10": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "former number of under 10": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        }
+			      ]
+			    },
+			    "d_population.percentage_of_over_65": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dPopulation",
+			          "ConceptualProperty": "Percentage_of_Over_65"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "percentage of over 65": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "Percentage_of_Over_65": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        },
+			        {
+			          "ratio of over 65": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.514
+			          }
+			        },
+			        {
+			          "measurement of over 65": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.514
+			          }
+			        },
+			        {
+			          "calculation of over 65": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.514
+			          }
+			        },
+			        {
+			          "fraction of over 65": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.499
+			          }
+			        },
+			        {
+			          "proportion of over 65": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.499
+			          }
+			        },
+			        {
+			          "part of over 65": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.499
+			          }
+			        },
+			        {
+			          "section of over 65": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.499
+			          }
+			        },
+			        {
+			          "entitlement of over 65": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.489
+			          }
+			        },
+			        {
+			          "take of over 65": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.474
+			          }
+			        },
+			        {
+			          "profit of over 65": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.474
+			          }
+			        },
+			        {
+			          "Population Over 65": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "d_death.most_recent_total_deaths": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dDeaths",
+			          "ConceptualProperty": "Most_Recent_Total_Deaths"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "most recent total deaths": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "Most_Recent_Total_Deaths": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        },
+			        {
+			          "most recent aggregate death": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.599
+			          }
+			        },
+			        {
+			          "most recent overall death": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.599
+			          }
+			        },
+			        {
+			          "most recent total expiries": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.514
+			          }
+			        },
+			        {
+			          "most recent total bereavement": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.514
+			          }
+			        },
+			        {
+			          "most recent total loss": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.514
+			          }
+			        },
+			        {
+			          "most recent total demise": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.499
+			          }
+			        },
+			        {
+			          "most recent total decease": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.499
+			          }
+			        },
+			        {
+			          "most recent total fatality": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.489
+			          }
+			        },
+			        {
+			          "most recent total casualty": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.489
+			          }
+			        },
+			        {
+			          "most recent total mortality": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.489
+			          }
+			        }
+			      ]
+			    },
+			    "d_death.last_number_of_deaths_under_10": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dDeaths",
+			          "ConceptualProperty": "Last_Number_of_Deaths_Under_10"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "last number of deaths under 10": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "Last_Number_of_Deaths_Under_10": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        }
+			      ]
+			    },
+			    "d_death.LT11_dts": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dDeaths",
+			          "ConceptualProperty": "LT11_Dts"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "LT11 dts": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "LT11_Dts": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        },
+			        {
+			          "dts": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        }
+			      ]
+			    },
+			    "d_death.last_number_of_deaths_10_29": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dDeaths",
+			          "ConceptualProperty": "Last_Number_of_Deaths_10-29"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "last number of deaths 10 29": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "Last_Number_of_Deaths_10-29": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        }
+			      ]
+			    },
+			    "d_death.dts_11_30": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dDeaths",
+			          "ConceptualProperty": "Dts_11_30"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "dts 11 30": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "Dts_11_30": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        }
+			      ]
+			    },
+			    "f_enrollment": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "fEnrollments"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "f enrollment": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "fEnrollments": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        },
+			        {
+			          "f registration": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "f matriculation": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "f admission": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "f acceptance": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "f membership": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "f conscription": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.475
+			          }
+			        },
+			        {
+			          "f staffing": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.461
+			          }
+			        },
+			        {
+			          "f employment": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.461
+			          }
+			        }
+			      ]
+			    },
+			    "f_enrollment.isced_11": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "fEnrollments",
+			          "ConceptualProperty": "ISCED11"
+			        }
+			      },
+			      "State": "Generated",
+			      "Visibility": {
+			        "Value": "Hidden"
+			      },
+			      "Terms": [
+			        {
+			          "isced 11": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "ISCED11": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        }
+			      ]
+			    },
+			    "f_enrollment.sex": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "fEnrollments",
+			          "ConceptualProperty": "Sex"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "sex": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "masculinity": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "femininity": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "gender": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        }
+			      ]
+			    },
+			    "f_enrollment.geo": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "fEnrollments",
+			          "ConceptualProperty": "Geo"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "geo": {
+			            "State": "Generated"
+			          }
+			        }
+			      ]
+			    },
+			    "f_enrollment.year": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "fEnrollments",
+			          "ConceptualProperty": "Year"
+			        }
+			      },
+			      "State": "Generated",
+			      "Visibility": {
+			        "Value": "Hidden"
+			      },
+			      "Terms": [
+			        {
+			          "year": {
+			            "Type": "Noun",
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "yr": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.736
+			          }
+			        }
+			      ],
+			      "SemanticType": "Time"
+			    },
+			    "f_enrollment.enrollment": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "fEnrollments",
+			          "ConceptualProperty": "Enrollments"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "enrollment": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "registration": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "matriculation": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "admission": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "acceptance": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "membership": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "conscription": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.466
+			          }
+			        },
+			        {
+			          "staffing": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.452
+			          }
+			        },
+			        {
+			          "employment": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.452
+			          }
+			        }
+			      ]
+			    },
+			    "f_enrollment.total_enrollments": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "fEnrollments",
+			          "ConceptualProperty": "Total Enrollments"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "total enrollments": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "enrollments": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "aggregate enrollment": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.582
+			          }
+			        },
+			        {
+			          "overall enrollment": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.582
+			          }
+			        }
+			      ]
+			    },
+			    "f_enrollment.male_enrollments": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "fEnrollments",
+			          "ConceptualProperty": "Male Enrollments"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "male enrollments": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "enrollments": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        }
+			      ]
+			    },
+			    "f_enrollment.female_enrollments": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "fEnrollments",
+			          "ConceptualProperty": "Female Enrollments"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "female enrollments": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "enrollments": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        }
+			      ]
+			    },
+			    "d_GDP": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dGDP"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "d GDP": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "dGDP": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        }
+			      ]
+			    },
+			    "d_GDP.entity": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dGDP",
+			          "ConceptualProperty": "Entity"
+			        }
+			      },
+			      "State": "Generated",
+			      "Visibility": {
+			        "Value": "Hidden"
+			      },
+			      "Terms": [
+			        {
+			          "entity": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "unit": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "thing": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "person": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "creature": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "object": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "article": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "being": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "individual": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "body": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        }
+			      ]
+			    },
+			    "d_GDP.year": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dGDP",
+			          "ConceptualProperty": "Year"
+			        }
+			      },
+			      "State": "Generated",
+			      "Visibility": {
+			        "Value": "Hidden"
+			      },
+			      "Terms": [
+			        {
+			          "year": {
+			            "Type": "Noun",
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "yr": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.736
+			          }
+			        }
+			      ],
+			      "SemanticType": "Time"
+			    },
+			    "d_GDP.gdp": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dGDP",
+			          "ConceptualProperty": "GDP"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "gdp": {
+			            "State": "Generated"
+			          }
+			        }
+			      ]
+			    },
+			    "entity": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Entities"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "entity": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "unit": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "thing": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "person": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "creature": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "object": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "article": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "being": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "individual": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "body": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        }
+			      ]
+			    },
+			    "entity.entity": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Entities",
+			          "ConceptualProperty": "Entity"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "entity": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "entity name": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "unit": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "thing": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "person": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "creature": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "object": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "article": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "being": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "individual": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "body": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        }
+			      ],
+			      "NameType": "Name"
+			    },
+			    "entity.code": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Entities",
+			          "ConceptualProperty": "Code"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "code": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "key": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.714
+			          }
+			        }
+			      ]
+			    },
+			    "d_death": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dDeaths"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "d death": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "dDeaths": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        },
+			        {
+			          "d expiry": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "d bereavement": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "d loss": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "d demise": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        },
+			        {
+			          "d passing": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        },
+			        {
+			          "d decease": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        },
+			        {
+			          "d fatality": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.475
+			          }
+			        },
+			        {
+			          "d casualty": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.475
+			          }
+			        },
+			        {
+			          "d mortality": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.475
+			          }
+			        },
+			        {
+			          "d killing": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.461
+			          }
+			        }
+			      ]
+			    },
+			    "d_death.sex": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dDeaths",
+			          "ConceptualProperty": "Sex"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "sex": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "masculinity": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "femininity": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "gender": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        }
+			      ]
+			    },
+			    "d_death.age": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dDeaths",
+			          "ConceptualProperty": "Age"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "age": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "oldness": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "stage": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "phase": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "era": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.466
+			          }
+			        },
+			        {
+			          "epoch": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.466
+			          }
+			        },
+			        {
+			          "period": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.452
+			          }
+			        }
+			      ]
+			    },
+			    "d_death.entity": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dDeaths",
+			          "ConceptualProperty": "Entity"
+			        }
+			      },
+			      "State": "Generated",
+			      "Visibility": {
+			        "Value": "Hidden"
+			      },
+			      "Terms": [
+			        {
+			          "entity": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "state or province": {
+			            "State": "Generated",
+			            "Weight": 0.7
+			          }
+			        },
+			        {
+			          "unit": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "thing": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "person": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "creature": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "object": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "article": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "being": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "individual": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "body": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        }
+			      ],
+			      "SemanticType": "Location"
+			    },
+			    "d_death.year": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dDeaths",
+			          "ConceptualProperty": "Year"
+			        }
+			      },
+			      "State": "Generated",
+			      "Visibility": {
+			        "Value": "Hidden"
+			      },
+			      "Terms": [
+			        {
+			          "year": {
+			            "Type": "Noun",
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "yr": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.736
+			          }
+			        }
+			      ],
+			      "SemanticType": "Time"
+			    },
+			    "d_death.death": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dDeaths",
+			          "ConceptualProperty": "Deaths"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "death": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "expiry": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "bereavement": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "loss": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "demise": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "passing": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "decease": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "fatality": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.466
+			          }
+			        },
+			        {
+			          "casualty": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.466
+			          }
+			        },
+			        {
+			          "mortality": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.466
+			          }
+			        },
+			        {
+			          "killing": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.452
+			          }
+			        }
+			      ]
+			    },
+			    "d_death.age_groups": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dDeaths",
+			          "ConceptualProperty": "Age (groups)"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "age (groups)": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "age (group)": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.78
+			          }
+			        },
+			        {
+			          "age": {
+			            "State": "Generated",
+			            "Weight": 0.75
+			          }
+			        }
+			      ]
+			    },
+			    "d_death.total_deaths_last_5_years": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dDeaths",
+			          "ConceptualProperty": "Total_Deaths_Last_5_Years"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "total deaths last 5 years": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "Total_Deaths_Last_5_Years": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        },
+			        {
+			          "5 years": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "last 5 years": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "deaths last 5 years": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "aggregate death last 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "overall death last 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "total death end 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "total death final 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "total death closing 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "total death concluding 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "total death finishing 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "total death former 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "total death latest 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "total death latter 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        }
+			      ]
+			    },
+			    "d_death.mortality_rate": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dDeaths",
+			          "ConceptualProperty": "Mortality_Rate"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "mortality rate": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "Mortality_Rate": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        },
+			        {
+			          "rate": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "mortality degree": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "mortality frequency": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "mortality percentage": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "mortality ratio": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "mortality quotient": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "degree": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "frequency": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "ratio": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "quotient": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "mortality amount": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        }
+			      ]
+			    },
+			    "d_death.mortality_rate_last_5_years_weighted": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dDeaths",
+			          "ConceptualProperty": "Mortality_Rate_Last_5_Years_Weighted"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "mortality rate last 5 years weighted": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "Mortality_Rate_Last_5_Years_Weighted": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        }
+			      ]
+			    },
+			    "d_population.age_groups": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dPopulation",
+			          "ConceptualProperty": "Age (groups)"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "age (groups)": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "age (group)": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.78
+			          }
+			        },
+			        {
+			          "age": {
+			            "State": "Generated",
+			            "Weight": 0.75
+			          }
+			        }
+			      ]
+			    },
+			    "d_population.population_growth_rate_last_5_years": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dPopulation",
+			          "ConceptualProperty": "Population Growth Rate Last 5 Years"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "population growth rate last 5 years": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "5 years": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "last 5 years": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "rate last 5 years": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "growth rate last 5 years": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "growth rate end 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "growth rate final 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "growth rate closing 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "growth rate concluding 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "growth rate finishing 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "growth rate former 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "growth rate latest 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "growth rate latter 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "growth rate past 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        },
+			        {
+			          "growth rate remaining 5 year": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.605
+			          }
+			        }
+			      ]
+			    },
+			    "d_GDP.GDP_per_capita": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dGDP",
+			          "ConceptualProperty": "GDP per Capita"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "GDP per capita": {
+			            "State": "Generated"
+			          }
+			        }
+			      ]
+			    },
+			    "d_GDP.GDP_per_capita_italy": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dGDP",
+			          "ConceptualProperty": "GDP per Capita Italy"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "GDP per capita italy": {
+			            "State": "Generated"
+			          }
+			        }
+			      ]
+			    },
+			    "d_GDP.GDP_per_capita_EU": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dGDP",
+			          "ConceptualProperty": "GDP per Capita EU"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "GDP per capita EU": {
+			            "State": "Generated"
+			          }
+			        }
+			      ]
+			    },
+			    "d_GDP.GDP_per_capita_vs_italy": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dGDP",
+			          "ConceptualProperty": "GDP per Capita vs Italy"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "GDP per capita vs italy": {
+			            "State": "Generated"
+			          }
+			        }
+			      ]
+			    },
+			    "d_GDP.GDP_per_capita_vs_EU": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dGDP",
+			          "ConceptualProperty": "GDP per Capita vs EU"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "GDP per capita vs EU": {
+			            "State": "Generated"
+			          }
+			        }
+			      ]
+			    },
+			    "d_GDP.GDP_per_capita_vs_marche_last_5_years": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dGDP",
+			          "ConceptualProperty": "GDP per Capita vs Marche (Last 5 Years)"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "GDP per capita vs marche (last 5 years)": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "GDP per capita vs marche": {
+			            "State": "Generated",
+			            "Weight": 0.75
+			          }
+			        }
+			      ]
+			    },
+			    "dUnemployment_rate": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dUnemployment Rate"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "dUnemployment rate": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "dunemployment degree": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "dunemployment frequency": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "dunemployment percentage": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "dunemployment ratio": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "dunemployment quotient": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "dunemployment amount": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        },
+			        {
+			          "dunemployment proportion": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        },
+			        {
+			          "dunemployment speed": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        },
+			        {
+			          "dunemployment level": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        },
+			        {
+			          "dunemployment scale": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        }
+			      ]
+			    },
+			    "dUnemployment_rate.entity": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dUnemployment Rate",
+			          "ConceptualProperty": "Entity"
+			        }
+			      },
+			      "State": "Generated",
+			      "Visibility": {
+			        "Value": "Hidden"
+			      },
+			      "Terms": [
+			        {
+			          "entity": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "unit": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "thing": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "person": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "creature": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "object": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "article": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "being": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "individual": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        },
+			        {
+			          "body": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.476
+			          }
+			        }
+			      ]
+			    },
+			    "dUnemployment_rate.year": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dUnemployment Rate",
+			          "ConceptualProperty": "Year"
+			        }
+			      },
+			      "State": "Generated",
+			      "Visibility": {
+			        "Value": "Hidden"
+			      },
+			      "Terms": [
+			        {
+			          "year": {
+			            "Type": "Noun",
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "yr": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.736
+			          }
+			        }
+			      ],
+			      "SemanticType": "Time"
+			    },
+			    "dUnemployment_rate.unemployment_rate": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dUnemployment Rate",
+			          "ConceptualProperty": "UnemploymentRate"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "unemployment rate": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "UnemploymentRate": {
+			            "Type": "Noun",
+			            "State": "Generated",
+			            "Weight": 0.99
+			          }
+			        },
+			        {
+			          "rate": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "unemployment degree": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "unemployment frequency": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "unemployment percentage": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "unemployment ratio": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "unemployment quotient": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.5
+			          }
+			        },
+			        {
+			          "degree": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "frequency": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "ratio": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "quotient": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.491
+			          }
+			        },
+			        {
+			          "unemployment amount": {
+			            "Type": "Noun",
+			            "State": "Suggested",
+			            "Source": {
+			              "Agent": "Thesaurus"
+			            },
+			            "Weight": 0.485
+			          }
+			        }
+			      ]
+			    },
+			    "dUnemployment_rate.unemployment_rate_italy": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dUnemployment Rate",
+			          "ConceptualProperty": "Unemployment Rate Italy"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "unemployment rate italy": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "italy": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "rate italy": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        }
+			      ]
+			    },
+			    "dUnemployment_rate.unemployment_rate_marche": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dUnemployment Rate",
+			          "ConceptualProperty": "Unemployment Rate Marche"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "unemployment rate marche": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "marche": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "rate marche": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        }
+			      ]
+			    },
+			    "dUnemployment_rate.unemployment_rate_EU": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dUnemployment Rate",
+			          "ConceptualProperty": "Unemployment Rate EU"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "unemployment rate EU": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "EU": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        },
+			        {
+			          "rate EU": {
+			            "State": "Generated",
+			            "Weight": 0.97
+			          }
+			        }
+			      ]
+			    },
+			    "dUnemployment_rate.unemployment_rate_vs_italy": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dUnemployment Rate",
+			          "ConceptualProperty": "Unemployment Rate vs Italy"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "unemployment rate vs italy": {
+			            "State": "Generated"
+			          }
+			        }
+			      ]
+			    },
+			    "dUnemployment_rate.unemployment_rate_vs_EU": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dUnemployment Rate",
+			          "ConceptualProperty": "Unemployment Rate vs EU"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "unemployment rate vs EU": {
+			            "State": "Generated"
+			          }
+			        }
+			      ]
+			    },
+			    "dUnemployment_rate.unemployment_rate_vs_marche_last_5_years": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dUnemployment Rate",
+			          "ConceptualProperty": "Unemployment Rate vs Marche (Last 5 Years)"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "unemployment rate vs marche (last 5 years)": {
+			            "State": "Generated"
+			          }
+			        },
+			        {
+			          "unemployment rate vs marche": {
+			            "State": "Generated",
+			            "Weight": 0.75
+			          }
+			        }
+			      ]
+			    }
+			  },
+			  "Relationships": {
+			    "dUnemployment_rate_has_unemployment_rate_vs_marche_last_5_years": {
+			      "Binding": {
+			        "ConceptualEntity": "dUnemployment Rate"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "dUnemployment_rate": {
+			          "Target": {
+			            "Entity": "dUnemployment_rate"
+			          }
+			        },
+			        "dUnemployment_rate.unemployment_rate_vs_marche_last_5_years": {
+			          "Target": {
+			            "Entity": "dUnemployment_rate.unemployment_rate_vs_marche_last_5_years"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "dUnemployment_rate"
+			            },
+			            "Object": {
+			              "Role": "dUnemployment_rate.unemployment_rate_vs_marche_last_5_years"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "dUnemployment_rates_have_unemployment_rate_vs_marche_last_5_years"
+			        }
+			      ]
+			    },
+			    "dUnemployment_rate_has_unemployment_rate_vs_EU": {
+			      "Binding": {
+			        "ConceptualEntity": "dUnemployment Rate"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "dUnemployment_rate": {
+			          "Target": {
+			            "Entity": "dUnemployment_rate"
+			          }
+			        },
+			        "dUnemployment_rate.unemployment_rate_vs_EU": {
+			          "Target": {
+			            "Entity": "dUnemployment_rate.unemployment_rate_vs_EU"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "dUnemployment_rate"
+			            },
+			            "Object": {
+			              "Role": "dUnemployment_rate.unemployment_rate_vs_EU"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "dUnemployment_rates_have_unemployment_rate_vs_EU"
+			        }
+			      ]
+			    },
+			    "dUnemployment_rate_has_unemployment_rate_vs_italy": {
+			      "Binding": {
+			        "ConceptualEntity": "dUnemployment Rate"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "dUnemployment_rate": {
+			          "Target": {
+			            "Entity": "dUnemployment_rate"
+			          }
+			        },
+			        "dUnemployment_rate.unemployment_rate_vs_italy": {
+			          "Target": {
+			            "Entity": "dUnemployment_rate.unemployment_rate_vs_italy"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "dUnemployment_rate"
+			            },
+			            "Object": {
+			              "Role": "dUnemployment_rate.unemployment_rate_vs_italy"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "dUnemployment_rates_have_unemployment_rate_vs_italy"
+			        }
+			      ]
+			    },
+			    "dUnemployment_rate_has_unemployment_rate_EU": {
+			      "Binding": {
+			        "ConceptualEntity": "dUnemployment Rate"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "dUnemployment_rate": {
+			          "Target": {
+			            "Entity": "dUnemployment_rate"
+			          }
+			        },
+			        "dUnemployment_rate.unemployment_rate_EU": {
+			          "Target": {
+			            "Entity": "dUnemployment_rate.unemployment_rate_EU"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "dUnemployment_rate"
+			            },
+			            "Object": {
+			              "Role": "dUnemployment_rate.unemployment_rate_EU"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "dUnemployment_rates_have_unemployment_rate_EU"
+			        }
+			      ]
+			    },
+			    "dUnemployment_rate_has_unemployment_rate_marche": {
+			      "Binding": {
+			        "ConceptualEntity": "dUnemployment Rate"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "dUnemployment_rate": {
+			          "Target": {
+			            "Entity": "dUnemployment_rate"
+			          }
+			        },
+			        "dUnemployment_rate.unemployment_rate_marche": {
+			          "Target": {
+			            "Entity": "dUnemployment_rate.unemployment_rate_marche"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "dUnemployment_rate"
+			            },
+			            "Object": {
+			              "Role": "dUnemployment_rate.unemployment_rate_marche"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "dUnemployment_rates_have_unemployment_rate_marche"
+			        }
+			      ]
+			    },
+			    "dUnemployment_rate_has_unemployment_rate_italy": {
+			      "Binding": {
+			        "ConceptualEntity": "dUnemployment Rate"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "dUnemployment_rate": {
+			          "Target": {
+			            "Entity": "dUnemployment_rate"
+			          }
+			        },
+			        "dUnemployment_rate.unemployment_rate_italy": {
+			          "Target": {
+			            "Entity": "dUnemployment_rate.unemployment_rate_italy"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "dUnemployment_rate"
+			            },
+			            "Object": {
+			              "Role": "dUnemployment_rate.unemployment_rate_italy"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "dUnemployment_rates_have_unemployment_rate_italy"
+			        }
+			      ]
+			    },
+			    "dUnemployment_rate_has_unemployment_rate": {
+			      "Binding": {
+			        "ConceptualEntity": "dUnemployment Rate"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "dUnemployment_rate": {
+			          "Target": {
+			            "Entity": "dUnemployment_rate"
+			          }
+			        },
+			        "dUnemployment_rate.unemployment_rate": {
+			          "Target": {
+			            "Entity": "dUnemployment_rate.unemployment_rate"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "dUnemployment_rate"
+			            },
+			            "Object": {
+			              "Role": "dUnemployment_rate.unemployment_rate"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "dUnemployment_rates_have_unemployment_rates"
+			        }
+			      ]
+			    },
+			    "d_population_has_d_GDP_GDP_per_capita_vs_marche_last_5_years": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "d_GDP.GDP_per_capita_vs_marche_last_5_years": {
+			          "Target": {
+			            "Entity": "d_GDP.GDP_per_capita_vs_marche_last_5_years"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "d_GDP.GDP_per_capita_vs_marche_last_5_years"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_GDP_per_capita_vs_marche_last_5_years"
+			        }
+			      ]
+			    },
+			    "d_GDP_has_GDP_per_capita_vs_marche_last_5_years": {
+			      "Binding": {
+			        "ConceptualEntity": "dGDP"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_GDP": {
+			          "Target": {
+			            "Entity": "d_GDP"
+			          }
+			        },
+			        "d_GDP.GDP_per_capita_vs_marche_last_5_years": {
+			          "Target": {
+			            "Entity": "d_GDP.GDP_per_capita_vs_marche_last_5_years"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_GDP"
+			            },
+			            "Object": {
+			              "Role": "d_GDP.GDP_per_capita_vs_marche_last_5_years"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_GDP_have_GDP_per_capita_vs_marche_last_5_years"
+			        }
+			      ]
+			    },
+			    "d_population_has_d_GDP_GDP_per_capita_vs_EU": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "d_GDP.GDP_per_capita_vs_EU": {
+			          "Target": {
+			            "Entity": "d_GDP.GDP_per_capita_vs_EU"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "d_GDP.GDP_per_capita_vs_EU"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_GDP_per_capita_vs_EU"
+			        }
+			      ]
+			    },
+			    "d_GDP_has_GDP_per_capita_vs_EU": {
+			      "Binding": {
+			        "ConceptualEntity": "dGDP"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_GDP": {
+			          "Target": {
+			            "Entity": "d_GDP"
+			          }
+			        },
+			        "d_GDP.GDP_per_capita_vs_EU": {
+			          "Target": {
+			            "Entity": "d_GDP.GDP_per_capita_vs_EU"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_GDP"
+			            },
+			            "Object": {
+			              "Role": "d_GDP.GDP_per_capita_vs_EU"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_GDP_have_GDP_per_capita_vs_EU"
+			        }
+			      ]
+			    },
+			    "d_population_has_d_GDP_GDP_per_capita_vs_italy": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "d_GDP.GDP_per_capita_vs_italy": {
+			          "Target": {
+			            "Entity": "d_GDP.GDP_per_capita_vs_italy"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "d_GDP.GDP_per_capita_vs_italy"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_GDP_per_capita_vs_italy"
+			        }
+			      ]
+			    },
+			    "d_GDP_has_GDP_per_capita_vs_italy": {
+			      "Binding": {
+			        "ConceptualEntity": "dGDP"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_GDP": {
+			          "Target": {
+			            "Entity": "d_GDP"
+			          }
+			        },
+			        "d_GDP.GDP_per_capita_vs_italy": {
+			          "Target": {
+			            "Entity": "d_GDP.GDP_per_capita_vs_italy"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_GDP"
+			            },
+			            "Object": {
+			              "Role": "d_GDP.GDP_per_capita_vs_italy"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_GDP_have_GDP_per_capita_vs_italy"
+			        }
+			      ]
+			    },
+			    "d_population_has_d_GDP_GDP_per_capita_EU": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "d_GDP.GDP_per_capita_EU": {
+			          "Target": {
+			            "Entity": "d_GDP.GDP_per_capita_EU"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "d_GDP.GDP_per_capita_EU"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_GDP_per_capita_EU"
+			        }
+			      ]
+			    },
+			    "d_GDP_has_GDP_per_capita_EU": {
+			      "Binding": {
+			        "ConceptualEntity": "dGDP"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_GDP": {
+			          "Target": {
+			            "Entity": "d_GDP"
+			          }
+			        },
+			        "d_GDP.GDP_per_capita_EU": {
+			          "Target": {
+			            "Entity": "d_GDP.GDP_per_capita_EU"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_GDP"
+			            },
+			            "Object": {
+			              "Role": "d_GDP.GDP_per_capita_EU"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_GDP_have_GDP_per_capita_EU"
+			        }
+			      ]
+			    },
+			    "d_population_has_d_GDP_GDP_per_capita_italy": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "d_GDP.GDP_per_capita_italy": {
+			          "Target": {
+			            "Entity": "d_GDP.GDP_per_capita_italy"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "d_GDP.GDP_per_capita_italy"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_GDP_per_capita_italy"
+			        }
+			      ]
+			    },
+			    "d_GDP_has_GDP_per_capita_italy": {
+			      "Binding": {
+			        "ConceptualEntity": "dGDP"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_GDP": {
+			          "Target": {
+			            "Entity": "d_GDP"
+			          }
+			        },
+			        "d_GDP.GDP_per_capita_italy": {
+			          "Target": {
+			            "Entity": "d_GDP.GDP_per_capita_italy"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_GDP"
+			            },
+			            "Object": {
+			              "Role": "d_GDP.GDP_per_capita_italy"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_GDP_have_GDP_per_capita_italy"
+			        }
+			      ]
+			    },
+			    "d_population_has_d_GDP_GDP_per_capita": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "d_GDP.GDP_per_capita": {
+			          "Target": {
+			            "Entity": "d_GDP.GDP_per_capita"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "d_GDP.GDP_per_capita"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_GDP_per_capita"
+			        }
+			      ]
+			    },
+			    "d_GDP_has_GDP_per_capita": {
+			      "Binding": {
+			        "ConceptualEntity": "dGDP"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_GDP": {
+			          "Target": {
+			            "Entity": "d_GDP"
+			          }
+			        },
+			        "d_GDP.GDP_per_capita": {
+			          "Target": {
+			            "Entity": "d_GDP.GDP_per_capita"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_GDP"
+			            },
+			            "Object": {
+			              "Role": "d_GDP.GDP_per_capita"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_GDP_have_GDP_per_capita"
+			        }
+			      ]
+			    },
+			    "d_population_has_population_growth_rate_last_5_years": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "d_population.population_growth_rate_last_5_years": {
+			          "Target": {
+			            "Entity": "d_population.population_growth_rate_last_5_years"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "d_population.population_growth_rate_last_5_years"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_population_growth_rate_last_5_years"
+			        }
+			      ]
+			    },
+			    "d_population_has_age_groups": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "d_population.age_groups": {
+			          "Target": {
+			            "Entity": "d_population.age_groups"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "d_population.age_groups"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_age_groups"
+			        }
+			      ]
+			    },
+			    "d_population_has_d_death_mortality_rate_last_5_years_weighted": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "d_death.mortality_rate_last_5_years_weighted": {
+			          "Target": {
+			            "Entity": "d_death.mortality_rate_last_5_years_weighted"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "d_death.mortality_rate_last_5_years_weighted"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_mortality_rate_last_5_years_weighted"
+			        }
+			      ]
+			    },
+			    "d_death_has_mortality_rate_last_5_years_weighted": {
+			      "Binding": {
+			        "ConceptualEntity": "dDeaths"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_death": {
+			          "Target": {
+			            "Entity": "d_death"
+			          }
+			        },
+			        "d_death.mortality_rate_last_5_years_weighted": {
+			          "Target": {
+			            "Entity": "d_death.mortality_rate_last_5_years_weighted"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_death"
+			            },
+			            "Object": {
+			              "Role": "d_death.mortality_rate_last_5_years_weighted"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_deaths_have_mortality_rate_last_5_years_weighted"
+			        }
+			      ]
+			    },
+			    "d_population_has_d_death_mortality_rate": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "d_death.mortality_rate": {
+			          "Target": {
+			            "Entity": "d_death.mortality_rate"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "d_death.mortality_rate"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_mortality_rate"
+			        }
+			      ]
+			    },
+			    "d_death_has_mortality_rate": {
+			      "Binding": {
+			        "ConceptualEntity": "dDeaths"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_death": {
+			          "Target": {
+			            "Entity": "d_death"
+			          }
+			        },
+			        "d_death.mortality_rate": {
+			          "Target": {
+			            "Entity": "d_death.mortality_rate"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_death"
+			            },
+			            "Object": {
+			              "Role": "d_death.mortality_rate"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_deaths_have_mortality_rate"
+			        }
+			      ]
+			    },
+			    "d_death_has_total_deaths_last_5_years": {
+			      "Binding": {
+			        "ConceptualEntity": "dDeaths"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_death": {
+			          "Target": {
+			            "Entity": "d_death"
+			          }
+			        },
+			        "d_death.total_deaths_last_5_years": {
+			          "Target": {
+			            "Entity": "d_death.total_deaths_last_5_years"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_death"
+			            },
+			            "Object": {
+			              "Role": "d_death.total_deaths_last_5_years"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_deaths_have_total_deaths_last_5_years"
+			        }
+			      ]
+			    },
+			    "d_death_has_age_groups": {
+			      "Binding": {
+			        "ConceptualEntity": "dDeaths"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_death": {
+			          "Target": {
+			            "Entity": "d_death"
+			          }
+			        },
+			        "d_death.age_groups": {
+			          "Target": {
+			            "Entity": "d_death.age_groups"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_death"
+			            },
+			            "Object": {
+			              "Role": "d_death.age_groups"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_deaths_have_age_groups"
+			        }
+			      ]
+			    },
+			    "d_death_has_death": {
+			      "Binding": {
+			        "ConceptualEntity": "dDeaths"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_death": {
+			          "Target": {
+			            "Entity": "d_death"
+			          }
+			        },
+			        "d_death.death": {
+			          "Target": {
+			            "Entity": "d_death.death"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_death"
+			            },
+			            "Object": {
+			              "Role": "d_death.death"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_deaths_have_deaths"
+			        }
+			      ]
+			    },
+			    "d_death_has_age": {
+			      "Binding": {
+			        "ConceptualEntity": "dDeaths"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_death": {
+			          "Target": {
+			            "Entity": "d_death"
+			          }
+			        },
+			        "d_death.age": {
+			          "Target": {
+			            "Entity": "d_death.age"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_death"
+			            },
+			            "Object": {
+			              "Role": "d_death.age"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_deaths_have_ages"
+			        }
+			      ]
+			    },
+			    "d_death_has_sex": {
+			      "Binding": {
+			        "ConceptualEntity": "dDeaths"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_death": {
+			          "Target": {
+			            "Entity": "d_death"
+			          }
+			        },
+			        "d_death.sex": {
+			          "Target": {
+			            "Entity": "d_death.sex"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_death"
+			            },
+			            "Object": {
+			              "Role": "d_death.sex"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_deaths_have_sexes"
+			        }
+			      ]
+			    },
+			    "entity_has_code": {
+			      "Binding": {
+			        "ConceptualEntity": "Entities"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "entity": {
+			          "Target": {
+			            "Entity": "entity"
+			          }
+			        },
+			        "entity.code": {
+			          "Target": {
+			            "Entity": "entity.code"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "entity"
+			            },
+			            "Object": {
+			              "Role": "entity.code"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "entities_have_codes"
+			        }
+			      ]
+			    },
+			    "entity_has_entity": {
+			      "Binding": {
+			        "ConceptualEntity": "Entities"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "entity": {
+			          "Target": {
+			            "Entity": "entity"
+			          }
+			        },
+			        "entity.entity": {
+			          "Target": {
+			            "Entity": "entity.entity"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "entity"
+			            },
+			            "Object": {
+			              "Role": "entity.entity"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "entities_have_entities"
+			        },
+			        {
+			          "Name": {
+			            "Subject": {
+			              "Role": "entity"
+			            },
+			            "Name": {
+			              "Role": "entity.entity"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "entities_are_names_IDs_of_entities"
+			        }
+			      ]
+			    },
+			    "d_GDP_has_gdp": {
+			      "Binding": {
+			        "ConceptualEntity": "dGDP"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_GDP": {
+			          "Target": {
+			            "Entity": "d_GDP"
+			          }
+			        },
+			        "d_GDP.gdp": {
+			          "Target": {
+			            "Entity": "d_GDP.gdp"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_GDP"
+			            },
+			            "Object": {
+			              "Role": "d_GDP.gdp"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_GDP_have_gdp"
+			        },
+			        {
+			          "Adjective": {
+			            "Subject": {
+			              "Role": "d_GDP"
+			            },
+			            "Adjectives": [
+			              {
+			                "expensive": {
+			                  "State": "Generated"
+			                }
+			              }
+			            ],
+			            "Antonyms": [
+			              {
+			                "cheap": {
+			                  "State": "Generated"
+			                }
+			              }
+			            ],
+			            "Measurement": {
+			              "Role": "d_GDP.gdp"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "gdp_indicates_how_expensive_d_GDP_are"
+			        }
+			      ]
+			    },
+			    "f_enrollment_has_female_enrollments": {
+			      "Binding": {
+			        "ConceptualEntity": "fEnrollments"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "f_enrollment": {
+			          "Target": {
+			            "Entity": "f_enrollment"
+			          }
+			        },
+			        "f_enrollment.female_enrollments": {
+			          "Target": {
+			            "Entity": "f_enrollment.female_enrollments"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "f_enrollment"
+			            },
+			            "Object": {
+			              "Role": "f_enrollment.female_enrollments"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "f_enrollments_have_female_enrollments"
+			        }
+			      ]
+			    },
+			    "f_enrollment_has_male_enrollments": {
+			      "Binding": {
+			        "ConceptualEntity": "fEnrollments"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "f_enrollment": {
+			          "Target": {
+			            "Entity": "f_enrollment"
+			          }
+			        },
+			        "f_enrollment.male_enrollments": {
+			          "Target": {
+			            "Entity": "f_enrollment.male_enrollments"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "f_enrollment"
+			            },
+			            "Object": {
+			              "Role": "f_enrollment.male_enrollments"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "f_enrollments_have_male_enrollments"
+			        }
+			      ]
+			    },
+			    "f_enrollment_has_total_enrollments": {
+			      "Binding": {
+			        "ConceptualEntity": "fEnrollments"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "f_enrollment": {
+			          "Target": {
+			            "Entity": "f_enrollment"
+			          }
+			        },
+			        "f_enrollment.total_enrollments": {
+			          "Target": {
+			            "Entity": "f_enrollment.total_enrollments"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "f_enrollment"
+			            },
+			            "Object": {
+			              "Role": "f_enrollment.total_enrollments"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "f_enrollments_have_total_enrollments"
+			        }
+			      ]
+			    },
+			    "f_enrollment_has_enrollment": {
+			      "Binding": {
+			        "ConceptualEntity": "fEnrollments"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "f_enrollment": {
+			          "Target": {
+			            "Entity": "f_enrollment"
+			          }
+			        },
+			        "f_enrollment.enrollment": {
+			          "Target": {
+			            "Entity": "f_enrollment.enrollment"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "f_enrollment"
+			            },
+			            "Object": {
+			              "Role": "f_enrollment.enrollment"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "f_enrollments_have_enrollments"
+			        }
+			      ]
+			    },
+			    "f_enrollment_has_geo": {
+			      "Binding": {
+			        "ConceptualEntity": "fEnrollments"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "f_enrollment": {
+			          "Target": {
+			            "Entity": "f_enrollment"
+			          }
+			        },
+			        "f_enrollment.geo": {
+			          "Target": {
+			            "Entity": "f_enrollment.geo"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "f_enrollment"
+			            },
+			            "Object": {
+			              "Role": "f_enrollment.geo"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "f_enrollments_have_geos"
+			        }
+			      ]
+			    },
+			    "f_enrollment_has_sex": {
+			      "Binding": {
+			        "ConceptualEntity": "fEnrollments"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "f_enrollment": {
+			          "Target": {
+			            "Entity": "f_enrollment"
+			          }
+			        },
+			        "f_enrollment.sex": {
+			          "Target": {
+			            "Entity": "f_enrollment.sex"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "f_enrollment"
+			            },
+			            "Object": {
+			              "Role": "f_enrollment.sex"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "f_enrollments_have_sexes"
+			        }
+			      ]
+			    },
+			    "d_death_has_dts_11_30": {
+			      "Binding": {
+			        "ConceptualEntity": "dDeaths"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_death": {
+			          "Target": {
+			            "Entity": "d_death"
+			          }
+			        },
+			        "d_death.dts_11_30": {
+			          "Target": {
+			            "Entity": "d_death.dts_11_30"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_death"
+			            },
+			            "Object": {
+			              "Role": "d_death.dts_11_30"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_deaths_have_dts_11_30"
+			        }
+			      ]
+			    },
+			    "d_death_has_last_number_of_deaths_10_29": {
+			      "Binding": {
+			        "ConceptualEntity": "dDeaths"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_death": {
+			          "Target": {
+			            "Entity": "d_death"
+			          }
+			        },
+			        "d_death.last_number_of_deaths_10_29": {
+			          "Target": {
+			            "Entity": "d_death.last_number_of_deaths_10_29"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_death"
+			            },
+			            "Object": {
+			              "Role": "d_death.last_number_of_deaths_10_29"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_deaths_have_last_number_of_deaths_10_29"
+			        }
+			      ]
+			    },
+			    "d_death_has_LT11_dts": {
+			      "Binding": {
+			        "ConceptualEntity": "dDeaths"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_death": {
+			          "Target": {
+			            "Entity": "d_death"
+			          }
+			        },
+			        "d_death.LT11_dts": {
+			          "Target": {
+			            "Entity": "d_death.LT11_dts"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_death"
+			            },
+			            "Object": {
+			              "Role": "d_death.LT11_dts"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_deaths_have_LT11_dts"
+			        }
+			      ]
+			    },
+			    "d_death_has_last_number_of_deaths_under_10": {
+			      "Binding": {
+			        "ConceptualEntity": "dDeaths"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_death": {
+			          "Target": {
+			            "Entity": "d_death"
+			          }
+			        },
+			        "d_death.last_number_of_deaths_under_10": {
+			          "Target": {
+			            "Entity": "d_death.last_number_of_deaths_under_10"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_death"
+			            },
+			            "Object": {
+			              "Role": "d_death.last_number_of_deaths_under_10"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_deaths_have_last_number_of_deaths_under_10"
+			        }
+			      ]
+			    },
+			    "d_death_has_most_recent_total_deaths": {
+			      "Binding": {
+			        "ConceptualEntity": "dDeaths"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_death": {
+			          "Target": {
+			            "Entity": "d_death"
+			          }
+			        },
+			        "d_death.most_recent_total_deaths": {
+			          "Target": {
+			            "Entity": "d_death.most_recent_total_deaths"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_death"
+			            },
+			            "Object": {
+			              "Role": "d_death.most_recent_total_deaths"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_deaths_have_most_recent_total_deaths"
+			        }
+			      ]
+			    },
+			    "d_population_has_percentage_of_over_65": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "d_population.percentage_of_over_65": {
+			          "Target": {
+			            "Entity": "d_population.percentage_of_over_65"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "d_population.percentage_of_over_65"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_percentage_of_over_65"
+			        }
+			      ]
+			    },
+			    "d_population_has_last_number_of_under_10": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "d_population.last_number_of_under_10": {
+			          "Target": {
+			            "Entity": "d_population.last_number_of_under_10"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "d_population.last_number_of_under_10"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_last_number_of_under_10"
+			        }
+			      ]
+			    },
+			    "d_population_has_percentage_of_under_15": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "d_population.percentage_of_under_15": {
+			          "Target": {
+			            "Entity": "d_population.percentage_of_under_15"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "d_population.percentage_of_under_15"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_percentage_of_under_15"
+			        }
+			      ]
+			    },
+			    "d_population_has_last_number_of_over_80": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "d_population.last_number_of_over_80": {
+			          "Target": {
+			            "Entity": "d_population.last_number_of_over_80"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "d_population.last_number_of_over_80"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_last_number_of_over_80"
+			        }
+			      ]
+			    },
+			    "d_population_has_most_recent_total_population": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "d_population.most_recent_total_population": {
+			          "Target": {
+			            "Entity": "d_population.most_recent_total_population"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "d_population.most_recent_total_population"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_most_recent_total_population"
+			        }
+			      ]
+			    },
+			    "d_population_has_population": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "d_population.population": {
+			          "Target": {
+			            "Entity": "d_population.population"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "d_population.population"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_populations"
+			        },
+			        {
+			          "Adjective": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Adjectives": [
+			              {
+			                "large": {
+			                  "State": "Generated"
+			                }
+			              },
+			              {
+			                "big": {
+			                  "State": "Generated"
+			                }
+			              },
+			              {
+			                "populated": {
+			                  "State": "Generated"
+			                }
+			              }
+			            ],
+			            "Antonyms": [
+			              {
+			                "small": {
+			                  "State": "Generated"
+			                }
+			              }
+			            ],
+			            "Measurement": {
+			              "Role": "d_population.population"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "population_indicates_how_large_d_populations_are"
+			        }
+			      ]
+			    },
+			    "d_population_has_age": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "d_population.age": {
+			          "Target": {
+			            "Entity": "d_population.age"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "d_population.age"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_ages"
+			        }
+			      ]
+			    },
+			    "d_population_has_sex": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "d_population.sex": {
+			          "Target": {
+			            "Entity": "d_population.sex"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "d_population.sex"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_sexes"
+			        }
+			      ]
+			    },
+			    "isced_11_has_ISCED_code": {
+			      "Binding": {
+			        "ConceptualEntity": "ISCED 11"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "isced_11": {
+			          "Target": {
+			            "Entity": "isced_11"
+			          }
+			        },
+			        "isced_11.ISCED_code": {
+			          "Target": {
+			            "Entity": "isced_11.ISCED_code"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "isced_11"
+			            },
+			            "Object": {
+			              "Role": "isced_11.ISCED_code"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "isced_11_have_ISCED_codes"
+			        }
+			      ]
+			    },
+			    "isced_11_has_isced_11": {
+			      "Binding": {
+			        "ConceptualEntity": "ISCED 11"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "isced_11": {
+			          "Target": {
+			            "Entity": "isced_11"
+			          }
+			        },
+			        "isced_11.isced_11": {
+			          "Target": {
+			            "Entity": "isced_11.isced_11"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "isced_11"
+			            },
+			            "Object": {
+			              "Role": "isced_11.isced_11"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "isced_11_have_isced_11"
+			        },
+			        {
+			          "Name": {
+			            "Subject": {
+			              "Role": "isced_11"
+			            },
+			            "Name": {
+			              "Role": "isced_11.isced_11"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "isced_11_are_names_IDs_of_isced_11"
+			        }
+			      ]
+			    },
+			    "year_has_year": {
+			      "Binding": {
+			        "ConceptualEntity": "Year"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "year": {
+			          "Target": {
+			            "Entity": "year"
+			          }
+			        },
+			        "year.year": {
+			          "Target": {
+			            "Entity": "year.year"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "year"
+			            },
+			            "Object": {
+			              "Role": "year.year"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "years_have_years"
+			        }
+			      ]
+			    },
+			    "d_population_has_year": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "year": {
+			          "Target": {
+			            "Entity": "year"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "year"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_years"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "year"
+			            },
+			            "Object": {
+			              "Role": "d_population"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "years_have_d_populations"
+			        }
+			      ]
+			    },
+			    "d_population_has_entity": {
+			      "Binding": {
+			        "ConceptualEntity": "dPopulation"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_population": {
+			          "Target": {
+			            "Entity": "d_population"
+			          }
+			        },
+			        "entity": {
+			          "Target": {
+			            "Entity": "entity"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_population"
+			            },
+			            "Object": {
+			              "Role": "entity"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_populations_have_entities"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "entity"
+			            },
+			            "Object": {
+			              "Role": "d_population"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "entities_have_d_populations"
+			        }
+			      ]
+			    },
+			    "f_enrollment_has_isced_11": {
+			      "Binding": {
+			        "ConceptualEntity": "fEnrollments"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "f_enrollment": {
+			          "Target": {
+			            "Entity": "f_enrollment"
+			          }
+			        },
+			        "isced_11": {
+			          "Target": {
+			            "Entity": "isced_11"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "f_enrollment"
+			            },
+			            "Object": {
+			              "Role": "isced_11"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "f_enrollments_have_isced_11"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "isced_11"
+			            },
+			            "Object": {
+			              "Role": "f_enrollment"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "isced_11_have_f_enrollments"
+			        }
+			      ]
+			    },
+			    "f_enrollment_has_year": {
+			      "Binding": {
+			        "ConceptualEntity": "fEnrollments"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "f_enrollment": {
+			          "Target": {
+			            "Entity": "f_enrollment"
+			          }
+			        },
+			        "year": {
+			          "Target": {
+			            "Entity": "year"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "f_enrollment"
+			            },
+			            "Object": {
+			              "Role": "year"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "f_enrollments_have_years"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "year"
+			            },
+			            "Object": {
+			              "Role": "f_enrollment"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "years_have_f_enrollments"
+			        }
+			      ]
+			    },
+			    "d_GDP_has_entity": {
+			      "Binding": {
+			        "ConceptualEntity": "dGDP"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_GDP": {
+			          "Target": {
+			            "Entity": "d_GDP"
+			          }
+			        },
+			        "entity": {
+			          "Target": {
+			            "Entity": "entity"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_GDP"
+			            },
+			            "Object": {
+			              "Role": "entity"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_GDP_have_entities"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "entity"
+			            },
+			            "Object": {
+			              "Role": "d_GDP"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "entities_have_d_GDP"
+			        }
+			      ]
+			    },
+			    "d_GDP_has_year": {
+			      "Binding": {
+			        "ConceptualEntity": "dGDP"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_GDP": {
+			          "Target": {
+			            "Entity": "d_GDP"
+			          }
+			        },
+			        "year": {
+			          "Target": {
+			            "Entity": "year"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_GDP"
+			            },
+			            "Object": {
+			              "Role": "year"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_GDP_have_years"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "year"
+			            },
+			            "Object": {
+			              "Role": "d_GDP"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "years_have_d_GDP"
+			        }
+			      ]
+			    },
+			    "d_death_has_entity": {
+			      "Binding": {
+			        "ConceptualEntity": "dDeaths"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_death": {
+			          "Target": {
+			            "Entity": "d_death"
+			          }
+			        },
+			        "entity": {
+			          "Target": {
+			            "Entity": "entity"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_death"
+			            },
+			            "Object": {
+			              "Role": "entity"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_deaths_have_entities"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "entity"
+			            },
+			            "Object": {
+			              "Role": "d_death"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "entities_have_d_deaths"
+			        }
+			      ]
+			    },
+			    "d_death_has_year": {
+			      "Binding": {
+			        "ConceptualEntity": "dDeaths"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "d_death": {
+			          "Target": {
+			            "Entity": "d_death"
+			          }
+			        },
+			        "year": {
+			          "Target": {
+			            "Entity": "year"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "d_death"
+			            },
+			            "Object": {
+			              "Role": "year"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "d_deaths_have_years"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "year"
+			            },
+			            "Object": {
+			              "Role": "d_death"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "years_have_d_deaths"
+			        }
+			      ]
+			    },
+			    "dUnemployment_rate_has_year": {
+			      "Binding": {
+			        "ConceptualEntity": "dUnemployment Rate"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "dUnemployment_rate": {
+			          "Target": {
+			            "Entity": "dUnemployment_rate"
+			          }
+			        },
+			        "year": {
+			          "Target": {
+			            "Entity": "year"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "dUnemployment_rate"
+			            },
+			            "Object": {
+			              "Role": "year"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "dUnemployment_rates_have_years"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "year"
+			            },
+			            "Object": {
+			              "Role": "dUnemployment_rate"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "years_have_dUnemployment_rates"
+			        }
+			      ]
+			    },
+			    "dUnemployment_rate_has_entity": {
+			      "Binding": {
+			        "ConceptualEntity": "dUnemployment Rate"
+			      },
+			      "State": "Generated",
+			      "Roles": {
+			        "dUnemployment_rate": {
+			          "Target": {
+			            "Entity": "dUnemployment_rate"
+			          }
+			        },
+			        "entity": {
+			          "Target": {
+			            "Entity": "entity"
+			          }
+			        }
+			      },
+			      "Phrasings": [
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "dUnemployment_rate"
+			            },
+			            "Object": {
+			              "Role": "entity"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "dUnemployment_rates_have_entities"
+			        },
+			        {
+			          "Attribute": {
+			            "Subject": {
+			              "Role": "entity"
+			            },
+			            "Object": {
+			              "Role": "dUnemployment_rate"
+			            }
+			          },
+			          "State": "Generated",
+			          "Weight": 0.99,
+			          "ID": "entities_have_dUnemployment_rates"
+			        }
+			      ]
+			    }
+			  },
+			  "Agents": {
+			    "Internal": {
+			      "Version": "1.1.0"
+			    }
+			  }
+			}
+		contentType: json
+

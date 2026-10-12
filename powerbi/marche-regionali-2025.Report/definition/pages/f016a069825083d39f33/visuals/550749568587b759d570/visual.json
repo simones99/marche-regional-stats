@@ -1,0 +1,51 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "550749568587b759d570",
+  "position": {
+    "x": 24,
+    "y": 32,
+    "z": 0,
+    "height": 176,
+    "width": 280,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Over the past two decades, the Marche region has experienced a"
+                  },
+                  {
+                    "value": " gradual increase",
+                    "textStyle": {
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": " in the absolute number of deaths, with notable peaks during critical years such as 2020 and 2021, when the "
+                  },
+                  {
+                    "value": "COVID-19 pandemic",
+                    "textStyle": {
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": " significantly impacted mortality. In 2020, deaths reached their highest level, before declining slightly in the following years."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

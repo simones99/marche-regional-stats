@@ -1,0 +1,42 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "c2908cc935aea05c5eed",
+  "position": {
+    "x": 448,
+    "y": 152,
+    "z": 1000,
+    "height": 112,
+    "width": 376,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "When looking at the "
+                  },
+                  {
+                    "value": "weighted mortality rate over the last 5 years",
+                    "textStyle": {
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": ", Marche shows a value comparable to its neighboring regions, highlighting that while the pandemic caused a temporary shock, the long-term trend remains aligned with broader demographic patterns."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

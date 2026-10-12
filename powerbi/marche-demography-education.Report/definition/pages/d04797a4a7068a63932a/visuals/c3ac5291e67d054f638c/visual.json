@@ -1,0 +1,76 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "c3ac5291e67d054f638c",
+  "position": {
+    "x": 690.71986440846331,
+    "y": 497.71798642536993,
+    "z": 5000,
+    "height": 166.81831727426243,
+    "width": 252.26184563425051,
+    "tabOrder": 13001
+  },
+  "visual": {
+    "visualType": "kpi",
+    "query": {
+      "queryState": {
+        "Indicator": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dPopulation"
+                    }
+                  },
+                  "Property": "Percentage_of_Over_65"
+                }
+              },
+              "queryRef": "dPopulation.Percentage_of_Over_65",
+              "nativeQueryRef": "Population Over 65",
+              "displayName": "Population Over 65"
+            }
+          ]
+        },
+        "TrendLine": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dPopulation"
+                    }
+                  },
+                  "Property": "Year"
+                }
+              },
+              "queryRef": "dPopulation.Year",
+              "nativeQueryRef": "Year"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "lastDate": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "parentGroupName": "ba96aec4e7bce1add9a1"
+}

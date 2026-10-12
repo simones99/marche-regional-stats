@@ -1,0 +1,126 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1951.7474956241031,
+            "y": 1716.0247961041746
+          },
+          "nodeIndex": "ISCED 11",
+          "nodeLineageTag": "9dda6817-f685-4fd7-8f15-abdf4e6e4d2d",
+          "size": {
+            "height": 145,
+            "width": 234
+          },
+          "zIndex": 6
+        },
+        {
+          "location": {
+            "x": 2048.585414465907,
+            "y": 1227.6480932686795
+          },
+          "nodeIndex": "Year",
+          "nodeLineageTag": "6680716d-369a-4633-8aef-9d4ebc66c23f",
+          "size": {
+            "height": 221.81818181818181,
+            "width": 234
+          },
+          "zIndex": 8
+        },
+        {
+          "location": {
+            "x": 1517.9293138059211,
+            "y": 1501.02227545187
+          },
+          "nodeIndex": "dPopulation",
+          "nodeLineageTag": "8ce83a7f-5b25-4dee-b54a-e2c5146205f3",
+          "size": {
+            "height": 270.90909090909088,
+            "width": 234
+          },
+          "zIndex": 4
+        },
+        {
+          "location": {
+            "x": 2296.8131886227857,
+            "y": 1523.6293090861927
+          },
+          "nodeIndex": "fEnrollments",
+          "nodeLineageTag": "c0ad9aef-92ef-4f64-9d10-f1e1086071e2",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 3
+        },
+        {
+          "location": {
+            "x": 1558.5854144659068,
+            "y": 1119.5798787667168
+          },
+          "nodeIndex": "dGDP",
+          "nodeLineageTag": "210598d1-6b12-42c1-ba50-d7816bdaef06",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 1
+        },
+        {
+          "location": {
+            "x": 1810.5854144659068,
+            "y": 1303.4016041991954
+          },
+          "nodeIndex": "Entities",
+          "nodeLineageTag": "8d95a70c-e844-4c63-8055-6025961e7678",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 1872.585414465907,
+            "y": 705.13419234791365
+          },
+          "nodeIndex": "dDeaths",
+          "nodeLineageTag": "de7faa79-4e29-45aa-8490-0e77896a1493",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2376.8131886227857,
+            "y": 964.99003266076852
+          },
+          "nodeIndex": "dUnemployment Rate",
+          "nodeLineageTag": "eaf49ad4-8c5f-49c6-9f14-9d62aa068880",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 50,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

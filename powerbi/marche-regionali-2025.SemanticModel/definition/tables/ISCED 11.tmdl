@@ -1,0 +1,54 @@
+table 'ISCED 11'
+	lineageTag: 9dda6817-f685-4fd7-8f15-abdf4e6e4d2d
+
+	column ISCED11
+		lineageTag: d6170d98-42f2-4b82-a708-cefde363f590
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ISCED11]
+
+		annotation SummarizationSetBy = Automatic
+
+	column ISCED_Code
+		formatString: 0
+		lineageTag: 958853d6-4fdf-4e4a-a072-649d68c6a018
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ISCED_Code]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'ISCED 11' = calculated
+		mode: import
+		source = ```
+				
+				VAR ClonedTable = 
+				    SELECTCOLUMNS(
+				        'fEnrollments',
+				        "ISCED11", 'fEnrollments'[ISCED11]
+				    )
+				VAR WithCodes = 
+				    ADDCOLUMNS(
+				        DISTINCT(ClonedTable),
+				        "ISCED_Code", 
+				            SWITCH(
+				                TRUE(),
+				                [ISCED11] = "Early childhood education", 0,
+				                [ISCED11] = "Primary education", 1,
+				                [ISCED11] = "Lower secondary education", 2,
+				                [ISCED11] = "Upper secondary education", 3,
+				                [ISCED11] = "Post-secondary non-tertiary education", 4,
+				                [ISCED11] = "Short-cycle tertiary education", 5,
+				                [ISCED11] = "Bachelor's or equivalent level", 6,
+				                [ISCED11] = "Master's or equivalent level", 7,
+				                [ISCED11] = "Doctoral or equivalent level", 8,
+				                [ISCED11] = "Early childhood to tertiary education", -1,
+				                -1
+				            )
+				    )
+				RETURN
+				    WithCodes
+				```
+
+	annotation PBI_Id = 3ace4444336b4e95af9a94c612f50c38
+

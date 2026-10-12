@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "4894ba6c3f9b0b11ccd6",
+  "position": {
+    "x": 216,
+    "y": 64,
+    "z": 2500,
+    "height": 344,
+    "width": 376,
+    "tabOrder": 3000
+  },
+  "visualGroup": {
+    "displayName": "Unemployment Rate",
+    "groupMode": "ScaleMode"
+  }
+}

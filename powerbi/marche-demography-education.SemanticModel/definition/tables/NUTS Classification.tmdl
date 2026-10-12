@@ -1,0 +1,60 @@
+table 'NUTS Classification'
+	isHidden
+	lineageTag: 5237a351-e472-4fe8-90a8-bf74f91f6001
+
+	column 'NUTS Code'
+		dataType: string
+		isHidden
+		lineageTag: 97980fdc-a2de-4083-85e5-2a19f8d5968c
+		summarizeBy: none
+		sourceColumn: NUTS Code
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'NUTS label'
+		dataType: string
+		isHidden
+		lineageTag: c949c176-bfe6-48aa-b91d-ec4f8688fd0f
+		summarizeBy: none
+		sourceColumn: NUTS label
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'NUTS level'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: e1479f5c-994b-47e5-bccc-24d1e7ec76f3
+		summarizeBy: sum
+		sourceColumn: NUTS level
+
+		changedProperty = IsHidden
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'NUTS Classification' = m
+		mode: import
+		source =
+				let
+				    // NUTS 2024 attribute table from GISCO; the NUTS level is the code length minus the 2-letter country code
+				    Source = Csv.Document(Web.Contents("https://gisco-services.ec.europa.eu/distribution/v2/nuts/csv/NUTS_AT_2024.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    #"Promoted Headers" = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    #"Removed Other Columns" = Table.SelectColumns(#"Promoted Headers",{"NUTS_ID", "NAME_LATN"}),
+				    #"Renamed Columns" = Table.RenameColumns(#"Removed Other Columns",{{"NUTS_ID", "NUTS Code"}, {"NAME_LATN", "NUTS label"}}),
+				    #"Changed Type" = Table.TransformColumnTypes(#"Renamed Columns",{{"NUTS Code", type text}, {"NUTS label", type text}}),
+				    #"Added NUTS level" = Table.AddColumn(#"Changed Type", "NUTS level", each Text.Length([NUTS Code]) - 2, Int64.Type),
+				    #"Filtered Rows" = Table.SelectRows(#"Added NUTS level", each [NUTS level] = #"NUTS Level"),
+				    #"Filtered Rows2" = Table.SelectRows(#"Filtered Rows", each Text.Contains([NUTS Code], #"Code of Interest"))
+				in
+				    #"Filtered Rows2"
+
+	changedProperty = IsHidden
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Table
+

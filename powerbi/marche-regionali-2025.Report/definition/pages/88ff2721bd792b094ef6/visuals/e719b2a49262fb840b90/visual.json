@@ -1,0 +1,95 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "e719b2a49262fb840b90",
+  "position": {
+    "x": 24,
+    "y": 32,
+    "z": 0,
+    "height": 184,
+    "width": 280,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": ""
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "The ",
+                    "textStyle": {
+                      "fontSize": "10.5pt"
+                    }
+                  },
+                  {
+                    "value": "gender distribution",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "10.5pt"
+                    }
+                  },
+                  {
+                    "value": " remains balanced, with men representing about 51% and women 49%. However, the ",
+                    "textStyle": {
+                      "fontSize": "10.5pt"
+                    }
+                  },
+                  {
+                    "value": "age structure",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "10.5pt"
+                    }
+                  },
+                  {
+                    "value": " highlights the demographic challenge ahead, as children under 11 represent only ",
+                    "textStyle": {
+                      "fontSize": "10.5pt"
+                    }
+                  },
+                  {
+                    "value": "9.1%",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "10.5pt"
+                    }
+                  },
+                  {
+                    "value": " of the population while people aged over 79 already make up ",
+                    "textStyle": {
+                      "fontSize": "10.5pt"
+                    }
+                  },
+                  {
+                    "value": "6.3%",
+                    "textStyle": {
+                      "fontWeight": "bold",
+                      "fontSize": "10.5pt"
+                    }
+                  },
+                  {
+                    "value": ", a share that continues to grow.",
+                    "textStyle": {
+                      "fontSize": "10.5pt"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

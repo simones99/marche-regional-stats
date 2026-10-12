@@ -1,0 +1,19 @@
+/// •	NUTS 1: Represents large socio-economic regions, useful for analyzing broad economic trends across major areas of a country.
+/// •	NUTS 2: Corresponds to basic regions for the application of regional policies, commonly used for allocating EU structural funds and regional comparisons.
+/// •	NUTS 3: Defines small regions for specific diagnoses, ideal for detailed local analysis, targeting, and granular reporting in BI tools.
+expression 'NUTS Level' = 2 meta [IsParameterQuery=true, List={1, 2, 3}, DefaultValue=2, Type="Number", IsParameterQueryRequired=true]
+	lineageTag: be40162f-4f0a-46aa-9bcc-a1a5e0f95121
+	queryGroup: Parameters
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Number
+
+/// Write the code of the Entity or Entitites you want to filter for. (e.g.: ITI3 = "Marche")
+expression 'Code of Interest' = "ITI3" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 76f79edb-024c-4ccc-b960-8a85e7ace07b
+	queryGroup: Parameters
+
+	annotation PBI_NavigationStepName = Navigation
+
+	annotation PBI_ResultType = Text

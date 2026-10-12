@@ -1,0 +1,52 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "845f7a40fba7732c7f25",
+  "position": {
+    "x": 784,
+    "y": 64,
+    "z": 1500,
+    "height": 144,
+    "width": 416.00000000000006,
+    "tabOrder": 7000
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Overall, the data suggest that the Marche region is facing a structural demographic contraction, with fewer young people entering the population and a rising proportion of elderly citizens. These dynamics will have important implications for healthcare, labor markets, and social policies in the coming years.",
+                    "textStyle": {
+                      "fontSize": "10.5pt"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "parentGroupName": "ba96aec4e7bce1add9a1"
+}

@@ -1,0 +1,40 @@
+table Entities
+	lineageTag: 8d95a70c-e844-4c63-8055-6025961e7678
+
+	column Entity
+		lineageTag: e8200a86-0388-4f80-9c02-60a67503777e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Entity]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Code
+		lineageTag: 43ae49e7-b0e0-4510-a0c9-792c7479ca5e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Code]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Entities = calculated
+		mode: import
+		source =
+				
+				DATATABLE(
+				    "Entity", STRING,
+				    "Code", STRING,
+				    {
+				        {"European Union - 27 countries (from 2020)", "EU27_2020"},
+				        {"Italy", "IT"},
+				        {"Marche", "ITI3"},
+				        {"Umbria", "ITI2"},
+				        {"Abruzzo", "ITF1"},
+				        {"Emilia-Romagna", "ITH5"},
+				        {"Lazio", "ITI4"},
+				        {"Toscana", "ITI1"}
+				    }
+				    )
+
+	annotation PBI_Id = 18dcce0514384923bf659a4529aaec61
+

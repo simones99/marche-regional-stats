@@ -1,0 +1,15 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "ae850f650194396c8007",
+  "displayName": "Comparative Analysis",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "visualInteractions": [
+    {
+      "source": "07b32897b765579e9ca4",
+      "target": "c05f39b1582775affce2",
+      "type": "NoFilter"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "07ba153d77504df14f73",
+  "position": {
+    "x": 24,
+    "y": 48,
+    "z": 0,
+    "height": 144,
+    "width": 280,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "textbox",
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Gender distribution",
+                    "textStyle": {
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": " has been relatively balanced, with male deaths slightly higher than female deaths in 2023 (around 51% vs. 49%). Age-specific mortality rates are very low among "
+                  },
+                  {
+                    "value": "younger age groups",
+                    "textStyle": {
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": " (under 10 and 11–30), confirming that the majority of deaths are concentrated in older populations."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

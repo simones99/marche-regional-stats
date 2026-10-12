@@ -1,0 +1,91 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "c3ac5291e67d054f638c",
+  "position": {
+    "x": 512,
+    "y": 496.00000000000006,
+    "z": 4000,
+    "height": 168,
+    "width": 256,
+    "tabOrder": 13001
+  },
+  "visual": {
+    "visualType": "kpi",
+    "query": {
+      "queryState": {
+        "Indicator": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dPopulation"
+                    }
+                  },
+                  "Property": "Percentage_of_Over_65"
+                }
+              },
+              "queryRef": "dPopulation.Percentage_of_Over_65",
+              "nativeQueryRef": "Population Over 65",
+              "displayName": "Population Over 65"
+            }
+          ]
+        },
+        "TrendLine": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dPopulation"
+                    }
+                  },
+                  "Property": "Year"
+                }
+              },
+              "queryRef": "dPopulation.Year",
+              "nativeQueryRef": "Year"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "lastDate": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Population Over 79'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "parentGroupName": "ba96aec4e7bce1add9a1"
+}
