@@ -71,7 +71,7 @@ A star schema. Every relationship uses NUTS or source codes, never labels.
 
 | Table | Columns | Source |
 |---|---|---|
-| `Geo` | Code, Name, Level (EU, Country, NUTS 2, NUTS 3), ParentCode, Role (Focus, Peer, Country, EU, Province), SortOrder | GISCO `NUTS_AT_2024.csv` (Code = `NUTS_ID`, Name = `NAME_LATN`, Level = code length − 2), filtered to the codes in FocusRegion, PeerRegions and ProvinceRegions (the refresh fails if one is missing from GISCO), plus static rows for `IT` ("Italy") and `EU27_2020` ("European Union (27)") |
+| `Geo` | Code, Name, Level (EU, Country, NUTS2, NUTS3), ParentCode, Role (Focus, Peer, Country, EU, Province), SortOrder | GISCO `NUTS_AT_2024.csv` (Code = `NUTS_ID`, Name = `NAME_LATN`, Level = code length − 2), filtered to the codes in FocusRegion, PeerRegions and ProvinceRegions (the refresh fails if one is missing from GISCO), plus static rows for `IT` ("Italy") and `EU27_2020` ("European Union (27)") |
 | `Calendar` | Date, Year, Quarter, MonthNumber, MonthName, YearMonth, MonthEnd | Power Query, daily, 1 January of `StartYear` to 31 December of the current year, marked as the date table |
 | `Sex` | Code (T, M, F), Name | static |
 | `AgeGroup` | Code (Eurostat five-year codes), Name, SortOrder, BroadGroup (0-14, 15-64, 65+), Is80Plus | static |
@@ -145,12 +145,12 @@ marche-stats export-powerbi ─────► powerbi/data/*.csv (GitHub raw) �
 StartYear parameter ─────────────► Calendar
 ```
 
-**`fnEurostat(dataset, filters, startYear)`** is one M function used by every Eurostat fact. It:
-- builds the URL `…/data/dataflow/ESTAT/<dataset>/1.0?c[geo]=<codes>&<filters>&c[TIME_PERIOD]=ge:<startYear>&format=csvdata&formatVersion=1.0&labels=id&compress=false`;
+**`fnEurostat(dataset, filters, levels)`** is one M function used by every Eurostat fact. It reads `StartYear` from the parameter. It:
+- builds the URL `…/data/dataflow/ESTAT/<dataset>/1.0?c[geo]=<codes>&<filters>&c[TIME_PERIOD]=ge:<StartYear>&format=csvdata&formatVersion=1.0&labels=id&compress=false`;
 - filters by dimension name only, with no positional key, so a dataset that gains or loses a dimension still works;
 - takes geo codes from the parameters, by level: EU (`EU27_2020`), Country, NUTS2 (focus and peers), NUTS3 (provinces);
-- returns typed columns with codes;
-- rethrows any HTTP or parsing error with the dataset name and URL in the message.
+- returns untyped columns with codes; each fact query types its own columns;
+- rethrows any HTTP or parsing error with the dataset name and the request query in the message.
 
 **`Companies`** repeats the rules of `src/marche_stats/companies.py`:
 1. Read the CSV with `;` as separator.

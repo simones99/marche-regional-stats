@@ -77,6 +77,8 @@ def geo_codes(params: dict[str, str], levels: tuple[str, ...]) -> list[str]:
         "NUTS2": [params["FocusRegion"], *params["PeerRegions"].split(",")],
         "NUTS3": params["ProvinceRegions"].split(","),
     }
+    if not levels:
+        raise ValueError("no levels given")
     unknown = [level for level in levels if level not in by_level]
     if unknown:
         valid = ", ".join(by_level)

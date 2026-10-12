@@ -245,12 +245,29 @@ def test_real_model_parameters_are_complete():
     }
 
 
-def test_real_model_fneurostat_knows_every_level():
+def test_real_model_fneurostat_maps_levels_like_geo_codes():
     text = (REAL_MODEL / "expressions.tmdl").read_text(encoding="utf-8")
     start = text.index("expression fnEurostat")
     following = re.search(r"^expression ", text[start + 1 :], re.MULTILINE)
     body = text[start : start + 1 + following.start()] if following else text[start:]
-    assert "EU27_2020" in body
-    # sources.geo_codes keeps its level mapping local, so the names are repeated here.
-    for level in ("EU", "Country", "NUTS2", "NUTS3"):
-        assert f'"{level}"' in body
+    # Each `if List.Contains(levels, "X") then <expr> else {}` branch of fnEurostat.
+    branches = dict(re.findall(r'List\.Contains\(levels, "(\w+)"\) then (.+?) else \{\}', body))
+    assert set(branches) == {"EU", "Country", "NUTS2", "NUTS3"}
+    assert branches["EU"] == '{"EU27_2020"}'
+    assert branches["Country"] == "{Country}"
+    assert branches["NUTS2"] == '{FocusRegion} & Text.Split(PeerRegions, ",")'
+    assert branches["NUTS3"] == 'Text.Split(ProvinceRegions, ",")'
+    params = sources.parameters(REAL_MODEL)
+    assert sources.geo_codes(params, ("EU",)) == ["EU27_2020"]
+    assert sources.geo_codes(params, ("Country",)) == [params["Country"]]
+    assert sources.geo_codes(params, ("NUTS2",)) == [
+        params["FocusRegion"],
+        *params["PeerRegions"].split(","),
+    ]
+    assert sources.geo_codes(params, ("NUTS3",)) == params["ProvinceRegions"].split(",")
+
+
+def test_geo_codes_rejects_empty_levels():
+    params = sources.parameters(REAL_MODEL)
+    with pytest.raises(ValueError, match="no levels"):
+        sources.geo_codes(params, ())

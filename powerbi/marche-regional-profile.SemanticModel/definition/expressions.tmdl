@@ -47,12 +47,16 @@ expression CompaniesSourceUrl = "https://opendata.marche.camcom.it/data/Stock-Im
 expression fnEurostat =
 		(dataset as text, filters as text, levels as list) as table =>
 		let
-		    GeoCodes = List.Combine({
-		        if List.Contains(levels, "EU") then {"EU27_2020"} else {},
-		        if List.Contains(levels, "Country") then {Country} else {},
-		        if List.Contains(levels, "NUTS2") then {FocusRegion} & Text.Split(PeerRegions, ",") else {},
-		        if List.Contains(levels, "NUTS3") then Text.Split(ProvinceRegions, ",") else {}
-		    }),
+		    UnknownLevels = List.Difference(levels, {"EU", "Country", "NUTS2", "NUTS3"}),
+		    GeoCodes =
+		        if List.IsEmpty(levels) or not List.IsEmpty(UnknownLevels)
+		        then error Error.Record("fnEurostat: unknown or no levels", dataset & ": " & Text.Combine(UnknownLevels, ", "))
+		        else List.Combine({
+		            if List.Contains(levels, "EU") then {"EU27_2020"} else {},
+		            if List.Contains(levels, "Country") then {Country} else {},
+		            if List.Contains(levels, "NUTS2") then {FocusRegion} & Text.Split(PeerRegions, ",") else {},
+		            if List.Contains(levels, "NUTS3") then Text.Split(ProvinceRegions, ",") else {}
+		        }),
 		    FilterPairs = List.Select(Text.Split(filters, "&"), each _ <> ""),
 		    FilterQuery = Record.FromList(
 		        List.Transform(FilterPairs, each Text.AfterDelimiter(_, "=")),
@@ -71,19 +75,22 @@ expression fnEurostat =
 		    }),
 		    Response = Web.Contents(
 		        "https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0/data/dataflow/ESTAT/",
-		        [RelativePath = dataset & "/1.0", Query = Query, ManualStatusHandling = {400, 404, 413, 500, 503}]
+		        [RelativePath = dataset & "/1.0", Query = Query, ManualStatusHandling = {400, 404, 413, 500}]
 		    ),
 		    Status = Value.Metadata(Response)[Response.Status],
 		    Body = Text.FromBinary(Response, TextEncoding.Utf8),
 		    Message =
 		        if Text.Contains(Body, "<faultstring>")
-		        then Text.BeforeDelimiter(Text.AfterDelimiter(Body, "<faultstring>"), "</faultstring>")
+		        then Text.Replace(Text.Replace(Text.Replace(Text.Replace(Text.Replace(
+		            Text.BeforeDelimiter(Text.AfterDelimiter(Body, "<faultstring>"), "</faultstring>"),
+		            "&apos;", "'"), "&quot;", """"), "&gt;", ">"), "&lt;", "<"), "&amp;", "&")
 		        else Text.Start(Body, 300),
 		    Checked =
 		        if Status = 200 then Body
 		        else error Error.Record(
 		            "Eurostat request failed",
-		            "HTTP " & Text.From(Status) & " for " & dataset & ": " & Message,
+		            "HTTP " & Text.From(Status) & " for " & dataset & ": " & Message
+		            & " (" & dataset & "/1.0?" & Uri.BuildQueryString(Query) & ")",
 		            [Dataset = dataset, Query = Query]
 		        ),
 		    Parsed = Csv.Document(Checked, [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),

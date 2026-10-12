@@ -53,13 +53,14 @@ table Geo
 				        Table.SelectColumns(Selected, {"NUTS_ID", "NAME_LATN"}),
 				        {{"NUTS_ID", "Code"}, {"NAME_LATN", "Name"}}
 				    ),
-				    WithLevel = Table.AddColumn(Renamed, "Level", each "NUTS" & Text.From(Text.Length([Code]) - 2), type text),
+				    Typed = Table.TransformColumnTypes(Renamed, {{"Code", type text}, {"Name", type text}}),
+				    WithLevel = Table.AddColumn(Typed, "Level", each "NUTS" & Text.From(Text.Length([Code]) - 2), type text),
 				    WithParent = Table.AddColumn(WithLevel, "ParentCode", each if Text.Length([Code]) = 5 then Text.Start([Code], 4) else Country, type text),
 				    WithRole = Table.AddColumn(WithParent, "Role", each if [Code] = FocusRegion then "Focus" else if List.Contains(Peers, [Code]) then "Peer" else "Province", type text),
 				    Benchmarks = #table(
-				        type table [Code = text, Name = text, Level = text, ParentCode = text, Role = text],
+				        type table [Code = text, Name = text, Level = text, ParentCode = nullable text, Role = text],
 				        {
-				            {"EU27_2020", "European Union (27)", "EU", "", "EU"},
+				            {"EU27_2020", "European Union (27)", "EU", null, "EU"},
 				            {Country, if Country = "IT" then "Italy" else Country, "Country", "EU27_2020", "Country"}
 				        }
 				    ),
