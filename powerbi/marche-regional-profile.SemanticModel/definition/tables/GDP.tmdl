@@ -21,12 +21,13 @@ table GDP
 		formatString: yyyy-mm-dd
 		summarizeBy: none
 		sourceColumn: Date
+		annotation UnderlyingDateTimeDataType = Date
 
 	column Value
 		dataType: double
 		isHidden
 		formatString: #,0.0
-		summarizeBy: sum
+		summarizeBy: none
 		sourceColumn: Value
 
 	column Flag

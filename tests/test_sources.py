@@ -274,12 +274,26 @@ def test_geo_codes_rejects_empty_levels():
 
 
 def test_real_model_eurostat_calls():
-    calls = {(c.table, c.dataset): c.levels for c in sources.eurostat_calls(REAL_MODEL)}
+    calls = {
+        (c.table, c.dataset): (c.filters, c.levels) for c in sources.eurostat_calls(REAL_MODEL)
+    }
+    age = (
+        "TOTAL,Y_LT5,Y5-9,Y10-14,Y15-19,Y20-24,Y25-29,Y30-34,Y35-39,Y40-44,Y45-49,"
+        "Y50-54,Y55-59,Y60-64,Y65-69,Y70-74,Y75-79,Y80-84,Y85-89,Y_GE90,UNK"
+    )
+    demo = f"c[unit]=NR&c[sex]=T,M,F&c[age]={age}"
+    gdp = "c[unit]=EUR_HAB,PPS_HAB_EU27_2020"
     assert calls == {
-        ("Deaths", "demo_r_magec3"): ("EU", "Country", "NUTS2", "NUTS3"),
-        ("Enrolment", "educ_uoe_enra11"): ("EU", "Country", "NUTS2"),
-        ("GDP", "nama_10r_2gdp"): ("EU", "Country", "NUTS2"),
-        ("GDP", "nama_10r_3gdp"): ("NUTS3",),
-        ("Population", "demo_r_pjangrp3"): ("EU", "Country", "NUTS2", "NUTS3"),
-        ("Unemployment", "lfst_r_lfu3rt"): ("EU", "Country", "NUTS2"),
+        ("Deaths", "demo_r_magec3"): (demo, ("EU", "Country", "NUTS2", "NUTS3")),
+        ("Enrolment", "educ_uoe_enra11"): (
+            "c[unit]=NR&c[sex]=T,M,F&c[isced11]=ED02-8,ED0,ED1,ED2,ED3,ED4,ED5,ED6,ED7,ED8",
+            ("EU", "Country", "NUTS2"),
+        ),
+        ("GDP", "nama_10r_2gdp"): (gdp, ("EU", "Country", "NUTS2")),
+        ("GDP", "nama_10r_3gdp"): (gdp, ("NUTS3",)),
+        ("Population", "demo_r_pjangrp3"): (demo, ("EU", "Country", "NUTS2", "NUTS3")),
+        ("Unemployment", "lfst_r_lfu3rt"): (
+            "c[isced11]=TOTAL&c[sex]=T&c[age]=Y15-74&c[unit]=PC",
+            ("EU", "Country", "NUTS2"),
+        ),
     }

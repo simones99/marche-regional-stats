@@ -197,7 +197,7 @@ The About page has a "Data checks" section:
 2. **`marche-stats check-sources`:** reads every source URL from the `.tmdl` files, calls it, and reports the HTTP status and the latest period. It also runs as a weekly GitHub Actions workflow, separate from CI.
 3. **After every refresh (user):**
    - every reconciliation checkpoint shows ✓;
-   - the reference values hold: about 130,000 active companies in January 2025, a Marche crude death rate of about 12.6 per 1,000, SARIMA MAPE of about 1 %.
+   - the reference values hold: about 130,000 active companies in January 2025, a Marche crude death rate of about 11.8 per 1,000 (2024), SARIMA MAPE of about 1 %.
 4. **Best Practice Analyzer (optional):** if the Tabular Editor 2 CLI can load a TMDL folder, run the BPA rules in CI. To be checked in the plan.
 
 ## Phases

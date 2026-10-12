@@ -1,4 +1,4 @@
-/// Population on 1 January by sex and five-year age group (Eurostat demo_r_pjangrp3).
+/// Population on 1 January by sex and five-year age group (Eurostat demo_r_pjangrp3). Age bands of a (geo, sex, year) are kept only when they add up to TOTAL (within 0.1%), otherwise only TOTAL is kept, so incomplete band sets cannot skew shares.
 table Population
 
 	column GeoCode
@@ -25,6 +25,7 @@ table Population
 		formatString: yyyy-mm-dd
 		summarizeBy: none
 		sourceColumn: Date
+		annotation UnderlyingDateTimeDataType = Date
 
 	column Residents
 		dataType: int64
@@ -58,8 +59,22 @@ table Population
 				        Renamed,
 				        {{"GeoCode", type text}, {"SexCode", type text}, {"AgeCode", type text}, {"Residents", Int64.Type}, {"Flag", type text}},
 				        "en-US"
+				    ),
+				    Checked = Table.Combine(
+				        Table.Group(
+				            Typed, {"GeoCode", "SexCode", "Date"},
+				            {{"Rows", (t) =>
+				                let
+				                    Total = List.Sum(Table.SelectRows(t, each [AgeCode] = "TOTAL")[Residents]),
+				                    Bands = List.Sum(Table.SelectRows(t, each [AgeCode] <> "TOTAL")[Residents])
+				                in
+				                    if Bands = null or (Total <> null and Number.Abs(Bands - Total) <= 0.001 * Total)
+				                    then t
+				                    else Table.SelectRows(t, each [AgeCode] = "TOTAL"),
+				              Value.Type(Typed)}}
+				        )[Rows]
 				    )
 				in
-				    Typed
+				    Checked
 
 	annotation PBI_ResultType = Table

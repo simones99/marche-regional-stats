@@ -25,6 +25,7 @@ table Enrolment
 		formatString: yyyy-mm-dd
 		summarizeBy: none
 		sourceColumn: Date
+		annotation UnderlyingDateTimeDataType = Date
 
 	column Students
 		dataType: int64
