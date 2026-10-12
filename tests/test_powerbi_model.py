@@ -17,6 +17,12 @@ ROOT = Path(__file__).resolve().parents[1]
 MODEL = ROOT / "powerbi" / sources.MODEL_DEFINITION
 REPORT = ROOT / "powerbi" / "marche-regional-profile.Report" / "definition"
 NAME = r"('[^']+'|[^\s=.]+)"
+# Measure and calculation item expressions: name, then the DAX after " = ".
+EXPRESSION = re.compile(rf"^(\t+)(?:measure|calculationItem) {NAME}\s*=(.*)$")
+# String literals and comments, dropped before looking for references.
+DAX_IGNORED = re.compile(r'"(?:[^"]|"")*"|//[^\n]*|--[^\n]*|/\*.*?\*/', re.S)
+# Qualified references: Table[Name] or 'Table name'[Name].
+DAX_REFERENCE = re.compile(r"('[^']+'|\b[A-Za-z_]\w*)\[([^\]]+)\]")
 
 
 def _name(raw: str) -> str:
@@ -28,7 +34,9 @@ def model_tables() -> dict[str, dict[str, set[str]]]:
     tables = {}
     for path in sorted((MODEL / "tables").glob("*.tmdl")):
         text = path.read_text(encoding="utf-8")
-        name = _name(re.search(r"^table (.+)$", text, re.M).group(1))
+        match = re.search(r"^table (.+)$", text, re.M)
+        assert match, path.name
+        name = _name(match.group(1))
         tables[name] = {
             "columns": {_name(m) for m in re.findall(rf"^\tcolumn {NAME}", text, re.M)},
             "measures": {_name(m) for m in re.findall(rf"^\tmeasure {NAME}", text, re.M)},
@@ -56,6 +64,7 @@ def test_relationships_use_existing_columns():
     text = path.read_text(encoding="utf-8")
     for ref in re.findall(r"^\t(?:from|to)Column: (.+)$", text, re.M):
         table, column = re.match(rf"{NAME}\.(.+)$", ref.strip()).groups()
+        assert _name(table) in tables, ref
         assert _name(column) in tables[_name(table)]["columns"], ref
 
 
@@ -65,7 +74,7 @@ def test_measure_references_exist():
         pytest.skip("no measures yet")
     measures = tables["_Measures"]["measures"]
     text = "\n".join(p.read_text(encoding="utf-8") for p in (MODEL / "tables").glob("*.tmdl"))
-    named = re.findall(r"NAMEOF\s*\(\s*'_Measures'\[([^\]]+)\]", text)
+    named = re.findall(r"NAMEOF\s*\(\s*'?_Measures'?\[([^\]]+)\]", text)
     selected = [
         m
         for args in re.findall(r"ISSELECTEDMEASURE\s*\(((?:[^()]|\([^()]*\))*)\)", text)
@@ -95,3 +104,61 @@ def test_report_fields_exist_in_model():
             assert entity in tables, f"{path.parent.name}: table {entity}"
             fields = tables[entity]["columns"] | tables[entity]["measures"]
             assert prop in fields, f"{path.parent.name}: {entity}[{prop}]"
+
+
+def dax_expressions(text: str) -> list[str]:
+    """DAX of every measure and calculation item in a TMDL table file.
+
+    An expression starts after " = " and runs over the lines indented deeper than its
+    properties; the first line at the property level or above (formatString, ///, the next
+    measure, column or partition) ends it, so Power Query partitions are never read.
+    """
+    lines = text.splitlines()
+    expressions = []
+    for number, line in enumerate(lines):
+        match = EXPRESSION.match(line)
+        if not match:
+            continue
+        depth = len(match.group(1))
+        body = [match.group(3)]
+        for following in lines[number + 1 :]:
+            indent = len(following) - len(following.lstrip("\t"))
+            if following.strip() and indent <= depth + 1:
+                break
+            body.append(following)
+        expressions.append("\n".join(body))
+    return expressions
+
+
+def test_measure_column_references_exist():
+    tables = model_tables()
+    for path in sorted((MODEL / "tables").glob("*.tmdl")):
+        for expression in dax_expressions(path.read_text(encoding="utf-8")):
+            code = DAX_IGNORED.sub("", expression)
+            for table, name in DAX_REFERENCE.findall(code):
+                ref = f"{path.name}: {table}[{name}]"
+                assert _name(table) in tables, ref
+                fields = tables[_name(table)]["columns"] | tables[_name(table)]["measures"]
+                assert name in fields, ref
+
+
+def test_measure_table_has_the_spec_indicators():
+    measures = model_tables()["_Measures"]["measures"]
+    assert {
+        "Population",
+        "Population change 5y %",
+        "Share aged 0-14",
+        "Share aged 65+",
+        "Share aged 80+",
+        "Deaths",
+        "Crude death rate per 1,000",
+        "GDP per inhabitant (EUR)",
+        "GDP per inhabitant (PPS, EU = 100)",
+        "Unemployment rate",
+        "Students enrolled",
+        "Tertiary students per 1,000 residents",
+        "Active companies",
+        "Active companies change %",
+        "Companies per 1,000 residents",
+        "Reconciliation status",
+    } <= measures

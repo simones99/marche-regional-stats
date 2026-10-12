@@ -36,6 +36,7 @@ table Population
 
 	column Flag
 		dataType: string
+		isHidden
 		summarizeBy: none
 		sourceColumn: Flag
 
