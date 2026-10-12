@@ -38,3 +38,10 @@ def test_regional_series_uses_total_rows_and_constant_boundaries(wide):
 def test_province_totals_map_to_nuts3(wide):
     totals = companies.province_totals(companies.to_long(wide))
     assert set(totals["nuts3"]) == {"ITI31", "ITI32", "ITI33", "ITI34", "ITI35"}
+
+
+def test_modelling_series_stops_before_first_stale_month(wide):
+    wide[wide.columns[-2]] = wide[wide.columns[-3]]  # second-to-last month not updated
+    series = companies.modelling_series(wide)
+    assert series.index[-1] == pd.to_datetime(wide.columns[-3], format="%d/%m/%Y")
+    assert series.index.freqstr == "ME"

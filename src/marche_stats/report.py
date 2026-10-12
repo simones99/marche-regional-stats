@@ -27,10 +27,7 @@ def build(companies_csv: Path, eurostat_dir: Path, docs: Path, holdout: int = 24
     stale = companies.stale_months(wide)
     long = companies.to_long(wide)
 
-    series = companies.regional_series(long)
-    if stale:
-        # A month identical to the previous one in every cell is treated as not updated.
-        series = series[series.index < min(stale)]
+    series = companies.modelling_series(wide)
 
     strength = timeseries.seasonal_strength(series)
     components = timeseries.decompose(series)
