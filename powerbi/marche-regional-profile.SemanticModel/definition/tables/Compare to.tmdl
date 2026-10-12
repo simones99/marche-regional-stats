@@ -1,5 +1,7 @@
 /// Benchmark comparisons for any indicator measure: the value, the country, the EU, the
 /// unweighted mean of the peer regions, the differences from them and the rank among peers.
+/// Every item evaluates the measure under the Value item, so the result does not depend on
+/// how the engine applies items to measures referenced inside the selected measure.
 table 'Compare to'
 	calculationGroup
 		precedence: 10
@@ -8,45 +10,45 @@ table 'Compare to'
 			ordinal: 0
 
 		calculationItem Country =
-				VAR v = SELECTEDMEASURE ()
-				RETURN IF ( ISTEXT ( v ), v, CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Role] = "Country" ) )
+				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
+				RETURN IF ( ISTEXT ( v ), v, CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Role] = "Country", 'Compare to'[Comparison] = "Value" ) )
 			ordinal: 1
 
 		calculationItem 'vs Country' =
-				VAR v = SELECTEDMEASURE ()
-				VAR c = CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Role] = "Country" )
+				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
+				VAR c = CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Role] = "Country", 'Compare to'[Comparison] = "Value" )
 				RETURN IF ( ISTEXT ( v ), v, IF ( NOT ISBLANK ( v ) && NOT ISBLANK ( c ), v - c ) )
 			ordinal: 2
 			formatStringDefinition = SELECTEDMEASUREFORMATSTRING ()
 
 		calculationItem EU =
-				VAR v = SELECTEDMEASURE ()
-				RETURN IF ( ISTEXT ( v ), v, CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Role] = "EU" ) )
+				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
+				RETURN IF ( ISTEXT ( v ), v, CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Role] = "EU", 'Compare to'[Comparison] = "Value" ) )
 			ordinal: 3
 
 		calculationItem 'vs EU' =
-				VAR v = SELECTEDMEASURE ()
-				VAR e = CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Role] = "EU" )
+				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
+				VAR e = CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Role] = "EU", 'Compare to'[Comparison] = "Value" )
 				RETURN IF ( ISTEXT ( v ), v, IF ( NOT ISBLANK ( v ) && NOT ISBLANK ( e ), v - e ) )
 			ordinal: 4
 			formatStringDefinition = SELECTEDMEASUREFORMATSTRING ()
 
 		calculationItem 'Peers avg' =
-				VAR v = SELECTEDMEASURE ()
+				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
 				VAR Peers = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Peer" )
-				RETURN IF ( ISTEXT ( v ), v, AVERAGEX ( Peers, VAR c = Geo[Code] RETURN CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Code] = c ) ) )
+				RETURN IF ( ISTEXT ( v ), v, AVERAGEX ( Peers, VAR c = Geo[Code] RETURN CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Code] = c, 'Compare to'[Comparison] = "Value" ) ) )
 			ordinal: 5
 
 		calculationItem 'vs Peers avg' =
-				VAR v = SELECTEDMEASURE ()
+				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
 				VAR Peers = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Peer" )
-				VAR p = AVERAGEX ( Peers, VAR c = Geo[Code] RETURN CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Code] = c ) )
+				VAR p = AVERAGEX ( Peers, VAR c = Geo[Code] RETURN CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Code] = c, 'Compare to'[Comparison] = "Value" ) )
 				RETURN IF ( ISTEXT ( v ), v, IF ( NOT ISBLANK ( v ) && NOT ISBLANK ( p ), v - p ) )
 			ordinal: 6
 			formatStringDefinition = SELECTEDMEASUREFORMATSTRING ()
 
 		calculationItem 'Rank among peers' =
-				VAR v = SELECTEDMEASURE ()
+				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
 				VAR Areas = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] IN { "Focus", "Peer" } )
 				VAR Comparable =
 				    ISSELECTEDMEASURE (
@@ -57,7 +59,7 @@ table 'Compare to'
 				RETURN
 				    IF (
 				        Comparable && SELECTEDVALUE ( Geo[Role] ) IN { "Focus", "Peer" } && NOT ISBLANK ( v ),
-				        RANKX ( Areas, VAR c = Geo[Code] RETURN CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Code] = c ), v, DESC, DENSE )
+				        RANKX ( Areas, VAR c = Geo[Code] RETURN CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Code] = c, 'Compare to'[Comparison] = "Value" ), v, DESC, DENSE )
 				    )
 			ordinal: 7
 			formatStringDefinition = "0"
