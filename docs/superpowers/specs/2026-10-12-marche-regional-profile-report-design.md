@@ -31,7 +31,7 @@ The report is a **regional profile plus a deep dive**. The profile covers popula
 | 3 | Economy & Labour | GDP per inhabitant and unemployment over time: focus region against peers, country and EU, with gap KPIs. Ranked bars replace the current "vs Marche" maps |
 | 4 | Education | One page with an ISCED level slicer. Enrolments by level and sex, and tertiary students per 1,000 residents against peers |
 | 5 | Provinces | Map of the NUTS 3 provinces with an indicator selector (field parameter), plus a comparison table. Drill-through to a province detail page |
-| 6 | Business deep dive | Active companies, January 2009 to March 2025, on constant boundaries: province index (2009 = 100), change by ATECO section, monthly seasonality, SARIMA forecast with intervals and its out-of-sample accuracy against the naive baselines |
+| 6 | Business deep dive | Active companies, March 2009 to March 2025, on constant boundaries (February 2025 is dropped: identical to January in every cell, so not updated): province index (2009 = 100), change by ATECO section, monthly seasonality, SARIMA forecast with intervals and its out-of-sample accuracy against the naive baselines |
 | 7 | Benchmark | Matrix of indicators × areas (focus, peers, country, EU) with conditional formatting and the rank among peers |
 | 8 | About | Sources, method, limits, refresh instructions, data checks, link to the repository |
 
@@ -61,6 +61,7 @@ A star schema. Every relationship uses NUTS or source codes, never labels.
 |---|---|---|
 | `FocusRegion` | `ITI3` | Region profiled. Its NUTS 3 children are the provinces |
 | `PeerRegions` | `ITI1,ITI2,ITH5,ITI4,ITF1` | Toscana, Umbria, Emilia-Romagna, Lazio, Abruzzo |
+| `ProvinceRegions` | `ITI31,ITI32,ITI33,ITI34,ITI35` | NUTS 3 provinces of the focus region. Eurostat filters accept only exact codes (no "starts with"), and a query that read the codes from the GISCO-based `Geo` table would trip the Power Query privacy firewall. `check-sources` verifies that the parameter matches the GISCO children of `FocusRegion` |
 | `Country` | `IT` | National benchmark |
 | `StartYear` | `2009` | First year requested from Eurostat, the same as the Python pipeline and the business series |
 | `RepoRawBase` | `https://raw.githubusercontent.com/simones99/marche-regional-stats/main` | Base URL of the files exported by Python |
@@ -70,7 +71,7 @@ A star schema. Every relationship uses NUTS or source codes, never labels.
 
 | Table | Columns | Source |
 |---|---|---|
-| `Geo` | Code, Name, Level (EU, Country, NUTS 2, NUTS 3), ParentCode, Role (Focus, Peer, Country, EU, Province), SortOrder | GISCO `NUTS_AT_2024.csv` (Code = `NUTS_ID`, Name = `NAME_LATN`, Level = code length − 2), filtered by the parameters, plus static rows for `IT` ("Italy") and `EU27_2020` ("European Union (27)") |
+| `Geo` | Code, Name, Level (EU, Country, NUTS 2, NUTS 3), ParentCode, Role (Focus, Peer, Country, EU, Province), SortOrder | GISCO `NUTS_AT_2024.csv` (Code = `NUTS_ID`, Name = `NAME_LATN`, Level = code length − 2), filtered to the codes in FocusRegion, PeerRegions and ProvinceRegions (the refresh fails if one is missing from GISCO), plus static rows for `IT` ("Italy") and `EU27_2020` ("European Union (27)") |
 | `Calendar` | Date, Year, Quarter, MonthNumber, MonthName, YearMonth, MonthEnd | Power Query, daily, 1 January of `StartYear` to 31 December of the current year, marked as the date table |
 | `Sex` | Code (T, M, F), Name | static |
 | `AgeGroup` | Code (Eurostat five-year codes), Name, SortOrder, BroadGroup (0-14, 15-64, 65+), Is80Plus | static |
@@ -88,7 +89,7 @@ Annual Eurostat facts join `Calendar` on 1 January of their year: population is 
 | `GDP` | geo × year × unit | `nama_10r_2gdp` (EU, country, NUTS 2) and `nama_10r_3gdp` (provinces), units `EUR_HAB` and `PPS_HAB_EU27_2020` (EU = 100). Eurostat's per-inhabitant values are used as published |
 | `Unemployment` | geo × year | `lfst_r_lfu3rt` (EU, country, NUTS 2) with `isced11=TOTAL`, `sex=T`, `age=Y15-74`, `unit=PC`. It replaces `tgs00010` + `tipsun20` |
 | `Enrolment` | geo × year × sex × ISCED | `educ_uoe_enra11` for focus, peers, country and EU, `unit=NR` |
-| `Companies` | province × ATECO section × month-end | Chamber of Commerce CSV, cleaned in Power Query (see Data flow). Focus region only. The page says so |
+| `Companies` | province × ATECO section × month-end | Chamber of Commerce CSV, cleaned in Power Query (see Data flow). Focus region only. The page says so. Sections A–T plus X (not classified). |
 | `Forecast` | month-end × series (actual, forecast, lower, upper) | `powerbi/data/forecast.csv` |
 | `ForecastAccuracy` | model (SARIMA, naive, seasonal naive) | `powerbi/data/forecast_accuracy.csv`: MAPE and MAE on the 24-month holdout |
 | `Reconciliation` | checkpoint | `powerbi/data/reconciliation.csv`: geo code, month-end, expected active companies |
@@ -128,7 +129,7 @@ Rules:
 - Differences use dynamic format strings: the format of the selected measure, so rates show as percentage points and amounts in euro.
 - `discourageImplicitMeasures` is on, so every visual uses explicit measures.
 - Rank is shown only for indicators comparable across regions (rates, shares, per-inhabitant values). The Rank item returns BLANK for other measures, tested with `ISSELECTEDMEASURE`.
-- Every item leaves text measures alone (`IF ( ISNUMERIC ( SELECTEDMEASURE () ), …, SELECTEDMEASURE () )`). The dynamic titles are text measures, and a calculation group would otherwise apply to them too.
+- Every item leaves text measures alone (`IF ( ISTEXT ( SELECTEDMEASURE () ), SELECTEDMEASURE (), … )`; `ISTEXT` and not `ISNUMERIC`, so a blank value is still compared). The dynamic titles are text measures, and a calculation group would otherwise apply to them too.
 
 ### Field parameter
 
@@ -147,7 +148,7 @@ StartYear parameter ─────────────► Calendar
 **`fnEurostat(dataset, filters, startYear)`** is one M function used by every Eurostat fact. It:
 - builds the URL `…/data/dataflow/ESTAT/<dataset>/1.0?c[geo]=<codes>&<filters>&c[TIME_PERIOD]=ge:<startYear>&format=csvdata&formatVersion=1.0&labels=id&compress=false`;
 - filters by dimension name only, with no positional key, so a dataset that gains or loses a dimension still works;
-- takes geo codes from `Geo`, never typed by hand;
+- takes geo codes from the parameters, by level: EU (`EU27_2020`), Country, NUTS2 (focus and peers), NUTS3 (provinces);
 - returns typed columns with codes;
 - rethrows any HTTP or parsing error with the dataset name and URL in the message.
 
@@ -160,7 +161,7 @@ StartYear parameter ─────────────► Calendar
 6. Drop every month column identical to the previous one in every row (not updated).
 7. Aggregate to province × section × month-end.
 
-**`marche-stats export-powerbi`** is a new CLI command. It writes `forecast.csv`, `forecast_accuracy.csv` and `reconciliation.csv` to `powerbi/data/`, and the files are committed. The reconciliation checkpoints are: the regional total in January 2009 and March 2025, and each province in March 2025.
+**`marche-stats export-powerbi`** is a new CLI command. It writes `forecast.csv`, `forecast_accuracy.csv` and `reconciliation.csv` to `powerbi/data/`, and the files are committed. The reconciliation checkpoints are: the regional total in the first month (March 2009) and in the last month the model is fitted on (January 2025), and each province in the first and last full-year December (2009, 2024), which the "change" and "per 1,000 residents" indicators use.
 
 **Refresh** runs in Power BI Desktop only. All sources are public: privacy level Public, anonymous access.
 
