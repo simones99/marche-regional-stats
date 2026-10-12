@@ -33,7 +33,8 @@ table Reconciliation
 				let
 				    Source = Csv.Document(Web.Contents(RepoRawBase & "/powerbi/data/reconciliation.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
 				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
-				    Renamed = Table.RenameColumns(Promoted, {
+				    Blanks = Table.ReplaceValue(Promoted, "", null, Replacer.ReplaceValue, Table.ColumnNames(Promoted)),
+				    Renamed = Table.RenameColumns(Blanks, {
 				        {"checkpoint", "Checkpoint"}, {"geo", "GeoCode"}, {"date", "Date"}, {"active_companies", "Expected"}
 				    }),
 				    Typed = Table.TransformColumnTypes(Renamed, {
