@@ -2999,7 +2999,7 @@ One page with three visuals:
 - Create: `powerbi/marche-regional-profile.Report/definition/pages/pages.json`
 - Create: `.../definition/pages/5e0c7a1d9b3f2a4c6e81/page.json` and three `visuals/*/visual.json`
 
-- [ ] **Step 1: Write the page with a script** (the JSON is repetitive, so a script avoids typos). Run from the repository root:
+- [x] **Step 1: Write the page with a script** (the JSON is repetitive, so a script avoids typos). Run from the repository root:
 
 ```bash
 python -I - <<'EOF'
@@ -3112,12 +3112,12 @@ EOF
 
 Expected: the script prints five paths: `pages.json`, `page.json` and three `visual.json` files.
 
-- [ ] **Step 2: Run the tests**
+- [x] **Step 2: Run the tests**
 
 Run: `pytest tests/test_powerbi_model.py -v`
 Expected: PASS. `test_report_fields_exist_in_model` checks every field of the three visuals against the model.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add powerbi/marche-regional-profile.Report/definition/pages
@@ -3131,12 +3131,12 @@ git commit -m "Add the model check page"
 **Files:**
 - Create: `powerbi/data/forecast.csv`, `powerbi/data/forecast_accuracy.csv`, `powerbi/data/reconciliation.csv`
 
-- [ ] **Step 1: Download the sources** (the business register file is not in the repository)
+- [x] **Step 1: Download the sources** (the business register file is not in the repository)
 
 Run: `marche-stats download`
 Expected: `data/raw/active_companies_marche.csv` exists (about 2.7 MB) with the Eurostat and GISCO files.
 
-- [ ] **Step 2: Export**
+- [x] **Step 2: Export**
 
 Run: `marche-stats export-powerbi`
 Expected: three files in `powerbi/data/`. Check them against `docs/results.md`:
@@ -3144,7 +3144,7 @@ Expected: three files in `powerbi/data/`. Check them against `docs/results.md`:
 - `reconciliation.csv`: 12 rows. `Region, first month` is dated 2009-03-31 and `Region, last modelled month` 2025-01-31. The provinces are dated 2009-12-31 and 2024-12-31.
 - `forecast.csv`: the first date is 2009-03-31; the `forecast` column covers 2025-02-28 to 2026-01-31.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add powerbi/data
@@ -3157,20 +3157,20 @@ git commit -m "Export the SARIMA forecast, its accuracy and the reconciliation t
 
 Only the user can run this task. The executor stops here and hands over these steps.
 
-- [ ] **Step 1: Publish the branch, so the raw URLs resolve.** `RepoRawBase` points at `main`, which does not yet have `powerbi/data/`. Ask the user before pushing (pushing is outward-facing):
+- [x] **Step 1: Publish the branch, so the raw URLs resolve.** `RepoRawBase` points at `main`, which does not yet have `powerbi/data/`. Ask the user before pushing (pushing is outward-facing):
 
 ```bash
 git push -u origin powerbi-pbip
 ```
 
-- [ ] **Step 2: Point `RepoRawBase` at the branch.** Open `powerbi/marche-regional-profile.pbip` in Power BI Desktop. Go to *Transform data → Manage parameters → RepoRawBase* and set it to `https://raw.githubusercontent.com/simones99/marche-regional-stats/powerbi-pbip`. The value returns to `main` in Task 17.
+- [x] **Step 2: Point `RepoRawBase` at the branch.** Open `powerbi/marche-regional-profile.pbip` in Power BI Desktop. Go to *Transform data → Manage parameters → RepoRawBase* and set it to `https://raw.githubusercontent.com/simones99/marche-regional-stats/powerbi-pbip`. The value returns to `main` in Task 17.
 
-- [ ] **Step 3: Refresh.** Choose *Anonymous* for every source if Desktop asks, and *Public* as privacy level. Expected: every table loads without errors. Error messages to look for:
+- [x] **Step 3: Refresh.** Choose *Anonymous* for every source if Desktop asks, and *Public* as privacy level. Expected: every table loads without errors. Error messages to look for:
   - "Eurostat request failed: HTTP 400 for …": a code in a parameter does not exist in that dataset. The message names the value.
   - "NUTS codes not found in GISCO": a code in `FocusRegion`, `PeerRegions` or `ProvinceRegions` does not exist in GISCO.
   - "The field 'XX' of the record wasn't found" in `Companies`: a new province prefix appeared in the Chamber of Commerce file.
 
-- [ ] **Step 4: Check the model check page against known values.**
+- [x] **Step 4: Check the model check page against known values.**
   - The **reconciliation** table shows ✓ in all 12 rows.
   - In **indicators by area**, compare with `docs/results.md`:
 
@@ -3193,9 +3193,9 @@ git push -u origin powerbi-pbip
     | Every region, Italy, EU | Unemployment rate | between 4 % and 7 % |
   - In the **Compare to** matrix, the columns Value, Country, vs Country, EU, vs EU, Peers avg, vs Peers avg and Rank among peers are filled. The rank is between 1 and 6. Expected for Marche: unemployment 5.1 % | 6.1 % | −1.0 | 6.0 % | −0.9 | 5.0 % | +0.1 | 3; GDP PPS 89 | 98 | −9 | 100 | −11 | 100.4 | −11 | 4. "vs Country" equals Value − Country.
 
-- [ ] **Step 5: If a visual shows an error** (PBIR written by hand), rebuild it in Desktop with the same fields and title, listed in Task 14, Step 1. If Desktop rejects the field parameter table, delete it and recreate it with *Modeling → New parameter → Fields*, named `Province indicator`, with the five measures of Task 13, Step 2. Then save. If Desktop reports an unknown property `ordinal` in `Compare to.tmdl`, delete the eight `ordinal:` lines and set the item order in *Model view → Compare to → Calculation items* (Value, Country, vs Country, EU, vs EU, Peers avg, vs Peers avg, Rank among peers).
+- [x] **Step 5: If a visual shows an error** (PBIR written by hand), rebuild it in Desktop with the same fields and title, listed in Task 14, Step 1. If Desktop rejects the field parameter table, delete it and recreate it with *Modeling → New parameter → Fields*, named `Province indicator`, with the five measures of Task 13, Step 2. Then save. If Desktop reports an unknown property `ordinal` in `Compare to.tmdl`, delete the eight `ordinal:` lines and set the item order in *Model view → Compare to → Calculation items* (Value, Country, vs Country, EU, vs EU, Peers avg, vs Peers avg, Rank among peers).
 
-- [ ] **Step 6: Save and commit what Desktop rewrote.** Desktop adds lineage tags and may reformat TMDL. Close Desktop, then:
+- [x] **Step 6: Save and commit what Desktop rewrote.** Desktop adds lineage tags and may reformat TMDL. Close Desktop, then:
 
 ```bash
 pytest -q
@@ -3212,14 +3212,14 @@ git commit -m "Save the model after the first refresh in Power BI Desktop"
 - Modify: `powerbi/README.md`, `powerbi/sources.md`
 - Modify: `.../definition/expressions.tmdl` (`RepoRawBase` back to `main`)
 
-- [ ] **Step 1: Remove the old projects** (they stay in git history)
+- [x] **Step 1: Remove the old projects** (they stay in git history)
 
 ```bash
 git rm -r -q powerbi/marche-regionali-2025.pbip powerbi/marche-regionali-2025.Report powerbi/marche-regionali-2025.SemanticModel
 git rm -r -q powerbi/marche-demography-education.pbip powerbi/marche-demography-education.Report powerbi/marche-demography-education.SemanticModel
 ```
 
-- [ ] **Step 2: Replace `powerbi/README.md`** (Phase B extends it with pages and screenshots):
+- [x] **Step 2: Replace `powerbi/README.md`** (Phase B extends it with pages and screenshots):
 
 ```markdown
 # Power BI report
