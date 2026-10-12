@@ -21,3 +21,8 @@ annotation PBI_ProTooling = ["DevMode"]
 
 ref table Geo
 ref table Calendar
+ref table Sex
+ref table AgeGroup
+ref table ISCED
+ref table Sector
+ref table _Measures

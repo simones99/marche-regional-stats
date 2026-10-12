@@ -1,0 +1,54 @@
+/// ISCED 2011 education levels used by educ_uoe_enra11. ED0-8 is the total.
+table ISCED
+
+	column Code
+		dataType: string
+		isKey
+		summarizeBy: none
+		sourceColumn: Code
+
+	column Name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Name
+		sortByColumn: SortOrder
+
+	column SortOrder
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: SortOrder
+
+	column Group
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Group
+
+	column IsTotal
+		dataType: boolean
+		isHidden
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		summarizeBy: none
+		sourceColumn: IsTotal
+
+	partition ISCED = m
+		mode: import
+		source =
+				#table(
+				    type table [Code = text, Name = text, SortOrder = Int64.Type, Group = text, IsTotal = logical],
+				    {
+				        {"ED0", "Early childhood education", 0, "ISCED 0-3", false},
+				        {"ED1", "Primary education", 1, "ISCED 0-3", false},
+				        {"ED2", "Lower secondary education", 2, "ISCED 0-3", false},
+				        {"ED3", "Upper secondary education", 3, "ISCED 0-3", false},
+				        {"ED4", "Post-secondary non-tertiary education", 4, "ISCED 4", false},
+				        {"ED5", "Short-cycle tertiary education", 5, "ISCED 5-8", false},
+				        {"ED6", "Bachelor's or equivalent", 6, "ISCED 5-8", false},
+				        {"ED7", "Master's or equivalent", 7, "ISCED 5-8", false},
+				        {"ED8", "Doctoral or equivalent", 8, "ISCED 5-8", false},
+				        {"ED0-8", "All levels", 9, "All", true}
+				    }
+				)
+
+	annotation PBI_ResultType = Table

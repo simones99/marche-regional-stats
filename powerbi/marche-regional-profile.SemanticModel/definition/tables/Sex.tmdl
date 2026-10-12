@@ -1,0 +1,31 @@
+/// Eurostat sex codes.
+table Sex
+
+	column Code
+		dataType: string
+		isKey
+		summarizeBy: none
+		sourceColumn: Code
+
+	column Name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Name
+		sortByColumn: SortOrder
+
+	column SortOrder
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: SortOrder
+
+	partition Sex = m
+		mode: import
+		source =
+				#table(
+				    type table [Code = text, Name = text, SortOrder = Int64.Type],
+				    {{"T", "Total", 1}, {"M", "Male", 2}, {"F", "Female", 3}}
+				)
+
+	annotation PBI_ResultType = Table

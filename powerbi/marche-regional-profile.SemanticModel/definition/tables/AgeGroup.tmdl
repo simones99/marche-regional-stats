@@ -1,0 +1,53 @@
+/// Eurostat five-year age groups (Y_LT5 to Y_GE90), the total and unknown age.
+table AgeGroup
+
+	column Code
+		dataType: string
+		isKey
+		summarizeBy: none
+		sourceColumn: Code
+
+	column Name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Name
+		sortByColumn: SortOrder
+
+	column SortOrder
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: SortOrder
+
+	column BroadGroup
+		dataType: string
+		summarizeBy: none
+		sourceColumn: BroadGroup
+
+	column Is80Plus
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		summarizeBy: none
+		sourceColumn: Is80Plus
+
+	partition AgeGroup = m
+		mode: import
+		source =
+				let
+				    Bands = List.Transform(
+				        {0..18},
+				        (i) =>
+				            let
+				                Lower = i * 5,
+				                Code = if i = 0 then "Y_LT5" else if i = 18 then "Y_GE90" else "Y" & Text.From(Lower) & "-" & Text.From(Lower + 4),
+				                Name = if i = 18 then "90+" else Text.From(Lower) & "-" & Text.From(Lower + 4),
+				                Broad = if Lower < 15 then "0-14" else if Lower < 65 then "15-64" else "65+"
+				            in
+				                {Code, Name, i + 1, Broad, Lower >= 80}
+				    ),
+				    Rows = {{"TOTAL", "Total", 0, "Total", false}} & Bands & {{"UNK", "Unknown", 99, "Unknown", false}}
+				in
+				    #table(type table [Code = text, Name = text, SortOrder = Int64.Type, BroadGroup = text, Is80Plus = logical], Rows)
+
+	annotation PBI_ResultType = Table
