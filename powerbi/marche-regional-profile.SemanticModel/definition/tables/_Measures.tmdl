@@ -52,84 +52,106 @@ table _Measures
 
 	/// Population on 1 January of the reference year. Total sex and age unless the visual
 	/// filters Sex or AgeGroup.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
 	measure Population =
 			VAR d = [_Ref date Population]
 			RETURN
-			    SWITCH (
-			        TRUE (),
-			        ISFILTERED ( Sex ) && ISFILTERED ( AgeGroup ), CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d ),
-			        ISFILTERED ( Sex ), CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, AgeGroup[Code] = "TOTAL" ),
-			        ISFILTERED ( AgeGroup ), CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, Sex[Code] = "T" ),
-			        CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, Sex[Code] = "T", AgeGroup[Code] = "TOTAL" )
+			    IF (
+			        HASONEVALUE ( Geo[Level] ),
+			        SWITCH (
+			            TRUE (),
+			            ISFILTERED ( Sex ) && ISFILTERED ( AgeGroup ), CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d ),
+			            ISFILTERED ( Sex ), CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, AgeGroup[Code] = "TOTAL" ),
+			            ISFILTERED ( AgeGroup ), CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, Sex[Code] = "T" ),
+			            CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, Sex[Code] = "T", AgeGroup[Code] = "TOTAL" )
+			        )
 			    )
 		formatString: #,0
 		displayFolder: Population & Health
 
 	/// Change in population over the five years to the reference year.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
 	measure 'Population change 5y %' =
 			VAR d = [_Ref date Population]
 			VAR PopLatest = [Population]
 			VAR PopBefore = CALCULATE ( [Population], REMOVEFILTERS ( Calendar ), Calendar[Date] = DATE ( YEAR ( d ) - 5, 1, 1 ) )
-			RETURN IF ( NOT ISBLANK ( PopBefore ), DIVIDE ( PopLatest - PopBefore, PopBefore ) )
+			RETURN IF ( HASONEVALUE ( Geo[Level] ), IF ( NOT ISBLANK ( PopBefore ), DIVIDE ( PopLatest - PopBefore, PopBefore ) ) )
 		formatString: +0.0%;-0.0%;0.0%
 		displayFolder: Population & Health
 
 	/// Share of residents aged 0-14 on 1 January. Numerator and total use one date: the latest
 	/// with age bands for every area of the comparison set.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
 	measure 'Share aged 0-14' =
 			VAR d = CALCULATE ( [_Ref date Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "0-14" )
 			RETURN
-			    DIVIDE (
-			        CALCULATE ( [Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "0-14", Calendar[Date] = d ),
-			        CALCULATE ( [Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL", Calendar[Date] = d )
+			    IF (
+			        HASONEVALUE ( Geo[Level] ),
+			        DIVIDE (
+			            CALCULATE ( [Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "0-14", Calendar[Date] = d ),
+			            CALCULATE ( [Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL", Calendar[Date] = d )
+			        )
 			    )
 		formatString: 0.0%
 		displayFolder: Population & Health
 
 	/// Share of residents aged 65 or over on 1 January. Numerator and total use one date: the latest
 	/// with age bands for every area of the comparison set.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
 	measure 'Share aged 65+' =
 			VAR d = CALCULATE ( [_Ref date Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "65+" )
 			RETURN
-			    DIVIDE (
-			        CALCULATE ( [Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "65+", Calendar[Date] = d ),
-			        CALCULATE ( [Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL", Calendar[Date] = d )
+			    IF (
+			        HASONEVALUE ( Geo[Level] ),
+			        DIVIDE (
+			            CALCULATE ( [Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "65+", Calendar[Date] = d ),
+			            CALCULATE ( [Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL", Calendar[Date] = d )
+			        )
 			    )
 		formatString: 0.0%
 		displayFolder: Population & Health
 
 	/// Share of residents aged 80 or over on 1 January. Numerator and total use one date: the latest
 	/// with age bands for every area of the comparison set.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
 	measure 'Share aged 80+' =
 			VAR d = CALCULATE ( [_Ref date Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[Is80Plus] = TRUE () )
 			RETURN
-			    DIVIDE (
-			        CALCULATE ( [Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[Is80Plus] = TRUE (), Calendar[Date] = d ),
-			        CALCULATE ( [Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL", Calendar[Date] = d )
+			    IF (
+			        HASONEVALUE ( Geo[Level] ),
+			        DIVIDE (
+			            CALCULATE ( [Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[Is80Plus] = TRUE (), Calendar[Date] = d ),
+			            CALCULATE ( [Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL", Calendar[Date] = d )
+			        )
 			    )
 		formatString: 0.0%
 		displayFolder: Population & Health
 
 	/// Deaths in the reference year. Total sex and age unless the visual filters Sex or AgeGroup.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
 	measure Deaths =
 			VAR d = [_Ref date Deaths]
 			RETURN
-			    SWITCH (
-			        TRUE (),
-			        ISFILTERED ( Sex ) && ISFILTERED ( AgeGroup ), CALCULATE ( SUM ( Deaths[Count] ), Deaths[Date] = d ),
-			        ISFILTERED ( Sex ), CALCULATE ( SUM ( Deaths[Count] ), Deaths[Date] = d, AgeGroup[Code] = "TOTAL" ),
-			        ISFILTERED ( AgeGroup ), CALCULATE ( SUM ( Deaths[Count] ), Deaths[Date] = d, Sex[Code] = "T" ),
-			        CALCULATE ( SUM ( Deaths[Count] ), Deaths[Date] = d, Sex[Code] = "T", AgeGroup[Code] = "TOTAL" )
+			    IF (
+			        HASONEVALUE ( Geo[Level] ),
+			        SWITCH (
+			            TRUE (),
+			            ISFILTERED ( Sex ) && ISFILTERED ( AgeGroup ), CALCULATE ( SUM ( Deaths[Count] ), Deaths[Date] = d ),
+			            ISFILTERED ( Sex ), CALCULATE ( SUM ( Deaths[Count] ), Deaths[Date] = d, AgeGroup[Code] = "TOTAL" ),
+			            ISFILTERED ( AgeGroup ), CALCULATE ( SUM ( Deaths[Count] ), Deaths[Date] = d, Sex[Code] = "T" ),
+			            CALCULATE ( SUM ( Deaths[Count] ), Deaths[Date] = d, Sex[Code] = "T", AgeGroup[Code] = "TOTAL" )
+			        )
 			    )
 		formatString: #,0
 		displayFolder: Population & Health
 
 	/// Deaths in the year per 1,000 residents on 1 January of the same year.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
 	measure 'Crude death rate per 1,000' =
 			VAR d = [_Ref date Deaths]
-			VAR DeathsTotal = CALCULATE ( SUM ( Deaths[Count] ), Deaths[Date] = d, Sex[Code] = "T", AgeGroup[Code] = "TOTAL" )
-			VAR Residents = CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, Sex[Code] = "T", AgeGroup[Code] = "TOTAL" )
-			RETURN DIVIDE ( 1000 * DeathsTotal, Residents )
+			VAR DeathsTotal = CALCULATE ( SUM ( Deaths[Count] ), Deaths[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "T", AgeGroup[Code] = "TOTAL" )
+			VAR Residents = CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "T", AgeGroup[Code] = "TOTAL" )
+			RETURN IF ( HASONEVALUE ( Geo[Level] ), DIVIDE ( 1000 * DeathsTotal, Residents ) )
 		formatString: 0.0
 		displayFolder: Population & Health
 
@@ -158,25 +180,30 @@ table _Measures
 		displayFolder: Economy & Labour
 
 	/// Pupils and students enrolled. All levels and both sexes unless the visual filters ISCED or Sex.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
 	measure 'Students enrolled' =
 			VAR d = [_Ref date Enrolment]
 			RETURN
-			    SWITCH (
-			        TRUE (),
-			        ISFILTERED ( Sex ) && ISFILTERED ( ISCED ), CALCULATE ( SUM ( Enrolment[Students] ), Enrolment[Date] = d, KEEPFILTERS ( ISCED[IsTotal] = FALSE () ) ),
-			        ISFILTERED ( Sex ), CALCULATE ( SUM ( Enrolment[Students] ), Enrolment[Date] = d, ISCED[Code] = "ED02-8" ),
-			        ISFILTERED ( ISCED ), CALCULATE ( SUM ( Enrolment[Students] ), Enrolment[Date] = d, Sex[Code] = "T", KEEPFILTERS ( ISCED[IsTotal] = FALSE () ) ),
-			        CALCULATE ( SUM ( Enrolment[Students] ), Enrolment[Date] = d, Sex[Code] = "T", ISCED[Code] = "ED02-8" )
+			    IF (
+			        HASONEVALUE ( Geo[Level] ),
+			        SWITCH (
+			            TRUE (),
+			            ISFILTERED ( Sex ) && ISFILTERED ( ISCED ), CALCULATE ( SUM ( Enrolment[Students] ), Enrolment[Date] = d, KEEPFILTERS ( ISCED[IsTotal] = FALSE () ) ),
+			            ISFILTERED ( Sex ), CALCULATE ( SUM ( Enrolment[Students] ), Enrolment[Date] = d, ISCED[Code] = "ED02-8" ),
+			            ISFILTERED ( ISCED ), CALCULATE ( SUM ( Enrolment[Students] ), Enrolment[Date] = d, Sex[Code] = "T", KEEPFILTERS ( ISCED[IsTotal] = FALSE () ) ),
+			            CALCULATE ( SUM ( Enrolment[Students] ), Enrolment[Date] = d, Sex[Code] = "T", ISCED[Code] = "ED02-8" )
+			        )
 			    )
 		formatString: #,0
 		displayFolder: Education
 
 	/// Students in ISCED 5-8 per 1,000 residents on 1 January of the same year.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
 	measure 'Tertiary students per 1,000 residents' =
 			VAR d = CALCULATE ( [_Ref date Enrolment], REMOVEFILTERS ( ISCED ), ISCED[Group] = "ISCED 5-8" )
-			VAR Tertiary = CALCULATE ( SUM ( Enrolment[Students] ), Enrolment[Date] = d, Sex[Code] = "T", REMOVEFILTERS ( ISCED ), ISCED[Group] = "ISCED 5-8" )
-			VAR Residents = CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, Sex[Code] = "T", AgeGroup[Code] = "TOTAL" )
-			RETURN DIVIDE ( 1000 * Tertiary, Residents )
+			VAR Tertiary = CALCULATE ( SUM ( Enrolment[Students] ), Enrolment[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "T", REMOVEFILTERS ( ISCED ), ISCED[Group] = "ISCED 5-8" )
+			VAR Residents = CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "T", AgeGroup[Code] = "TOTAL" )
+			RETURN IF ( HASONEVALUE ( Geo[Level] ), DIVIDE ( 1000 * Tertiary, Residents ) )
 		formatString: 0.0
 		displayFolder: Education
 
@@ -202,13 +229,14 @@ table _Measures
 		displayFolder: Business
 
 	/// Active companies at 31 December per 1,000 residents on 1 January of the following year.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
 	measure 'Companies per 1,000 residents' =
 			VAR Areas = VALUES ( Geo[Code] )
 			VAR WithProvinces = UNION ( Areas, CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), TREATAS ( Areas, Geo[ParentCode] ) ) )
 			VAR LastDec = CALCULATE ( MAX ( Companies[Date] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ), Calendar[MonthNumber] = 12 )
 			VAR CompaniesAtDec = CALCULATE ( SUM ( Companies[Companies] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ), REMOVEFILTERS ( Calendar ), Companies[Date] = LastDec )
-			VAR Residents = CALCULATE ( SUM ( Population[Residents] ), REMOVEFILTERS ( Calendar ), Population[Date] = DATE ( YEAR ( LastDec ) + 1, 1, 1 ), Sex[Code] = "T", AgeGroup[Code] = "TOTAL" )
-			RETURN DIVIDE ( 1000 * CompaniesAtDec, Residents )
+			VAR Residents = CALCULATE ( SUM ( Population[Residents] ), REMOVEFILTERS ( Calendar ), Population[Date] = DATE ( YEAR ( LastDec ) + 1, 1, 1 ), REMOVEFILTERS ( Sex ), Sex[Code] = "T", AgeGroup[Code] = "TOTAL" )
+			RETURN IF ( HASONEVALUE ( Geo[Level] ), DIVIDE ( 1000 * CompaniesAtDec, Residents ) )
 		formatString: 0.0
 		displayFolder: Business
 
@@ -220,7 +248,7 @@ table _Measures
 			    CALCULATE (
 			        CONCATENATEX ( FILTER ( VALUES ( Population[Flag] ), NOT ISBLANK ( Population[Flag] ) && Population[Flag] <> "" ), Population[Flag], ", ", Population[Flag], ASC ),
 			        Population[Date] = d,
-			        Sex[Code] = "T",
+			        REMOVEFILTERS ( Sex ), Sex[Code] = "T",
 			        AgeGroup[Code] = "TOTAL"
 			    )
 		displayFolder: Flags
@@ -233,7 +261,7 @@ table _Measures
 			    CALCULATE (
 			        CONCATENATEX ( FILTER ( VALUES ( Deaths[Flag] ), NOT ISBLANK ( Deaths[Flag] ) && Deaths[Flag] <> "" ), Deaths[Flag], ", ", Deaths[Flag], ASC ),
 			        Deaths[Date] = d,
-			        Sex[Code] = "T",
+			        REMOVEFILTERS ( Sex ), Sex[Code] = "T",
 			        AgeGroup[Code] = "TOTAL"
 			    )
 		displayFolder: Flags
@@ -270,7 +298,7 @@ table _Measures
 			    CALCULATE (
 			        CONCATENATEX ( FILTER ( VALUES ( Enrolment[Flag] ), NOT ISBLANK ( Enrolment[Flag] ) && Enrolment[Flag] <> "" ), Enrolment[Flag], ", ", Enrolment[Flag], ASC ),
 			        Enrolment[Date] = d,
-			        Sex[Code] = "T",
+			        REMOVEFILTERS ( Sex ), Sex[Code] = "T",
 			        ISCED[Code] = "ED02-8"
 			    )
 		displayFolder: Flags
@@ -315,8 +343,9 @@ table _Measures
 		formatString: 0.00%
 		displayFolder: Forecast
 
-	/// Value of the checkpoint computed by the Python pipeline.
-	measure 'Reconciliation expected' = SUM ( Reconciliation[Expected] )
+	/// Value of the checkpoint computed by the Python pipeline. Blank over several checkpoints.
+	measure 'Reconciliation expected' =
+			IF ( HASONEVALUE ( Reconciliation[Checkpoint] ), SUM ( Reconciliation[Expected] ) )
 		formatString: #,0
 		displayFolder: Checks
 
@@ -329,11 +358,17 @@ table _Measures
 		formatString: #,0
 		displayFolder: Checks
 
-	/// ✓ when Power BI matches the Python pipeline, otherwise ✗ and the difference.
+	/// ✓ when Power BI matches the Python pipeline, otherwise ✗ and the difference. Over several
+	/// checkpoints (the total row), ✓ all or ✗ and the number of checkpoints that fail.
 	measure 'Reconciliation status' =
-			VAR Expected = [Reconciliation expected]
-			VAR Diff = [Reconciliation in model] - Expected
-			RETURN IF ( NOT ISBLANK ( Expected ), IF ( Diff = 0, "✓", "✗ " & FORMAT ( Diff, "+#,0;-#,0" ) ) )
+			IF (
+			    HASONEVALUE ( Reconciliation[Checkpoint] ),
+			    VAR Expected = [Reconciliation expected]
+			    VAR Diff = [Reconciliation in model] - Expected
+			    RETURN IF ( NOT ISBLANK ( Expected ), IF ( Diff = 0, "✓", "✗ " & FORMAT ( Diff, "+#,0;-#,0" ) ) ),
+			    VAR Failed = COUNTROWS ( FILTER ( VALUES ( Reconciliation[Checkpoint] ), [Reconciliation in model] <> [Reconciliation expected] ) )
+			    RETURN IF ( Failed = 0, "✓ all", "✗ " & Failed & " failed" )
+			)
 		displayFolder: Checks
 
 	column Placeholder
