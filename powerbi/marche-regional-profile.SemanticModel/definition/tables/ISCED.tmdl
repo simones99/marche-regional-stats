@@ -1,4 +1,4 @@
-/// ISCED 2011 education levels used by educ_uoe_enra11. ED0-8 is the total.
+/// ISCED 2011 education levels used by educ_uoe_enra11. ED02-8 is the total (ED0-8 is missing after 2023).
 table ISCED
 
 	column Code
@@ -47,7 +47,7 @@ table ISCED
 				        {"ED6", "Bachelor's or equivalent", 6, "ISCED 5-8", false},
 				        {"ED7", "Master's or equivalent", 7, "ISCED 5-8", false},
 				        {"ED8", "Doctoral or equivalent", 8, "ISCED 5-8", false},
-				        {"ED0-8", "All levels", 9, "All", true}
+				        {"ED02-8", "All levels", 9, "All", true}
 				    }
 				)
 

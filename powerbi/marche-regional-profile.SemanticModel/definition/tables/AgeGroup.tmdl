@@ -31,6 +31,13 @@ table AgeGroup
 		summarizeBy: none
 		sourceColumn: Is80Plus
 
+	column IsBand
+		dataType: boolean
+		isHidden
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		summarizeBy: none
+		sourceColumn: IsBand
+
 	partition AgeGroup = m
 		mode: import
 		source =
@@ -44,10 +51,10 @@ table AgeGroup
 				                Name = if i = 18 then "90+" else Text.From(Lower) & "-" & Text.From(Lower + 4),
 				                Broad = if Lower < 15 then "0-14" else if Lower < 65 then "15-64" else "65+"
 				            in
-				                {Code, Name, i + 1, Broad, Lower >= 80}
+				                {Code, Name, i + 1, Broad, Lower >= 80, true}
 				    ),
-				    Rows = {{"TOTAL", "Total", 0, "Total", false}} & Bands & {{"UNK", "Unknown", 99, "Unknown", false}}
+				    Rows = {{"TOTAL", "Total", 0, "Total", false, false}} & Bands & {{"UNK", "Unknown", 99, "Unknown", false, false}}
 				in
-				    #table(type table [Code = text, Name = text, SortOrder = Int64.Type, BroadGroup = text, Is80Plus = logical], Rows)
+				    #table(type table [Code = text, Name = text, SortOrder = Int64.Type, BroadGroup = text, Is80Plus = logical, IsBand = logical], Rows)
 
 	annotation PBI_ResultType = Table

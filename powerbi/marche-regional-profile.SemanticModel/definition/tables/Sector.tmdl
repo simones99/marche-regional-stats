@@ -11,6 +11,7 @@ table Sector
 		dataType: string
 		summarizeBy: none
 		sourceColumn: Name
+		sortByColumn: Code
 
 	partition Sector = m
 		mode: import

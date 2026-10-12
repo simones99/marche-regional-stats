@@ -75,7 +75,7 @@ A star schema. Every relationship uses NUTS or source codes, never labels.
 | `Calendar` | Date, Year, Quarter, MonthNumber, MonthName, YearMonth, MonthEnd | Power Query, daily, 1 January of `StartYear` to 31 December of the current year, marked as the date table |
 | `Sex` | Code (T, M, F), Name | static |
 | `AgeGroup` | Code (Eurostat five-year codes), Name, SortOrder, BroadGroup (0-14, 15-64, 65+), Is80Plus | static |
-| `ISCED` | Code (ED0 … ED8, ED0-8), Name, SortOrder, Group (ISCED 0-3, 4, 5-8) | static |
+| `ISCED` | Code (ED0 … ED8, ED02-8; ED0-8 is missing after 2023), Name, SortOrder, Group (ISCED 0-3, 4, 5-8) | static |
 | `Sector` | Code (ATECO 2007 section), Name (English) | static |
 
 Annual Eurostat facts join `Calendar` on 1 January of their year: population is measured on 1 January. Monthly facts join on the month-end date, the date at which the stock of active companies is recorded.
