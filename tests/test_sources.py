@@ -1,4 +1,5 @@
 # ruff: noqa: E501 (TMDL fixture lines are long by nature)
+import re
 from pathlib import Path
 
 import pytest
@@ -223,3 +224,33 @@ def test_cli_check_sources_fails_when_a_source_fails(monkeypatch, tmp_path, caps
     )
     assert cli.main(["check-sources", "--powerbi", str(tmp_path)]) == 1
     assert "FAIL  X: HTTP 404" in capsys.readouterr().out
+
+
+REAL_MODEL = Path(__file__).resolve().parents[1] / "powerbi" / sources.MODEL_DEFINITION
+
+
+def test_real_model_parameters_are_complete():
+    params = sources.parameters(REAL_MODEL)
+    assert params["FocusRegion"] == "ITI3"
+    assert params["ProvinceRegions"] == "ITI31,ITI32,ITI33,ITI34,ITI35"
+    assert params["StartYear"] == "2009"
+    assert set(params) == {
+        "FocusRegion",
+        "PeerRegions",
+        "ProvinceRegions",
+        "Country",
+        "StartYear",
+        "RepoRawBase",
+        "CompaniesSourceUrl",
+    }
+
+
+def test_real_model_fneurostat_knows_every_level():
+    text = (REAL_MODEL / "expressions.tmdl").read_text(encoding="utf-8")
+    start = text.index("expression fnEurostat")
+    following = re.search(r"^expression ", text[start + 1 :], re.MULTILINE)
+    body = text[start : start + 1 + following.start()] if following else text[start:]
+    assert "EU27_2020" in body
+    # sources.geo_codes keeps its level mapping local, so the names are repeated here.
+    for level in ("EU", "Country", "NUTS2", "NUTS3"):
+        assert f'"{level}"' in body
