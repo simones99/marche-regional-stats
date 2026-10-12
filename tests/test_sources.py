@@ -2,6 +2,7 @@
 from pathlib import Path
 
 import pytest
+import requests
 
 from marche_stats import sources
 
@@ -61,9 +62,17 @@ def fake_get(routes: dict[str, FakeResponse]):
         for key, response in routes.items():
             if key in url:
                 return response
-        return FakeResponse(200)
+        return FakeResponse(404)
 
     return get
+
+
+OK_ROUTES = {
+    "gisco": FakeResponse(200, GISCO_OK),
+    "ESTAT": FakeResponse(200, EUROSTAT_OK),
+    "opendata.example": FakeResponse(200),
+    "raw.example": FakeResponse(200),
+}
 
 
 @pytest.fixture
@@ -106,8 +115,7 @@ def test_eurostat_url_lists_geo_codes_by_level(definition):
 
 
 def test_check_passes_when_every_source_answers(definition):
-    get = fake_get({"gisco": FakeResponse(200, GISCO_OK), "ESTAT": FakeResponse(200, EUROSTAT_OK)})
-    results = sources.check(definition, get=get)
+    results = sources.check(definition, get=fake_get(OK_ROUTES))
     assert [r.source for r in results] == [
         "GISCO NUTS codes",
         "ProvinceRegions matches GISCO",
@@ -120,18 +128,18 @@ def test_check_passes_when_every_source_answers(definition):
 
 
 def test_check_reports_the_eurostat_fault_message(definition):
-    get = fake_get(
-        {"gisco": FakeResponse(200, GISCO_OK), "ESTAT": FakeResponse(400, EUROSTAT_FAULT)}
-    )
+    fault = EUROSTAT_FAULT.replace("not allowed", "not &apos;allowed&apos;")
+    get = fake_get({**OK_ROUTES, "ESTAT": FakeResponse(400, fault)})
     eurostat = [r for r in sources.check(definition, get=get) if r.source.startswith("Eurostat")]
     assert not eurostat[0].ok
     assert "HTTP 400" in eurostat[0].detail
     assert "GEO=ITI31" in eurostat[0].detail
+    assert "'allowed'" in eurostat[0].detail
 
 
 def test_check_flags_provinces_that_differ_from_gisco(definition):
     gisco = GISCO_OK + "IT,ITI33\n"
-    get = fake_get({"gisco": FakeResponse(200, gisco), "ESTAT": FakeResponse(200, EUROSTAT_OK)})
+    get = fake_get({**OK_ROUTES, "gisco": FakeResponse(200, gisco)})
     provinces = next(
         r for r in sources.check(definition, get=get) if r.source.startswith("ProvinceRegions")
     )
@@ -147,3 +155,58 @@ def test_report_prints_one_line_per_result():
         ]
     )
     assert text.splitlines() == ["OK    A: fine", "FAIL  B: HTTP 404", "      https://b"]
+
+
+def test_check_fails_when_the_model_has_no_eurostat_calls(definition):
+    (definition / "tables" / "Population.tmdl").write_text(
+        TABLE.replace("fnEurostat(", "other("), encoding="utf-8"
+    )
+    results = sources.check(definition, get=fake_get(OK_ROUTES))
+    failing = [r for r in results if not r.ok]
+    assert [r.detail for r in failing] == ["no fnEurostat calls found in the model tables"]
+
+
+def test_check_fails_when_the_model_has_no_gisco_source(definition):
+    (definition / "tables" / "Population.tmdl").write_text(
+        TABLE.replace("gisco-services.ec.europa.eu", "nuts.example"), encoding="utf-8"
+    )
+    results = sources.check(definition, get=fake_get(OK_ROUTES))
+    provinces = next(r for r in results if r.source.startswith("ProvinceRegions"))
+    assert not provinces.ok
+    assert provinces.detail == "no GISCO source found in the model tables"
+
+
+def test_unknown_level_is_a_failing_result_not_a_crash(definition):
+    (definition / "tables" / "Population.tmdl").write_text(
+        TABLE.replace('"NUTS3"', '"NUTS9"'), encoding="utf-8"
+    )
+    with pytest.raises(ValueError, match="NUTS9.*EU, Country, NUTS2, NUTS3"):
+        sources.geo_codes(sources.parameters(definition), ("NUTS9",))
+    results = sources.check(definition, get=fake_get(OK_ROUTES))
+    eurostat = next(r for r in results if r.source.startswith("Eurostat"))
+    assert not eurostat.ok
+    assert "NUTS9" in eurostat.detail
+
+
+def test_malformed_csv_is_a_failing_result(definition):
+    routes = {**OK_ROUTES, "gisco": FakeResponse(200, "a,b\n1,2\n")}
+    routes["ESTAT"] = FakeResponse(200, "x,y\n1,2\n")
+    results = sources.check(definition, get=fake_get(routes))
+    provinces = next(r for r in results if r.source.startswith("ProvinceRegions"))
+    assert not provinces.ok
+    assert "NUTS_ID" in provinces.detail
+
+
+def test_a_connection_error_fails_one_source_and_the_rest_still_run(definition):
+    inner = fake_get(OK_ROUTES)
+
+    def get(url, **kwargs):
+        if "ESTAT" in url:
+            raise requests.ConnectionError("boom")
+        return inner(url, **kwargs)
+
+    results = sources.check(definition, get=get)
+    assert len(results) == 5
+    failing = [r for r in results if not r.ok]
+    assert [r.source for r in failing] == ["Eurostat demo_r_pjangrp3 (Population)"]
+    assert "boom" in failing[0].detail

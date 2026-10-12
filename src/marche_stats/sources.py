@@ -8,6 +8,7 @@ changes (a dataset that drops a year, a file that moves) shows up before the nex
 from __future__ import annotations
 
 import csv
+import html
 import io
 import re
 from collections.abc import Callable
@@ -76,6 +77,10 @@ def geo_codes(params: dict[str, str], levels: tuple[str, ...]) -> list[str]:
         "NUTS2": [params["FocusRegion"], *params["PeerRegions"].split(",")],
         "NUTS3": params["ProvinceRegions"].split(","),
     }
+    unknown = [level for level in levels if level not in by_level]
+    if unknown:
+        valid = ", ".join(by_level)
+        raise ValueError(f"unknown level {unknown[0]!r}; valid levels: {valid}")
     return [code for level in levels for code in by_level[level]]
 
 
@@ -89,20 +94,27 @@ def eurostat_url(call: EurostatCall, params: dict[str, str]) -> str:
     return f"{EUROSTAT_BASE}/{call.dataset}/1.0?{'&'.join(p for p in parts if p)}"
 
 
-def check_eurostat(call: EurostatCall, url: str, get: Callable) -> Result:
+def check_eurostat(call: EurostatCall, params: dict[str, str], get: Callable) -> Result:
     name = f"Eurostat {call.dataset} ({call.table})"
+    try:
+        url = eurostat_url(call, params)
+    except (KeyError, ValueError) as exc:
+        return Result(name, False, f"cannot build the request: {exc}", "")
     try:
         response = get(url, timeout=TIMEOUT_SECONDS)
     except requests.RequestException as exc:
         return Result(name, False, str(exc), url)
     if response.status_code != 200:
         fault = re.search(r"<faultstring>(.*?)</faultstring>", response.text, re.S)
-        message = fault.group(1) if fault else response.text[:200]
+        message = html.unescape(fault.group(1)) if fault else response.text[:200]
         return Result(name, False, f"HTTP {response.status_code}: {message}", url)
-    rows = [r for r in csv.DictReader(io.StringIO(response.text)) if r.get("OBS_VALUE")]
+    try:
+        rows = [r for r in csv.DictReader(io.StringIO(response.text)) if r.get("OBS_VALUE")]
+        latest = max((r["TIME_PERIOD"] for r in rows), default=None)
+    except (KeyError, csv.Error) as exc:
+        return Result(name, False, f"unreadable response: {exc!r}", url)
     if not rows:
         return Result(name, False, "no observations", url)
-    latest = max(r["TIME_PERIOD"] for r in rows)
     return Result(name, True, f"{len(rows):,} observations, latest {latest}", url)
 
 
@@ -117,15 +129,19 @@ def check_file(name: str, url: str, get: Callable) -> Result:
 
 def check_provinces(params: dict[str, str], gisco_csv: str) -> Result:
     """ProvinceRegions must list exactly the NUTS 3 children of FocusRegion."""
-    focus = params["FocusRegion"]
-    children = sorted(
-        r["NUTS_ID"]
-        for r in csv.DictReader(io.StringIO(gisco_csv))
-        if r["NUTS_ID"].startswith(focus) and len(r["NUTS_ID"]) == len(focus) + 1
-    )
-    configured = sorted(params["ProvinceRegions"].split(","))
+    name = "ProvinceRegions matches GISCO"
+    try:
+        focus = params["FocusRegion"]
+        children = sorted(
+            r["NUTS_ID"]
+            for r in csv.DictReader(io.StringIO(gisco_csv))
+            if r["NUTS_ID"].startswith(focus) and len(r["NUTS_ID"]) == len(focus) + 1
+        )
+        configured = sorted(params["ProvinceRegions"].split(","))
+    except (KeyError, csv.Error) as exc:
+        return Result(name, False, f"cannot compare with GISCO: {exc!r}", "")
     detail = f"GISCO: {','.join(children)}; parameter: {','.join(configured)}"
-    return Result("ProvinceRegions matches GISCO", children == configured, detail, "")
+    return Result(name, children == configured, detail, "")
 
 
 def check(definition: Path, get: Callable = requests.get) -> list[Result]:
@@ -133,7 +149,11 @@ def check(definition: Path, get: Callable = requests.get) -> list[Result]:
     params = parameters(definition)
     text = "\n".join(_tables(definition).values())
     results = []
-    for url in sorted(set(WEB_LITERAL.findall(text))):
+    urls = sorted(set(WEB_LITERAL.findall(text)))
+    if not any("gisco-services" in url for url in urls):
+        detail = "no GISCO source found in the model tables"
+        results.append(Result("ProvinceRegions matches GISCO", False, detail, ""))
+    for url in urls:
         if "gisco-services" not in url:
             results.append(check_file(url, url, get))
             continue
@@ -146,8 +166,12 @@ def check(definition: Path, get: Callable = requests.get) -> list[Result]:
         results.append(Result("GISCO NUTS codes", ok, f"HTTP {response.status_code}", url))
         if ok:
             results.append(check_provinces(params, response.text))
-    for call in eurostat_calls(definition):
-        results.append(check_eurostat(call, eurostat_url(call, params), get))
+    calls = eurostat_calls(definition)
+    if not calls:
+        detail = "no fnEurostat calls found in the model tables"
+        results.append(Result("Eurostat calls", False, detail, ""))
+    for call in calls:
+        results.append(check_eurostat(call, params, get))
     results.append(check_file("Chamber of Commerce archive", params["CompaniesSourceUrl"], get))
     for relative in sorted(set(REPO_FILE.findall(text))):
         url = params["RepoRawBase"] + relative
