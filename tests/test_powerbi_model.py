@@ -85,9 +85,13 @@ def test_measure_references_exist():
 
 
 def _field_refs(node):
+    """Yield (table, field) for every model field under node.
+
+    Report-level measures (SourceRef Schema "extension") are not in the model and are skipped.
+    """
     if isinstance(node, dict):
         source = node.get("Expression", {}).get("SourceRef", {})
-        if "Entity" in source and "Property" in node:
+        if "Entity" in source and "Property" in node and source.get("Schema") != "extension":
             yield source["Entity"], node["Property"]
         for value in node.values():
             yield from _field_refs(value)
@@ -96,11 +100,17 @@ def _field_refs(node):
             yield from _field_refs(value)
 
 
+def _visual_field_refs(visual):
+    """Fields of the visual's query and filters, not formatting selectors in objects."""
+    yield from _field_refs(visual.get("visual", {}).get("query", {}))
+    yield from _field_refs(visual.get("filterConfig", {}))
+
+
 def test_report_fields_exist_in_model():
     tables = model_tables()
     for path in REPORT.glob("pages/*/visuals/*/visual.json"):
         visual = json.loads(path.read_text(encoding="utf-8"))
-        for entity, prop in _field_refs(visual):
+        for entity, prop in _visual_field_refs(visual):
             assert entity in tables, f"{path.parent.name}: table {entity}"
             fields = tables[entity]["columns"] | tables[entity]["measures"]
             assert prop in fields, f"{path.parent.name}: {entity}[{prop}]"

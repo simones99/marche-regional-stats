@@ -1,0 +1,243 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "a1c3e5f7091b2d4f6a8c",
+  "position": {
+    "x": 24,
+    "y": 24,
+    "z": 0,
+    "height": 520,
+    "width": 1232,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Geo"
+                    }
+                  },
+                  "Property": "Name"
+                }
+              },
+              "queryRef": "Geo.Name",
+              "nativeQueryRef": "Name"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Geo"
+                    }
+                  },
+                  "Property": "Role"
+                }
+              },
+              "queryRef": "Geo.Role",
+              "nativeQueryRef": "Role"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Population"
+                }
+              },
+              "queryRef": "_Measures.Population",
+              "nativeQueryRef": "Population"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Population change 5y %"
+                }
+              },
+              "queryRef": "_Measures.Population change 5y %",
+              "nativeQueryRef": "Population change 5y %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Share aged 65+"
+                }
+              },
+              "queryRef": "_Measures.Share aged 65+",
+              "nativeQueryRef": "Share aged 65+"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Crude death rate per 1,000"
+                }
+              },
+              "queryRef": "_Measures.Crude death rate per 1,000",
+              "nativeQueryRef": "Crude death rate per 1,000"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "GDP per inhabitant (EUR)"
+                }
+              },
+              "queryRef": "_Measures.GDP per inhabitant (EUR)",
+              "nativeQueryRef": "GDP per inhabitant (EUR)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "GDP per inhabitant (PPS, EU = 100)"
+                }
+              },
+              "queryRef": "_Measures.GDP per inhabitant (PPS, EU = 100)",
+              "nativeQueryRef": "GDP per inhabitant (PPS, EU = 100)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Unemployment rate"
+                }
+              },
+              "queryRef": "_Measures.Unemployment rate",
+              "nativeQueryRef": "Unemployment rate"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Students enrolled"
+                }
+              },
+              "queryRef": "_Measures.Students enrolled",
+              "nativeQueryRef": "Students enrolled"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Tertiary students per 1,000 residents"
+                }
+              },
+              "queryRef": "_Measures.Tertiary students per 1,000 residents",
+              "nativeQueryRef": "Tertiary students per 1,000 residents"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Active companies"
+                }
+              },
+              "queryRef": "_Measures.Active companies",
+              "nativeQueryRef": "Active companies"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Companies per 1,000 residents"
+                }
+              },
+              "queryRef": "_Measures.Companies per 1,000 residents",
+              "nativeQueryRef": "Companies per 1,000 residents"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Indicators by area (latest year common to the areas)'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
