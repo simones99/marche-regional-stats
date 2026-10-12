@@ -130,6 +130,7 @@ Rules:
 - `discourageImplicitMeasures` is on, so every visual uses explicit measures.
 - Rank is shown only for indicators comparable across regions (rates, shares, per-inhabitant values). The Rank item returns BLANK for other measures, tested with `ISSELECTEDMEASURE`.
 - Every item leaves text measures alone (`IF ( ISTEXT ( SELECTEDMEASURE () ), SELECTEDMEASURE (), … )`; `ISTEXT` and not `ISNUMERIC`, so a blank value is still compared). The dynamic titles are text measures, and a calculation group would otherwise apply to them too.
+- Decided during Phase A: province rows are compared among provinces only. Provincial GDP lags the regional series by a year, so Compare to is not used on province rows (Provinces page).
 
 ### Field parameter
 

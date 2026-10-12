@@ -34,7 +34,7 @@ expression StartYear = 2009 meta [IsParameterQuery=true, Type="Number", IsParame
 	annotation PBI_ResultType = Number
 
 /// Base URL of the files that marche-stats export-powerbi writes to powerbi/data/.
-expression RepoRawBase = "https://raw.githubusercontent.com/simones99/marche-regional-stats/powerbi-pbip" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+expression RepoRawBase = "https://raw.githubusercontent.com/simones99/marche-regional-stats/main" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
 	lineageTag: 2098804d-999e-4eb1-b6aa-f6f9e8e10aec
 	queryGroup: Parameters
 

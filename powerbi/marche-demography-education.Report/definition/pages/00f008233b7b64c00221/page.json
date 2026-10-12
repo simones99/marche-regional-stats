@@ -1,8 +1,0 @@
-{
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
-  "name": "00f008233b7b64c00221",
-  "displayName": "Education Enrollment Overview",
-  "displayOption": "FitToPage",
-  "height": 720,
-  "width": 1280
-}

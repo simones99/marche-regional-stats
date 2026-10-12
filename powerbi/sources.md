@@ -1,91 +1,30 @@
-# Power Query sources
+# Data sources of the Power BI model
 
-Query URLs used in Power Query by the two reports (Eurostat SDMX 3.0 API, CSV output). They are copied from the semantic models of the `.pbip` projects (`*.SemanticModel/definition/tables/*.tmdl`).
-
-## marche-demography-education
-
-The Eurostat queries ask for an open-ended period (`c[TIME_PERIOD]=ge:<first year>`) and every NUTS 2 region. The report keeps the region set by the `Code of Interest` parameter (`ITI3`, Marche) at the NUTS level set by `NUTS Level` (2), except `fEnrollments`, whose query keeps Marche directly.
-
-**Population on 1 January by broad age group, sex and NUTS 3 region**
-
-_(Table `dPopulation`, NUTS 2 regions)_
+Every Eurostat query calls `fnEurostat(dataset, filters, levels)` (in `marche-regional-profile.SemanticModel/definition/expressions.tmdl`). The function requests:
 
 ```
-https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0/data/dataflow/ESTAT/demo_r_pjanaggr3/1.0/*.*.*.*.*?c[age]=TOTAL,Y_LT15,Y15-64,Y_GE65,UNK&c[geo]=BE10,BE21,BE22,BE23,BE24,BE25,BE31,BE32,BE33,BE34,BE35,BG31,BG32,BG33,BG34,BG41,BG42,CZ01,CZ02,CZ03,CZ04,CZ05,CZ06,CZ07,CZ08,DK01,DK02,DK03,DK04,DK05,DE11,DE12,DE13,DE14,DE21,DE22,DE23,DE24,DE25,DE26,DE27,DE30,DE40,DE50,DE60,DE71,DE72,DE73,DE80,DE91,DE92,DE93,DE94,DEA1,DEA2,DEA3,DEA4,DEA5,DEB1,DEB2,DEB3,DEC0,DED2,DED4,DED5,DEE0,DEF0,DEG0,EE00,IE04,IE05,IE06,EL30,EL41,EL42,EL43,EL51,EL52,EL53,EL54,EL61,EL62,EL63,EL64,EL65,ES11,ES12,ES13,ES21,ES22,ES23,ES24,ES30,ES41,ES42,ES43,ES51,ES52,ES53,ES61,ES62,ES63,ES64,ES70,FR10,FRB0,FRC1,FRC2,FRD1,FRD2,FRE1,FRE2,FRF1,FRF2,FRF3,FRG0,FRH0,FRI1,FRI2,FRI3,FRJ1,FRJ2,FRK1,FRK2,FRL0,FRM0,FRY1,FRY2,FRY3,FRY4,FRY5,FRXX,HR02,HR03,HR04,HR05,HR06,ITC1,ITC2,ITC3,ITC4,ITF1,ITF2,ITF3,ITF4,ITF5,ITF6,ITG1,ITG2,ITH1,ITH2,ITH3,ITH4,ITH5,ITI1,ITI2,ITI3,ITI4,CY00,LV00,LT01,LT02,LU00,HU11,HU12,HU21,HU22,HU23,HU31,HU32,HU33,HUXX,MT00,NL11,NL12,NL13,NL21,NL22,NL23,NL31,NL32,NL33,NL34,NL35,NL36,NL41,NL42,AT11,AT12,AT13,AT21,AT22,AT31,AT32,AT33,AT34,PL21,PL22,PL41,PL42,PL43,PL51,PL52,PL61,PL62,PL63,PL71,PL72,PL81,PL82,PL84,PL91,PL92,PT11,PT15,PT16,PT17,PT18,PT19,PT1A,PT1B,PT1C,PT1D,PT20,PT30,RO11,RO12,RO21,RO22,RO31,RO32,RO41,RO42,SI03,SI04,SK01,SK02,SK03,SK04,FI19,FI1B,FI1C,FI1D,FI20,SE11,SE12,SE21,SE22,SE23,SE31,SE32,SE33,IS00,LI00,NO01,NO02,NO03,NO04,NO05,NO06,NO07,NO08,NO09,NO0A,NO0B,CH01,CH02,CH03,CH04,CH05,CH06,CH07,UKC1,UKC2,UKD1,UKD3,UKD4,UKD6,UKD7,UKE1,UKE2,UKE3,UKE4,UKF1,UKF2,UKF3,UKG1,UKG2,UKG3,UKH1,UKH2,UKH3,UKI3,UKI4,UKI5,UKI6,UKI7,UKJ1,UKJ2,UKJ3,UKJ4,UKK1,UKK2,UKK3,UKK4,UKL1,UKL2,UKM5,UKM6,UKM7,UKM8,UKM9,UKN0,ME00,MK00,MKXX,AL01,AL02,AL03,ALXX,RS11,RS12,RS21,RS22,TR10,TR21,TR22,TR31,TR32,TR33,TR41,TR42,TR51,TR52,TR61,TR62,TR63,TR71,TR72,TR81,TR82,TR83,TR90,TRA1,TRA2,TRB1,TRB2,TRC1,TRC2,TRC3&c[sex]=T,M,F&c[freq]=A&c[unit]=NR&c[TIME_PERIOD]=ge:1990&compress=false&format=csvdata&formatVersion=1.0&lang=en&labels=both
+https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0/data/dataflow/ESTAT/<dataset>/1.0
+  ?c[geo]=<codes for the levels>&<filters>&c[TIME_PERIOD]=ge:<StartYear>
+  &format=csvdata&formatVersion=1.0&labels=id&compress=false
 ```
 
-**Deaths by age group, sex and NUTS 3 region**
+The levels map to codes through the parameters: `EU` → `EU27_2020`, `Country` → `IT`, `NUTS2` → `FocusRegion` and `PeerRegions`, `NUTS3` → `ProvinceRegions`. The period is open-ended. A fixed list of years fails with HTTP 400 as soon as Eurostat drops one of them.
 
-_(Table `dMortality`, NUTS 2 regions)_
+| Table | Dataset | Filters | Levels |
+|---|---|---|---|
+| Population | `demo_r_pjangrp3` | `unit=NR`, `sex=T,M,F`, `age=TOTAL,Y_LT5,Y5-9,Y10-14,…,Y80-84,Y85-89,Y_GE90,UNK` | EU, Country, NUTS2, NUTS3 |
+| Deaths | `demo_r_magec3` | as Population | EU, Country, NUTS2, NUTS3 |
+| GDP | `nama_10r_2gdp` | `unit=EUR_HAB,PPS_HAB_EU27_2020` | EU, Country, NUTS2 |
+| GDP | `nama_10r_3gdp` | `unit=EUR_HAB,PPS_HAB_EU27_2020` | NUTS3 |
+| Unemployment | `lfst_r_lfu3rt` | `isced11=TOTAL`, `sex=T`, `age=Y15-74`, `unit=PC` | EU, Country, NUTS2 |
+| Enrolment | `educ_uoe_enra11` | `unit=NR`, `sex=T,M,F`, `isced11=ED02-8,ED0,ED1,…,ED8` | EU, Country, NUTS2 |
 
-```
-https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0/data/dataflow/ESTAT/demo_r_magec3/1.0/*.*.*.*.*?c[freq]=A&c[sex]=T,M,F&c[unit]=NR&c[age]=TOTAL,Y_LT5,Y5-9,Y10-14,Y15-19,Y20-24,Y25-29,Y30-34,Y35-39,Y40-44,Y45-49,Y50-54,Y55-59,Y60-64,Y65-69,Y70-74,Y75-79,Y80-84,Y85-89,Y_GE90,UNK&c[geo]=BE10,BE21,BE22,BE23,BE24,BE25,BE31,BE32,BE33,BE34,BE35,BG31,BG32,BG33,BG34,BG41,BG42,CZ01,CZ02,CZ03,CZ04,CZ05,CZ06,CZ07,CZ08,DK01,DK02,DK03,DK04,DK05,DE11,DE12,DE13,DE14,DE21,DE22,DE23,DE24,DE25,DE26,DE27,DE30,DE40,DE50,DE60,DE71,DE72,DE73,DE80,DE91,DE92,DE93,DE94,DEA1,DEA2,DEA3,DEA4,DEA5,DEB1,DEB2,DEB3,DEC0,DED2,DED4,DED5,DEE0,DEF0,DEG0,EE00,IE04,IE05,IE06,EL30,EL41,EL42,EL43,EL51,EL52,EL53,EL54,EL61,EL62,EL63,EL64,EL65,ES11,ES12,ES13,ES21,ES22,ES23,ES24,ES30,ES41,ES42,ES43,ES51,ES52,ES53,ES61,ES62,ES63,ES64,ES70,FR10,FRB0,FRC1,FRC2,FRD1,FRD2,FRE1,FRE2,FRF1,FRF2,FRF3,FRG0,FRH0,FRI1,FRI2,FRI3,FRJ1,FRJ2,FRK1,FRK2,FRL0,FRM0,FRY1,FRY2,FRY3,FRY4,FRY5,FRXX,HR02,HR03,HR04,HR05,HR06,ITC1,ITC2,ITC3,ITC4,ITF1,ITF2,ITF3,ITF4,ITF5,ITF6,ITG1,ITG2,ITH1,ITH2,ITH3,ITH4,ITH5,ITI1,ITI2,ITI3,ITI4,CY00,LV00,LT01,LT02,LU00,HU11,HU12,HU21,HU22,HU23,HU31,HU32,HU33,HUXX,MT00,NL11,NL12,NL13,NL21,NL22,NL23,NL31,NL32,NL33,NL34,NL35,NL36,NL41,NL42,AT11,AT12,AT13,AT21,AT22,AT31,AT32,AT33,AT34,PL21,PL22,PL41,PL42,PL43,PL51,PL52,PL61,PL62,PL63,PL71,PL72,PL81,PL82,PL84,PL91,PL92,PT11,PT15,PT16,PT17,PT18,PT19,PT1A,PT1B,PT1C,PT1D,PT20,PT30,RO11,RO12,RO21,RO22,RO31,RO32,RO41,RO42,SI03,SI04,SK01,SK02,SK03,SK04,FI19,FI1B,FI1C,FI1D,FI20,SE11,SE12,SE21,SE22,SE23,SE31,SE32,SE33,IS00,LI00,NO01,NO02,NO03,NO04,NO05,NO06,NO07,NO08,NO09,NO0A,NO0B,CH01,CH02,CH03,CH04,CH05,CH06,CH07,UKC1,UKC2,UKD1,UKD3,UKD4,UKD6,UKD7,UKE1,UKE2,UKE3,UKE4,UKF1,UKF2,UKF3,UKG1,UKG2,UKG3,UKH1,UKH2,UKH3,UKI3,UKI4,UKI5,UKI6,UKI7,UKJ1,UKJ2,UKJ3,UKJ4,UKK1,UKK2,UKK3,UKK4,UKL1,UKL2,UKM5,UKM6,UKM7,UKM8,UKM9,UKN0,ME00,MK00,MKXX,AL01,AL02,AL03,ALXX,RS11,RS12,RS21,RS22,TR10,TR21,TR22,TR31,TR32,TR33,TR41,TR42,TR51,TR52,TR61,TR62,TR63,TR71,TR72,TR81,TR82,TR83,TR90,TRA1,TRA2,TRB1,TRB2,TRC1,TRC2,TRC3&c[TIME_PERIOD]=ge:2013&compress=false&format=csvdata&formatVersion=1.0&lang=en&labels=both
-```
+Population and Deaths keep the age bands of a (geo, sex, year) only when they add up to the TOTAL row (Eurostat lacks some EU27_2020 bands, e.g. 85+ in 2014–2020). `ED02-8` is the enrolment total: `ED0-8` is missing after 2023.
 
-**Pupils and students enrolled by education level, sex and NUTS 2 region**
+Other sources:
 
-_(Table `fEnrollments`, used by the Education Enrollment Overview and ISCED 0-3 pages)_
-
-```
-https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0/data/dataflow/ESTAT/educ_uoe_enra11/1.0/*.*.*.*.*?c[freq]=A&c[unit]=NR&c[isced11]=ED0-8,ED0,ED1,ED2,ED3,ED4,ED5,ED6,ED7,ED8&c[sex]=T,M,F&c[geo]=BE10,BE21,BE22,BE23,BE24,BE25,BE31,BE32,BE33,BE34,BE35,BEZZ,BG31,BG32,BG33,BG34,BG41,BG42,BGZZ,CZ01,CZ02,CZ03,CZ04,CZ05,CZ06,CZ07,CZ08,CZZZ,DK01,DK02,DK03,DK04,DK05,DKZZ,EE00,IE04,IE05,IE06,IEZZ,EL30,EL41,EL42,EL43,EL51,EL52,EL53,EL54,EL61,EL62,EL63,EL64,EL65,ELZZ,ES11,ES12,ES13,ES21,ES22,ES23,ES24,ES30,ES41,ES42,ES43,ES51,ES52,ES53,ES61,ES62,ES63,ES64,ES70,ESZZ,FR10,FRB0,FRC1,FRC2,FRD1,FRD2,FRE1,FRE2,FRF1,FRF2,FRF3,FRG0,FRH0,FRI1,FRI2,FRI3,FRJ1,FRJ2,FRK1,FRK2,FRL0,FRM0,FRY1,FRY2,FRY3,FRY4,FRY5,FRZZ,HR02,HR03,HR04,HR05,HR06,HRZZ,ITC1,ITC2,ITC3,ITC4,ITF1,ITF2,ITF3,ITF4,ITF5,ITF6,ITG1,ITG2,ITH1,ITH2,ITH3,ITH4,ITH5,ITI1,ITI2,ITI3,ITI4,ITZZ,CY00,LV00,LT01,LT02,LTZZ,LU00,HU11,HU12,HU21,HU22,HU23,HU31,HU32,HU33,HUZZ,MT00,NL11,NL12,NL13,NL21,NL22,NL23,NL31,NL32,NL33,NL34,NL35,NL36,NL41,NL42,NLZZ,AT11,AT12,AT13,AT21,AT22,AT31,AT32,AT33,AT34,ATZZ,PL21,PL22,PL41,PL42,PL43,PL51,PL52,PL61,PL62,PL63,PL71,PL72,PL81,PL82,PL84,PL91,PL92,PLZZ,PT11,PT15,PT16,PT17,PT18,PT19,PT1A,PT1B,PT1C,PT1D,PT20,PT30,PTZZ,RO11,RO12,RO21,RO22,RO31,RO32,RO41,RO42,ROZZ,SI03,SI01,SI04,SI02,SIZZ,SK01,SK02,SK03,SK04,SKZZ,FI19,FI1B,FI1C,FI1D,FI20,FIZZ,SE11,SE12,SE21,SE22,SE23,SE31,SE32,SE33,SEZZ,IS00,LI00,NO01,NO02,NO03,NO04,NO05,NO06,NO07,NO08,NO09,NO0A,NO0B,NOZZ,CH01,CH02,CH03,CH04,CH05,CH06,CH07,CHZZ,ME00,MK00,RS11,RS12,RS21,RS22,RSZZ,TR10,TR21,TR22,TR31,TR32,TR33,TR41,TR42,TR51,TR52,TR61,TR62,TR63,TR71,TR72,TR81,TR82,TR83,TR90,TRA1,TRA2,TRB1,TRB2,TRC1,TRC2,TRC3,TRZZ&c[TIME_PERIOD]=ge:2013&compress=false&format=csvdata&formatVersion=1.0&lang=en&labels=label_only
-```
-
-**NUTS 2024 codes and names (GISCO)**
-
-_(Hidden table `NUTS Classification`, which feeds `Entities of Interest`. © EuroGeographics, distributed by GISCO)_
-
-```
-https://gisco-services.ec.europa.eu/distribution/v2/nuts/csv/NUTS_AT_2024.csv
-```
-
-## marche-regionali-2025
-
-Every query asks for an open-ended period (`c[TIME_PERIOD]=ge:<first year>`), so a refresh picks up the years Eurostat publishes later. A fixed list of years would not: Eurostat answers `400 Bad Request` as soon as the list holds a year the dataset no longer has.
-
-**Population on 1 January by age group, sex and NUTS 2 region**
-
-_(Table `dPopulation`, selected regions and aggregates)_
-
-```
-https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0/data/dataflow/ESTAT/demo_r_pjangroup/1.0/*.*.*.*.*?c[freq]=A&c[unit]=NR&c[sex]=T,M,F&c[age]=TOTAL,Y_LT5,Y5-9,Y10-14,Y15-19,Y20-24,Y25-29,Y30-34,Y35-39,Y40-44,Y45-49,Y50-54,Y55-59,Y60-64,Y65-69,Y70-74,Y75-79,Y_GE75,Y80-84,Y_GE80,Y_GE85,UNK&c[geo]=EU27_2020,IT,ITF1,ITH5,ITI1,ITI2,ITI3,ITI4&c[TIME_PERIOD]=ge:2001&compress=false&format=csvdata&formatVersion=1.0&lang=en&labels=both&returnData=ALL
-```
-
-**Deaths by age, sex and NUTS 2 region**
-
-_(Table `dDeaths`, selected regions and aggregates)_
-
-```
-https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0/data/dataflow/ESTAT/demo_r_magec/1.0/*.*.*.*.*?c[freq]=A&c[unit]=NR&c[sex]=T,M,F&c[age]=TOTAL,Y_LT1,Y1,Y2,Y3,Y4,Y5,Y6,Y7,Y8,Y9,Y10,Y11,Y12,Y13,Y14,Y15,Y16,Y17,Y18,Y19,Y20,Y21,Y22,Y23,Y24,Y25,Y26,Y27,Y28,Y29,Y30,Y31,Y32,Y33,Y34,Y35,Y36,Y37,Y38,Y39,Y40,Y41,Y42,Y43,Y44,Y45,Y46,Y47,Y48,Y49,Y50,Y51,Y52,Y53,Y54,Y55,Y56,Y57,Y58,Y59,Y60,Y61,Y62,Y63,Y64,Y65,Y66,Y67,Y68,Y69,Y70,Y71,Y72,Y73,Y74,Y75,Y76,Y77,Y78,Y79,Y80,Y81,Y82,Y83,Y84,Y85,Y86,Y87,Y88,Y89,Y90,Y91,Y92,Y93,Y94,Y95,Y96,Y97,Y98,Y99,Y_OPEN,UNK&c[geo]=EU27_2020,IT,ITF1,ITH5,ITI1,ITI2,ITI3,ITI4&c[TIME_PERIOD]=ge:2001&compress=false&format=csvdata&formatVersion=1.0&lang=en&labels=both&returnData=ALL
-```
-
-**Gross domestic product (GDP) at current market prices by NUTS 2 region**
-
-_(Table `dGDP`, Eurostat default view: million euro, from 2015)_
-
-```
-https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0/data/dataflow/ESTAT/nama_10r_2gdp$defaultview/1.0?compress=false&format=csvdata&formatVersion=1.0&lang=en&labels=label_only&returnData=ALL
-```
-
-**Unemployment rate by NUTS 2 region**
-
-_(Table `dUnemployment Rate`, neighbouring regions)_
-
-```
-https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0/data/dataflow/ESTAT/tgs00010/1.0/*.*.*.*.*.*?c[freq]=A&c[isced11]=TOTAL,NRP,UNK&c[sex]=T,M,F&c[age]=Y15-74&c[unit]=PC&c[geo]=ITF1,ITH5,ITI1,ITI2,ITI3,ITI4&c[TIME_PERIOD]=ge:2013&compress=false&format=csvdata&formatVersion=1.0&lang=en&labels=label_only&returnData=ALL
-```
-
-**Unemployment rate - annual data**
-
-_(Appended to `dUnemployment Rate`: Italy and EU27)_
-
-```
-https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0/data/dataflow/ESTAT/tipsun20/1.0/*.*.*.*.*?c[freq]=A&c[sex]=T&c[age]=Y15-74&c[unit]=PC_ACT&c[geo]=EU27_2020,IT&c[TIME_PERIOD]=ge:2003&compress=false&format=csvdata&formatVersion=1.0&lang=en&labels=label_only&returnData=ALL
-```
-
-**Pupils and students enrolled by education level, sex and NUTS 2 region**
-
-_(Table `fEnrollments`, Marche only; used by the Education Enrollment Overview and ISCED 0-3 pages)_
-
-```
-https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0/data/dataflow/ESTAT/educ_uoe_enra11/1.0/*.*.*.*.*?c[freq]=A&c[unit]=NR&c[isced11]=ED0-8,ED0,ED1,ED2,ED3,ED4,ED5,ED6,ED7,ED8&c[sex]=T,M,F&c[geo]=ITI3&c[TIME_PERIOD]=ge:2013&compress=false&format=csvdata&formatVersion=1.0&lang=en&labels=label_only
-```
+| Table | Source |
+|---|---|
+| Geo | GISCO, NUTS 2024 attributes: `https://gisco-services.ec.europa.eu/distribution/v2/nuts/csv/NUTS_AT_2024.csv` (© EuroGeographics) |
+| Companies | Camera di Commercio delle Marche, active companies by municipality and ATECO 2007 section, monthly, 2009–2025 (CC BY 4.0): parameter `CompaniesSourceUrl` |
+| Forecast, ForecastAccuracy, Reconciliation | `powerbi/data/*.csv` in this repository, read from `RepoRawBase` (GitHub raw URL) |
