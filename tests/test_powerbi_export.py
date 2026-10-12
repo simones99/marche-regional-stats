@@ -1,3 +1,4 @@
+import pandas as pd
 import pytest
 from conftest import synthetic_wide
 
@@ -32,6 +33,11 @@ def test_forecast_table_has_one_row_per_month(fitted):
     assert table["forecast"].notna().sum() == 6
     assert table.loc[table["forecast"].notna(), "actual"].isna().all()
 
+    actual_rows = table[table["actual"].notna()]
+    assert list(table.index[table["holdout_sarima"].notna()]) == list(actual_rows.index[-12:])
+    first_forecast = table.loc[table["forecast"].notna(), "date"].min()
+    assert first_forecast == series.index[-1] + pd.offsets.MonthEnd(1)
+
 
 def test_accuracy_table_lists_the_three_methods(fitted):
     _, _, evaluation, _ = fitted
@@ -58,6 +64,13 @@ def test_reconciliation_matches_series_and_section_sums(fitted):
 
     region = table[table["geo"] == "ITI3"]
     assert list(region["active_companies"]) == [series.iloc[0], series.iloc[-1]]
+    # Independent check of the first month: section rows of all municipalities that stay
+    # in the region (everything but the transferred-out one).
+    first_month = series.index[0].strftime("%d/%m/%Y")
+    stays = wide[
+        (wide["Settore Ateco 2007"] != "TOTAL") & (wide["Territorio"] != "PU-42 Pennabilli")
+    ]
+    assert region.iloc[0]["active_companies"] == stays[first_month].sum()
 
     provinces = table[table["geo"] != "ITI3"]
     assert set(provinces["geo"]) == {"ITI31", "ITI32", "ITI33", "ITI34", "ITI35"}

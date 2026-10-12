@@ -81,6 +81,8 @@ def build(companies_csv: Path, out_dir: Path, holdout: int = 24) -> dict[str, Pa
     paths = {}
     for name, frame in tables.items():
         path = out_dir / name
-        frame.to_csv(path, index=False, date_format="%Y-%m-%d", float_format="%.4f")
+        frame.to_csv(
+            path, index=False, date_format="%Y-%m-%d", float_format="%.4f", lineterminator="\n"
+        )
         paths[name] = path
     return paths
