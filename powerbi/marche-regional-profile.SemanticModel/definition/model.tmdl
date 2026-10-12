@@ -35,3 +35,5 @@ ref table Companies
 ref table Forecast
 ref table ForecastAccuracy
 ref table Reconciliation
+ref table 'Compare to'
+ref table 'Province indicator'
