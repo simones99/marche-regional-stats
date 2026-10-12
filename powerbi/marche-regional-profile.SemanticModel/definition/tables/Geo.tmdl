@@ -1,31 +1,37 @@
 /// Areas of the report: EU, country, focus region, peer regions and provinces, keyed on NUTS codes.
 table Geo
+	lineageTag: cd915abf-c1a8-450c-ab20-ed6760b4b524
 
 	column Code
 		dataType: string
 		isKey
+		lineageTag: 44a096fd-577d-4476-9144-1e176256d6fa
 		summarizeBy: none
 		sourceColumn: Code
 
 	column Name
 		dataType: string
+		lineageTag: 662f4ff3-e46b-494d-a9e7-20194f065ea8
 		summarizeBy: none
 		sourceColumn: Name
 		sortByColumn: SortOrder
 
 	column Level
 		dataType: string
+		lineageTag: 19fcca34-d477-48c0-982d-2f7b84366274
 		summarizeBy: none
 		sourceColumn: Level
 
 	column ParentCode
 		dataType: string
 		isHidden
+		lineageTag: 6c8a9158-a464-4bc1-8453-41a743d26cf1
 		summarizeBy: none
 		sourceColumn: ParentCode
 
 	column Role
 		dataType: string
+		lineageTag: d6943e56-e208-4828-ba98-e43a96827d93
 		summarizeBy: none
 		sourceColumn: Role
 
@@ -33,6 +39,7 @@ table Geo
 		dataType: int64
 		isHidden
 		formatString: 0
+		lineageTag: 1a0eeb20-b00f-4b9f-9be2-c410a249f196
 		summarizeBy: none
 		sourceColumn: SortOrder
 
@@ -77,3 +84,6 @@ table Geo
 				    Result
 
 	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigazione
+

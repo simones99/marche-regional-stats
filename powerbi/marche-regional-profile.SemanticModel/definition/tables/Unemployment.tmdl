@@ -1,9 +1,11 @@
 /// Unemployment rate, age 15-74, all education levels (Eurostat lfst_r_lfu3rt), as a fraction.
 table Unemployment
+	lineageTag: 8c4f49f5-c6b6-4581-a262-13e6fa1d99ae
 
 	column GeoCode
 		dataType: string
 		isHidden
+		lineageTag: 33db2fbd-e720-48da-9e64-29c54d36d176
 		summarizeBy: none
 		sourceColumn: GeoCode
 
@@ -11,20 +13,24 @@ table Unemployment
 		dataType: dateTime
 		isHidden
 		formatString: yyyy-mm-dd
+		lineageTag: 98290ef7-878d-4062-8334-83283e78d752
 		summarizeBy: none
 		sourceColumn: Date
+
 		annotation UnderlyingDateTimeDataType = Date
 
 	column Rate
 		dataType: double
 		isHidden
 		formatString: 0.0%
+		lineageTag: 6794e177-4c74-491e-a650-6411906b2a4b
 		summarizeBy: none
 		sourceColumn: Rate
 
 	column Flag
 		dataType: string
 		isHidden
+		lineageTag: 4b3f4df3-a664-4fb0-8da9-8b8d04ef1203
 		summarizeBy: none
 		sourceColumn: Flag
 
@@ -50,3 +56,4 @@ table Unemployment
 				    Typed
 
 	annotation PBI_ResultType = Table
+

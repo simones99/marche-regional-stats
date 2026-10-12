@@ -1,7 +1,9 @@
 /// Indicator shown on the Provinces map (field parameter).
 table 'Province indicator'
+	lineageTag: d76a2a72-e0e9-4f8d-85fe-0df48f88cd03
 
 	column 'Province indicator'
+		lineageTag: e282ba10-062e-445e-b37d-542c4bc6c964
 		summarizeBy: none
 		sourceColumn: [Value1]
 		sortByColumn: 'Province indicator Order'
@@ -11,6 +13,7 @@ table 'Province indicator'
 
 	column 'Province indicator Fields'
 		isHidden
+		lineageTag: 64916e13-5ecb-4021-8e96-c0d17a0e21a9
 		summarizeBy: none
 		sourceColumn: [Value2]
 		sortByColumn: 'Province indicator Order'
@@ -24,6 +27,7 @@ table 'Province indicator'
 	column 'Province indicator Order'
 		isHidden
 		formatString: 0
+		lineageTag: 239e563e-56f2-42c5-9235-57b456dbb07a
 		summarizeBy: sum
 		sourceColumn: [Value3]
 
@@ -37,3 +41,4 @@ table 'Province indicator'
 				    ("Companies per 1,000 residents", NAMEOF ( '_Measures'[Companies per 1,000 residents] ), 3),
 				    ("GDP per inhabitant (EUR)", NAMEOF ( '_Measures'[GDP per inhabitant (EUR)] ), 4)
 				}
+

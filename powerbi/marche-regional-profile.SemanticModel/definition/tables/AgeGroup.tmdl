@@ -1,14 +1,17 @@
 /// Eurostat five-year age groups (Y_LT5 to Y_GE90), the total and unknown age.
 table AgeGroup
+	lineageTag: 20ada348-c7d6-4935-a61a-8383356f1a5a
 
 	column Code
 		dataType: string
 		isKey
+		lineageTag: b641e88a-a829-4b80-b26f-d6d69ebd4671
 		summarizeBy: none
 		sourceColumn: Code
 
 	column Name
 		dataType: string
+		lineageTag: b4744ad5-171a-4f62-9339-688331d053b1
 		summarizeBy: none
 		sourceColumn: Name
 		sortByColumn: SortOrder
@@ -17,17 +20,20 @@ table AgeGroup
 		dataType: int64
 		isHidden
 		formatString: 0
+		lineageTag: 0f833e80-6bef-4b5f-88d9-58f5d6fb8bf1
 		summarizeBy: none
 		sourceColumn: SortOrder
 
 	column BroadGroup
 		dataType: string
+		lineageTag: 2af4c153-6f78-44a3-892c-515e90730462
 		summarizeBy: none
 		sourceColumn: BroadGroup
 
 	column Is80Plus
 		dataType: boolean
 		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 68d1099f-edc4-42d1-8002-549ddba328c6
 		summarizeBy: none
 		sourceColumn: Is80Plus
 
@@ -35,6 +41,7 @@ table AgeGroup
 		dataType: boolean
 		isHidden
 		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 5875a173-6cd9-4a18-8eb5-25dca0f47bf7
 		summarizeBy: none
 		sourceColumn: IsBand
 
@@ -58,3 +65,4 @@ table AgeGroup
 				    #table(type table [Code = text, Name = text, SortOrder = Int64.Type, BroadGroup = text, Is80Plus = logical, IsBand = logical], Rows)
 
 	annotation PBI_ResultType = Table
+

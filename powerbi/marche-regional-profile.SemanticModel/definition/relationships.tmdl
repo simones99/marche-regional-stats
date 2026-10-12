@@ -77,3 +77,4 @@ relationship Companies_Sector
 relationship Forecast_Calendar
 	fromColumn: Forecast.Date
 	toColumn: Calendar.Date
+

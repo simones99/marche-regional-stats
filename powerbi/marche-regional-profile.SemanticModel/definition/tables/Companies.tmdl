@@ -4,16 +4,19 @@
 /// months identical to the previous one in every row dropped as not updated: the stale
 /// month (February 2025) is dropped; the SARIMA series in Forecast stops before it.
 table Companies
+	lineageTag: d13a833c-8211-42d9-80df-8ad7d4b8c428
 
 	column GeoCode
 		dataType: string
 		isHidden
+		lineageTag: 0fe2d4a7-b8cb-4ccb-9c4c-9d0814364f74
 		summarizeBy: none
 		sourceColumn: GeoCode
 
 	column SectorCode
 		dataType: string
 		isHidden
+		lineageTag: 31e349db-af46-4f1c-acde-06da81b4b387
 		summarizeBy: none
 		sourceColumn: SectorCode
 
@@ -21,14 +24,17 @@ table Companies
 		dataType: dateTime
 		isHidden
 		formatString: yyyy-mm-dd
+		lineageTag: b65d46dd-2a23-4d8f-82a1-45c666ef2c0d
 		summarizeBy: none
 		sourceColumn: Date
+
 		annotation UnderlyingDateTimeDataType = Date
 
 	column Companies
 		dataType: int64
 		isHidden
 		formatString: #,0
+		lineageTag: 0869e164-0ac9-44d1-a00d-c9325e7154c1
 		summarizeBy: sum
 		sourceColumn: Companies
 
@@ -86,3 +92,4 @@ table Companies
 				    InRange
 
 	annotation PBI_ResultType = Table
+

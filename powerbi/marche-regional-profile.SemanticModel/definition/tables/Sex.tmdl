@@ -1,14 +1,17 @@
 /// Eurostat sex codes.
 table Sex
+	lineageTag: a6c5ad41-3742-46cc-ac1f-48c03b6eb92e
 
 	column Code
 		dataType: string
 		isKey
+		lineageTag: c0ce912b-8485-454c-81a9-a603275faec0
 		summarizeBy: none
 		sourceColumn: Code
 
 	column Name
 		dataType: string
+		lineageTag: 3279811e-8abc-4c91-ba24-396755cb222d
 		summarizeBy: none
 		sourceColumn: Name
 		sortByColumn: SortOrder
@@ -17,6 +20,7 @@ table Sex
 		dataType: int64
 		isHidden
 		formatString: 0
+		lineageTag: fb96ef6f-e57c-469e-8735-8ec48d965fb9
 		summarizeBy: none
 		sourceColumn: SortOrder
 
@@ -29,3 +33,4 @@ table Sex
 				)
 
 	annotation PBI_ResultType = Table
+

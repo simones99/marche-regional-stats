@@ -3,48 +3,46 @@
 /// Every item evaluates the measure under the Value item, so the result does not depend on
 /// how the engine applies items to measures referenced inside the selected measure.
 table 'Compare to'
+	lineageTag: a3edc2d8-aa26-4849-a47c-9dcad1e7abaf
+
 	calculationGroup
 		precedence: 10
 
 		calculationItem Value = SELECTEDMEASURE ()
-			ordinal: 0
 
 		calculationItem Country =
 				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
 				RETURN IF ( ISTEXT ( v ), v, CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Role] = "Country", 'Compare to'[Comparison] = "Value" ) )
-			ordinal: 1
 
 		calculationItem 'vs Country' =
 				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
 				VAR c = CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Role] = "Country", 'Compare to'[Comparison] = "Value" )
 				RETURN IF ( ISTEXT ( v ), v, IF ( NOT ISBLANK ( v ) && NOT ISBLANK ( c ), v - c ) )
-			ordinal: 2
+
 			formatStringDefinition = SELECTEDMEASUREFORMATSTRING ()
 
 		calculationItem EU =
 				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
 				RETURN IF ( ISTEXT ( v ), v, CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Role] = "EU", 'Compare to'[Comparison] = "Value" ) )
-			ordinal: 3
 
 		calculationItem 'vs EU' =
 				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
 				VAR e = CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Role] = "EU", 'Compare to'[Comparison] = "Value" )
 				RETURN IF ( ISTEXT ( v ), v, IF ( NOT ISBLANK ( v ) && NOT ISBLANK ( e ), v - e ) )
-			ordinal: 4
+
 			formatStringDefinition = SELECTEDMEASUREFORMATSTRING ()
 
 		calculationItem 'Peers avg' =
 				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
 				VAR Peers = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Peer" )
 				RETURN IF ( ISTEXT ( v ), v, AVERAGEX ( Peers, VAR c = Geo[Code] RETURN CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Code] = c, 'Compare to'[Comparison] = "Value" ) ) )
-			ordinal: 5
 
 		calculationItem 'vs Peers avg' =
 				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
 				VAR Peers = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Peer" )
 				VAR p = AVERAGEX ( Peers, VAR c = Geo[Code] RETURN CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Code] = c, 'Compare to'[Comparison] = "Value" ) )
 				RETURN IF ( ISTEXT ( v ), v, IF ( NOT ISBLANK ( v ) && NOT ISBLANK ( p ), v - p ) )
-			ordinal: 6
+
 			formatStringDefinition = SELECTEDMEASUREFORMATSTRING ()
 
 		calculationItem 'Rank among peers' =
@@ -61,11 +59,12 @@ table 'Compare to'
 				        Comparable && SELECTEDVALUE ( Geo[Role] ) IN { "Focus", "Peer" } && NOT ISBLANK ( v ),
 				        RANKX ( Areas, VAR c = Geo[Code] RETURN CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Code] = c, 'Compare to'[Comparison] = "Value" ), v, DESC, DENSE )
 				    )
-			ordinal: 7
+
 			formatStringDefinition = "0"
 
 	column Comparison
 		dataType: string
+		lineageTag: 74aa4160-7449-4326-aae2-4c219a699588
 		summarizeBy: none
 		sourceColumn: Name
 		sortByColumn: Ordinal
@@ -74,5 +73,7 @@ table 'Compare to'
 		dataType: int64
 		isHidden
 		formatString: 0
+		lineageTag: 897cceea-b014-4fdc-b314-712491e169ad
 		summarizeBy: sum
 		sourceColumn: Ordinal
+

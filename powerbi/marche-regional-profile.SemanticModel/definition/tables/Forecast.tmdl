@@ -1,19 +1,23 @@
 /// Regional active companies: series the SARIMA model is fitted on, holdout forecasts and
 /// the 12-month forecast with its 95 % interval (powerbi/data/forecast.csv).
 table Forecast
+	lineageTag: 9a3dd500-b31f-4841-a023-ae628901555b
 
 	column Date
 		dataType: dateTime
 		isHidden
 		formatString: yyyy-mm-dd
+		lineageTag: fae29d60-4df2-43c8-962f-faae47dab302
 		summarizeBy: none
 		sourceColumn: Date
+
 		annotation UnderlyingDateTimeDataType = Date
 
 	column Actual
 		dataType: double
 		isHidden
 		formatString: #,0
+		lineageTag: ccbcf37f-9174-44df-bca3-15585ba9be1a
 		summarizeBy: sum
 		sourceColumn: Actual
 
@@ -21,6 +25,7 @@ table Forecast
 		dataType: double
 		isHidden
 		formatString: #,0
+		lineageTag: ec2c8b7b-ab6f-433d-9168-88b5d349b626
 		summarizeBy: sum
 		sourceColumn: HoldoutSarima
 
@@ -28,6 +33,7 @@ table Forecast
 		dataType: double
 		isHidden
 		formatString: #,0
+		lineageTag: 0789a1f7-032a-4a24-a622-87ed1b719406
 		summarizeBy: sum
 		sourceColumn: HoldoutNaive
 
@@ -35,6 +41,7 @@ table Forecast
 		dataType: double
 		isHidden
 		formatString: #,0
+		lineageTag: 95ea7d72-5f57-46c2-a434-44ee3f2230ee
 		summarizeBy: sum
 		sourceColumn: HoldoutSeasonalNaive
 
@@ -42,6 +49,7 @@ table Forecast
 		dataType: double
 		isHidden
 		formatString: #,0
+		lineageTag: e9177318-c605-46db-ad36-24beb4821867
 		summarizeBy: sum
 		sourceColumn: Forecast
 
@@ -49,6 +57,7 @@ table Forecast
 		dataType: double
 		isHidden
 		formatString: #,0
+		lineageTag: 80055bc8-c5af-4787-a890-da13bda2a93b
 		summarizeBy: sum
 		sourceColumn: Lower95
 
@@ -56,6 +65,7 @@ table Forecast
 		dataType: double
 		isHidden
 		formatString: #,0
+		lineageTag: 9ba75325-d628-4dc1-a75d-46eebab53dc1
 		summarizeBy: sum
 		sourceColumn: Upper95
 
@@ -80,3 +90,4 @@ table Forecast
 				    InRange
 
 	annotation PBI_ResultType = Table
+

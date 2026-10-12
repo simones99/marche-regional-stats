@@ -1,14 +1,17 @@
 /// ISCED 2011 education levels used by educ_uoe_enra11. ED02-8 is the total (ED0-8 is missing after 2023).
 table ISCED
+	lineageTag: 287991ba-cdf8-401d-8f6b-206db81482e3
 
 	column Code
 		dataType: string
 		isKey
+		lineageTag: 2e2b3313-749d-40da-bf3a-eabd2debc10f
 		summarizeBy: none
 		sourceColumn: Code
 
 	column Name
 		dataType: string
+		lineageTag: 9d8c97b9-7c75-4f51-b311-fa0813c23d6c
 		summarizeBy: none
 		sourceColumn: Name
 		sortByColumn: SortOrder
@@ -17,11 +20,13 @@ table ISCED
 		dataType: int64
 		isHidden
 		formatString: 0
+		lineageTag: 8f2d501a-c994-4e3a-9b6d-b898f9729f66
 		summarizeBy: none
 		sourceColumn: SortOrder
 
 	column Group
 		dataType: string
+		lineageTag: c16300ce-104d-43a4-b9ad-e14e6d425d0e
 		summarizeBy: none
 		sourceColumn: Group
 
@@ -29,6 +34,7 @@ table ISCED
 		dataType: boolean
 		isHidden
 		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: f6a47eb3-392b-44f5-a7f8-02eab53b4baa
 		summarizeBy: none
 		sourceColumn: IsTotal
 
@@ -52,3 +58,4 @@ table ISCED
 				)
 
 	annotation PBI_ResultType = Table
+

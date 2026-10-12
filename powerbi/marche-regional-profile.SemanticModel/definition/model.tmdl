@@ -19,6 +19,8 @@ annotation __PBI_TimeIntelligenceEnabled = 0
 
 annotation PBI_ProTooling = ["DevMode"]
 
+annotation PBI_QueryOrder = ["Geo","Calendar","Sex","AgeGroup","ISCED","Sector","_Measures","Population","Deaths","GDP","Unemployment","Enrolment","Companies","Forecast","ForecastAccuracy","Reconciliation","FocusRegion","PeerRegions","ProvinceRegions","Country","StartYear","RepoRawBase","CompaniesSourceUrl","fnEurostat"]
+
 ref table Geo
 ref table Calendar
 ref table Sex
@@ -37,3 +39,4 @@ ref table ForecastAccuracy
 ref table Reconciliation
 ref table 'Compare to'
 ref table 'Province indicator'
+

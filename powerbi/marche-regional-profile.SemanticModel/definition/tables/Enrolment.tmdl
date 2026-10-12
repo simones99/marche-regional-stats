@@ -1,21 +1,25 @@
 /// Pupils and students enrolled by ISCED level and sex (Eurostat educ_uoe_enra11).
 table Enrolment
+	lineageTag: 74d9ef3b-5164-4340-89df-c7453c7a8eea
 
 	column GeoCode
 		dataType: string
 		isHidden
+		lineageTag: b6bca162-6007-4621-afe8-dc657adc41dd
 		summarizeBy: none
 		sourceColumn: GeoCode
 
 	column SexCode
 		dataType: string
 		isHidden
+		lineageTag: 77179de1-3bcc-4a73-bd22-cc14fe622b2e
 		summarizeBy: none
 		sourceColumn: SexCode
 
 	column IscedCode
 		dataType: string
 		isHidden
+		lineageTag: 5a03d8b4-da5f-4bfc-b214-09f399c7f72f
 		summarizeBy: none
 		sourceColumn: IscedCode
 
@@ -23,20 +27,24 @@ table Enrolment
 		dataType: dateTime
 		isHidden
 		formatString: yyyy-mm-dd
+		lineageTag: d01469ee-e5d8-4dab-9e38-621763ffa219
 		summarizeBy: none
 		sourceColumn: Date
+
 		annotation UnderlyingDateTimeDataType = Date
 
 	column Students
 		dataType: int64
 		isHidden
 		formatString: #,0
+		lineageTag: 6c37f9d3-2877-4bf2-91f8-f2a32b55a3bb
 		summarizeBy: sum
 		sourceColumn: Students
 
 	column Flag
 		dataType: string
 		isHidden
+		lineageTag: b5cba258-369a-4d73-b2f5-932e20f4043d
 		summarizeBy: none
 		sourceColumn: Flag
 
@@ -65,3 +73,4 @@ table Enrolment
 				    Typed
 
 	annotation PBI_ResultType = Table
+

@@ -1,46 +1,56 @@
 /// Out-of-sample errors of SARIMA and the naive baselines (powerbi/data/forecast_accuracy.csv).
 table ForecastAccuracy
+	lineageTag: 6939f92d-3553-43a2-b771-4c24fe1edf9f
 
 	column Method
 		dataType: string
+		lineageTag: e5545ff5-c01a-46eb-9bf4-1315e1fff613
 		summarizeBy: none
 		sourceColumn: Method
 
 	column MAE
 		dataType: double
 		formatString: #,0
+		lineageTag: e08dac7a-2666-4ece-9e97-d78c64b58e0d
 		summarizeBy: none
 		sourceColumn: MAE
 
 	column MAPE
 		dataType: double
 		formatString: 0.00
+		lineageTag: f7651f82-78c6-4673-88fe-fd84ce66043f
 		summarizeBy: none
 		sourceColumn: MAPE
 
 	column Specification
 		dataType: string
+		lineageTag: ff9baf20-9022-4be8-8195-e479f2c24117
 		summarizeBy: none
 		sourceColumn: Specification
 
 	column IntervalCoverage
 		dataType: double
 		formatString: 0
+		lineageTag: 40ed00de-ea09-4309-a04c-f0b2363da4cd
 		summarizeBy: none
 		sourceColumn: IntervalCoverage
 
 	column HoldoutStart
 		dataType: dateTime
 		formatString: yyyy-mm-dd
+		lineageTag: de4c2b13-bdc5-4ff6-81fc-e4e32482a17f
 		summarizeBy: none
 		sourceColumn: HoldoutStart
+
 		annotation UnderlyingDateTimeDataType = Date
 
 	column HoldoutEnd
 		dataType: dateTime
 		formatString: yyyy-mm-dd
+		lineageTag: 4fb2f2cb-b839-4ade-9636-50447fd2fc32
 		summarizeBy: none
 		sourceColumn: HoldoutEnd
+
 		annotation UnderlyingDateTimeDataType = Date
 
 	partition ForecastAccuracy = m
@@ -61,4 +71,7 @@ table ForecastAccuracy
 				in
 				    Typed
 
-	annotation PBI_ResultType = Table
+	annotation PBI_ResultType = Exception
+
+	annotation PBI_NavigationStepName = Navigazione
+

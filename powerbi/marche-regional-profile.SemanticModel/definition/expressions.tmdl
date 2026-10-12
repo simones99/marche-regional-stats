@@ -1,41 +1,50 @@
 /// NUTS 2 region profiled by the report (ITI3 = Marche).
 expression FocusRegion = "ITI3" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: b0ea17a7-d4ea-4d12-8023-8c1b2e73a011
 	queryGroup: Parameters
 
 	annotation PBI_ResultType = Text
 
 /// NUTS 2 regions compared with the focus region: Toscana, Umbria, Emilia-Romagna, Lazio, Abruzzo.
 expression PeerRegions = "ITI1,ITI2,ITH5,ITI4,ITF1" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: aea6e035-a5bd-4c82-9368-666b3ad2b1b7
 	queryGroup: Parameters
 
 	annotation PBI_ResultType = Text
 
 /// NUTS 3 provinces of the focus region. marche-stats check-sources verifies them against GISCO.
 expression ProvinceRegions = "ITI31,ITI32,ITI33,ITI34,ITI35" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 0c6ce53c-3783-4181-a647-7f8f6ced004a
 	queryGroup: Parameters
 
 	annotation PBI_ResultType = Text
 
 /// Country used as national benchmark.
 expression Country = "IT" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 51f856d6-c40b-464e-8dfc-b06a1831ad59
 	queryGroup: Parameters
 
 	annotation PBI_ResultType = Text
 
 /// First year requested from Eurostat and first year of the Calendar table.
 expression StartYear = 2009 meta [IsParameterQuery=true, Type="Number", IsParameterQueryRequired=true]
+	lineageTag: aa6195d5-8313-4d99-99fc-ff98dde9ae04
 	queryGroup: Parameters
 
 	annotation PBI_ResultType = Number
 
 /// Base URL of the files that marche-stats export-powerbi writes to powerbi/data/.
-expression RepoRawBase = "https://raw.githubusercontent.com/simones99/marche-regional-stats/main" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+expression RepoRawBase = "https://raw.githubusercontent.com/simones99/marche-regional-stats/powerbi-pbip" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 2098804d-999e-4eb1-b6aa-f6f9e8e10aec
 	queryGroup: Parameters
 
 	annotation PBI_ResultType = Text
 
+	annotation PBI_NavigationStepName = Navigazione
+
 /// Chamber of Commerce archive of active companies (ATECO 2007, closed series).
 expression CompaniesSourceUrl = "https://opendata.marche.camcom.it/data/Stock-Imprese-Attive-Marche-2009-2025.csv" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 06ecc16a-a387-4c6d-9f86-3676fef61ddc
 	queryGroup: Parameters
 
 	annotation PBI_ResultType = Text
@@ -101,6 +110,8 @@ expression fnEurostat =
 		        else Promoted
 		in
 		    Rows
+	lineageTag: db83fae1-fc45-4513-995e-9591449a4832
 	queryGroup: Functions
 
 	annotation PBI_ResultType = Function
+

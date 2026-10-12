@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Compare to.Comparison",
-              "nativeQueryRef": "Comparison"
+              "nativeQueryRef": "Comparison",
+              "active": true
             }
           ]
         },

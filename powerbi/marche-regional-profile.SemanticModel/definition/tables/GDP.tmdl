@@ -2,16 +2,19 @@
 /// (purchasing power standard, EU = 100). nama_10r_2gdp for EU, country and regions,
 /// nama_10r_3gdp for provinces.
 table GDP
+	lineageTag: 1d973632-f73b-4bb4-aee7-04d542b6aca4
 
 	column GeoCode
 		dataType: string
 		isHidden
+		lineageTag: 20594f85-5e31-46f2-ba8a-c5d0091dfb14
 		summarizeBy: none
 		sourceColumn: GeoCode
 
 	column UnitCode
 		dataType: string
 		isHidden
+		lineageTag: 02b3a8f4-d577-47ce-963a-7885e4dfd350
 		summarizeBy: none
 		sourceColumn: UnitCode
 
@@ -19,20 +22,24 @@ table GDP
 		dataType: dateTime
 		isHidden
 		formatString: yyyy-mm-dd
+		lineageTag: 7aa0e734-f3ca-476a-808a-2d054e9a7bc9
 		summarizeBy: none
 		sourceColumn: Date
+
 		annotation UnderlyingDateTimeDataType = Date
 
 	column Value
 		dataType: double
 		isHidden
 		formatString: #,0.0
+		lineageTag: 4f9d2b88-c24e-4b6e-ad20-9e513d116c7d
 		summarizeBy: none
 		sourceColumn: Value
 
 	column Flag
 		dataType: string
 		isHidden
+		lineageTag: f626ed55-f565-4d3e-9fff-5caad7be4d9b
 		summarizeBy: none
 		sourceColumn: Flag
 
@@ -61,3 +68,4 @@ table GDP
 				    Typed
 
 	annotation PBI_ResultType = Table
+

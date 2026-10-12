@@ -1,14 +1,17 @@
 /// ATECO 2007 sections (NACE Rev. 2) in the Chamber of Commerce file. X = not classified.
 table Sector
+	lineageTag: c44ea3a5-b8e1-48f6-9d6f-c5bb39b70fba
 
 	column Code
 		dataType: string
 		isKey
+		lineageTag: 22e7c839-3a9d-4f08-bc9a-cf813a29d9db
 		summarizeBy: none
 		sourceColumn: Code
 
 	column Name
 		dataType: string
+		lineageTag: d21cecd7-fa09-456e-8d02-5e548b2fbc61
 		summarizeBy: none
 		sourceColumn: Name
 		sortByColumn: Code
@@ -44,3 +47,4 @@ table Sector
 				)
 
 	annotation PBI_ResultType = Table
+
