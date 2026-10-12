@@ -11,3 +11,6 @@ data/
 # Power BI project files that are local to each machine
 **/.pbi/localSettings.json
 **/.pbi/cache.abf
+
+# Files exported by marche-stats for the Power BI report are committed.
+!powerbi/data/

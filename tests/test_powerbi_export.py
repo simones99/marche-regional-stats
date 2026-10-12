@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 from conftest import synthetic_wide
 
-from marche_stats import companies, powerbi_export, timeseries
+from marche_stats import cli, companies, powerbi_export, timeseries
 
 
 @pytest.fixture(scope="module")
@@ -86,3 +86,39 @@ def test_reconciliation_matches_series_and_section_sums(fitted):
     ]
     assert first["geo"] == "ITI31"
     assert first["active_companies"] == pesaro[month].sum()
+
+
+def test_cli_export_powerbi_writes_three_files(companies_csv, tmp_path):
+    code = cli.main(
+        [
+            "export-powerbi",
+            "--companies",
+            str(companies_csv),
+            "--powerbi",
+            str(tmp_path),
+            "--holdout",
+            "12",
+        ]
+    )
+    assert code == 0
+    names = sorted(p.name for p in (tmp_path / "data").iterdir())
+    assert names == ["forecast.csv", "forecast_accuracy.csv", "reconciliation.csv"]
+    forecast = pd.read_csv(tmp_path / "data" / "forecast.csv")
+    assert forecast["date"].iloc[0] == "2009-03-31"
+
+    def raw(name):
+        return pd.read_csv(tmp_path / "data" / name, dtype=str, keep_default_na=False)
+
+    forecast_raw = raw("forecast.csv")
+    accuracy_raw = raw("forecast_accuracy.csv")
+    reconciliation_raw = raw("reconciliation.csv")
+    iso_date = r"^\d{4}-\d{2}-\d{2}$"
+    assert forecast_raw["date"].str.match(iso_date).all()
+    assert accuracy_raw["holdout_start"].str.match(iso_date).all()
+    assert accuracy_raw["holdout_end"].str.match(iso_date).all()
+    assert reconciliation_raw["date"].str.match(iso_date).all()
+    coverage = accuracy_raw["interval_coverage_pct"]
+    sarima = accuracy_raw["method"] == "SARIMA"
+    assert (coverage[~sarima] == "").all()
+    assert (coverage[sarima] != "").all()
+    assert reconciliation_raw["active_companies"].str.match(r"^\d+$").all()
