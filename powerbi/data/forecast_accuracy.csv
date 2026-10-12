@@ -1,0 +1,4 @@
+method,mae,mape_pct,specification,interval_coverage_pct,holdout_start,holdout_end
+SARIMA,1503.6773,1.1327,"SARIMA(2, 1, 2)(0, 1, 1)[12]",100.0000,2023-02-28,2025-01-31
+Naive (last value),4377.6250,3.3066,,,2023-02-28,2025-01-31
+Seasonal naive,7684.7917,5.7570,,,2023-02-28,2025-01-31
