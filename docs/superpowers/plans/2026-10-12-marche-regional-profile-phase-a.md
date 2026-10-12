@@ -50,9 +50,9 @@ Planning verified five facts that change details of the spec. Update it before b
 **Files:**
 - Modify: `docs/superpowers/specs/2026-10-12-marche-regional-profile-report-design.md`
 
-- [ ] **Step 1: Business series dates.** In the Pages table, row 6, replace `Active companies, January 2009 to March 2025, on constant boundaries` with `Active companies, March 2009 to March 2025, on constant boundaries (February 2025 is dropped: identical to January in every cell, so not updated)`. In the Facts table, row `Companies`, keep the text and add at the end: `Sections A–T plus X (not classified).`
+- [x] **Step 1: Business series dates.** In the Pages table, row 6, replace `Active companies, January 2009 to March 2025, on constant boundaries` with `Active companies, March 2009 to March 2025, on constant boundaries (February 2025 is dropped: identical to January in every cell, so not updated)`. In the Facts table, row `Companies`, keep the text and add at the end: `Sections A–T plus X (not classified).`
 
-- [ ] **Step 2: Provinces parameter.** In the Power Query parameters table, insert this row after `PeerRegions`:
+- [x] **Step 2: Provinces parameter.** In the Power Query parameters table, insert this row after `PeerRegions`:
 
 ```markdown
 | `ProvinceRegions` | `ITI31,ITI32,ITI33,ITI34,ITI35` | NUTS 3 provinces of the focus region. Eurostat filters accept only exact codes (no "starts with"), and a query that read the codes from the GISCO-based `Geo` table would trip the Power Query privacy firewall. `check-sources` verifies that the parameter matches the GISCO children of `FocusRegion` |
@@ -60,13 +60,13 @@ Planning verified five facts that change details of the spec. Update it before b
 
 In the Dimensions table, row `Geo`, replace `filtered by the parameters, plus static rows` with `filtered to the codes in FocusRegion, PeerRegions and ProvinceRegions (the refresh fails if one is missing from GISCO), plus static rows`.
 
-- [ ] **Step 3: `fnEurostat` geo codes.** In the Data flow section, replace `- takes geo codes from \`Geo\`, never typed by hand;` with `- takes geo codes from the parameters, by level: EU (\`EU27_2020\`), Country, NUTS2 (focus and peers), NUTS3 (provinces);`.
+- [x] **Step 3: `fnEurostat` geo codes.** In the Data flow section, replace `- takes geo codes from \`Geo\`, never typed by hand;` with `- takes geo codes from the parameters, by level: EU (\`EU27_2020\`), Country, NUTS2 (focus and peers), NUTS3 (provinces);`.
 
-- [ ] **Step 4: Reconciliation checkpoints.** In the Data flow section, replace `The reconciliation checkpoints are: the regional total in January 2009 and March 2025, and each province in March 2025.` with `The reconciliation checkpoints are: the regional total in the first month (March 2009) and in the last month the model is fitted on (January 2025), and each province in the first and last full-year December (2009, 2024), which the "change" and "per 1,000 residents" indicators use.`
+- [x] **Step 4: Reconciliation checkpoints.** In the Data flow section, replace `The reconciliation checkpoints are: the regional total in January 2009 and March 2025, and each province in March 2025.` with `The reconciliation checkpoints are: the regional total in the first month (March 2009) and in the last month the model is fitted on (January 2025), and each province in the first and last full-year December (2009, 2024), which the "change" and "per 1,000 residents" indicators use.`
 
-- [ ] **Step 5: Text guard.** In the calculation group rules, replace `(\`IF ( ISNUMERIC ( SELECTEDMEASURE () ), …, SELECTEDMEASURE () )\`)` with `(\`IF ( ISTEXT ( SELECTEDMEASURE () ), SELECTEDMEASURE (), … )\`; \`ISTEXT\` and not \`ISNUMERIC\`, so a blank value is still compared)`.
+- [x] **Step 5: Text guard.** In the calculation group rules, replace `(\`IF ( ISNUMERIC ( SELECTEDMEASURE () ), …, SELECTEDMEASURE () )\`)` with `(\`IF ( ISTEXT ( SELECTEDMEASURE () ), SELECTEDMEASURE (), … )\`; \`ISTEXT\` and not \`ISNUMERIC\`, so a blank value is still compared)`.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add docs/superpowers/specs/2026-10-12-marche-regional-profile-report-design.md
@@ -84,7 +84,7 @@ git commit -m "Record verified source details in the report spec"
 - Modify: `src/marche_stats/report.py:26-33`
 - Test: `tests/test_companies.py`
 
-- [ ] **Step 1: Write the failing test** (append to `tests/test_companies.py`)
+- [x] **Step 1: Write the failing test** (append to `tests/test_companies.py`)
 
 ```python
 def test_modelling_series_stops_before_first_stale_month(wide):
@@ -94,12 +94,12 @@ def test_modelling_series_stops_before_first_stale_month(wide):
     assert series.index.freqstr == "ME"
 ```
 
-- [ ] **Step 2: Run it to verify it fails**
+- [x] **Step 2: Run it to verify it fails**
 
 Run: `pytest tests/test_companies.py::test_modelling_series_stops_before_first_stale_month -v`
 Expected: FAIL with `AttributeError: module 'marche_stats.companies' has no attribute 'modelling_series'`
 
-- [ ] **Step 3: Implement** (append to `src/marche_stats/companies.py`)
+- [x] **Step 3: Implement** (append to `src/marche_stats/companies.py`)
 
 ```python
 def modelling_series(wide: pd.DataFrame) -> pd.Series:
@@ -115,7 +115,7 @@ def modelling_series(wide: pd.DataFrame) -> pd.Series:
     return series
 ```
 
-- [ ] **Step 4: Use it in `report.build()`.** In `src/marche_stats/report.py`, replace
+- [x] **Step 4: Use it in `report.build()`.** In `src/marche_stats/report.py`, replace
 
 ```python
     long = companies.to_long(wide)
@@ -133,12 +133,12 @@ with
     series = companies.modelling_series(wide)
 ```
 
-- [ ] **Step 5: Run the tests**
+- [x] **Step 5: Run the tests**
 
 Run: `pytest tests/test_companies.py tests/test_analysis.py -v`
 Expected: all PASS (the end-to-end report test proves the refactor kept behaviour).
 
-- [ ] **Step 6: Lint and commit**
+- [x] **Step 6: Lint and commit**
 
 ```bash
 ruff check src tests && ruff format --check src tests
@@ -154,7 +154,7 @@ git commit -m "Move the stale-month cut of the regional series into companies.mo
 - Create: `src/marche_stats/powerbi_export.py`
 - Test: `tests/test_powerbi_export.py`
 
-- [ ] **Step 1: Write the failing tests** (`tests/test_powerbi_export.py`)
+- [x] **Step 1: Write the failing tests** (`tests/test_powerbi_export.py`)
 
 ```python
 import pytest
@@ -234,12 +234,12 @@ def test_reconciliation_matches_series_and_section_sums(fitted):
     assert first["active_companies"] == pesaro[month].sum()
 ```
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `pytest tests/test_powerbi_export.py -v`
 Expected: FAIL with `ImportError: cannot import name 'powerbi_export'`
 
-- [ ] **Step 3: Implement** (`src/marche_stats/powerbi_export.py`)
+- [x] **Step 3: Implement** (`src/marche_stats/powerbi_export.py`)
 
 ```python
 """Tables for the Power BI report: SARIMA forecast, its accuracy and reconciliation totals.
@@ -330,12 +330,12 @@ def build(companies_csv: Path, out_dir: Path, holdout: int = 24) -> dict[str, Pa
     return paths
 ```
 
-- [ ] **Step 4: Run the tests**
+- [x] **Step 4: Run the tests**
 
 Run: `pytest tests/test_powerbi_export.py -v`
 Expected: 3 PASS (the SARIMA grid search makes the module fixture take a few tens of seconds).
 
-- [ ] **Step 5: Lint and commit**
+- [x] **Step 5: Lint and commit**
 
 ```bash
 ruff check src tests && ruff format --check src tests
@@ -352,7 +352,7 @@ git commit -m "Add the Power BI export tables: forecast, accuracy, reconciliatio
 - Modify: `.gitignore`
 - Test: `tests/test_powerbi_export.py`
 
-- [ ] **Step 1: Write the failing test** (append to `tests/test_powerbi_export.py`)
+- [x] **Step 1: Write the failing test** (append to `tests/test_powerbi_export.py`)
 
 ```python
 import pandas as pd
@@ -381,12 +381,12 @@ def test_cli_export_powerbi_writes_three_files(companies_csv, tmp_path):
 
 Move the two new imports to the top of the file with the others, so ruff's import sorting passes.
 
-- [ ] **Step 2: Run it to verify it fails**
+- [x] **Step 2: Run it to verify it fails**
 
 Run: `pytest tests/test_powerbi_export.py::test_cli_export_powerbi_writes_three_files -v`
 Expected: FAIL, argparse exits with `invalid choice: 'export-powerbi'`.
 
-- [ ] **Step 3: Implement.** Replace `src/marche_stats/cli.py` with:
+- [x] **Step 3: Implement.** Replace `src/marche_stats/cli.py` with:
 
 ```python
 """Command line entry point."""
@@ -454,7 +454,7 @@ from pathlib import Path
 MODEL_DEFINITION = Path("marche-regional-profile.SemanticModel") / "definition"
 ```
 
-- [ ] **Step 4: Keep `powerbi/data/` tracked.** The `.gitignore` line `data/` matches every folder called `data`. Append to `.gitignore`:
+- [x] **Step 4: Keep `powerbi/data/` tracked.** The `.gitignore` line `data/` matches every folder called `data`. Append to `.gitignore`:
 
 ```gitignore
 
@@ -464,12 +464,12 @@ MODEL_DEFINITION = Path("marche-regional-profile.SemanticModel") / "definition"
 
 Check: `git check-ignore -v powerbi/data/forecast.csv` prints nothing (exit code 1).
 
-- [ ] **Step 5: Run the tests**
+- [x] **Step 5: Run the tests**
 
 Run: `pytest tests/test_powerbi_export.py -v`
 Expected: 4 PASS.
 
-- [ ] **Step 6: Lint and commit**
+- [x] **Step 6: Lint and commit**
 
 ```bash
 ruff check src tests && ruff format --check src tests
@@ -485,7 +485,7 @@ git commit -m "Add the export-powerbi CLI step and track powerbi/data"
 - Modify: `src/marche_stats/sources.py` (replace the stub from Task 3)
 - Test: `tests/test_sources.py`
 
-- [ ] **Step 1: Write the failing tests** (`tests/test_sources.py`)
+- [x] **Step 1: Write the failing tests** (`tests/test_sources.py`)
 
 ```python
 from pathlib import Path
@@ -638,12 +638,12 @@ def test_report_prints_one_line_per_result():
     assert text.splitlines() == ["OK    A: fine", "FAIL  B: HTTP 404", "      https://b"]
 ```
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `pytest tests/test_sources.py -v`
 Expected: FAIL with `AttributeError: module 'marche_stats.sources' has no attribute 'parameters'`
 
-- [ ] **Step 3: Implement.** Replace `src/marche_stats/sources.py` with:
+- [x] **Step 3: Implement.** Replace `src/marche_stats/sources.py` with:
 
 ```python
 """Check the data sources of the Power BI semantic model.
@@ -810,12 +810,12 @@ def report(results: list[Result]) -> str:
     return "\n".join(lines)
 ```
 
-- [ ] **Step 4: Run the tests**
+- [x] **Step 4: Run the tests**
 
 Run: `pytest tests/test_sources.py -v`
 Expected: 7 PASS.
 
-- [ ] **Step 5: Lint and commit**
+- [x] **Step 5: Lint and commit**
 
 ```bash
 ruff check src tests && ruff format --check src tests
@@ -833,7 +833,7 @@ The CLI branch already exists (Task 3). This task tests it and schedules it.
 - Test: `tests/test_sources.py`
 - Create: `.github/workflows/check-sources.yml`
 
-- [ ] **Step 1: Write the test** (append to `tests/test_sources.py`, and add `from marche_stats import cli` to the imports at the top)
+- [x] **Step 1: Write the test** (append to `tests/test_sources.py`, and add `from marche_stats import cli` to the imports at the top)
 
 ```python
 def test_cli_check_sources_fails_when_a_source_fails(monkeypatch, tmp_path, capsys):
@@ -844,12 +844,12 @@ def test_cli_check_sources_fails_when_a_source_fails(monkeypatch, tmp_path, caps
     assert "FAIL  X: HTTP 404" in capsys.readouterr().out
 ```
 
-- [ ] **Step 2: Run it**
+- [x] **Step 2: Run it**
 
 Run: `pytest tests/test_sources.py -v`
 Expected: 8 PASS (the CLI code from Task 3 already handles the step).
 
-- [ ] **Step 3: Create `.github/workflows/check-sources.yml`**
+- [x] **Step 3: Create `.github/workflows/check-sources.yml`**
 
 ```yaml
 name: check-sources
@@ -876,7 +876,7 @@ jobs:
         run: marche-stats check-sources
 ```
 
-- [ ] **Step 4: Lint and commit**
+- [x] **Step 4: Lint and commit**
 
 ```bash
 ruff check src tests && ruff format --check src tests
@@ -894,7 +894,7 @@ git commit -m "Run check-sources weekly in GitHub Actions"
 - Create: `powerbi/marche-regional-profile.Report/` (copied, pages replaced)
 - Test: `tests/test_powerbi_model.py`
 
-- [ ] **Step 1: Write the static tests** (`tests/test_powerbi_model.py`)
+- [x] **Step 1: Write the static tests** (`tests/test_powerbi_model.py`)
 
 ```python
 """Static checks of the Power BI project: names and references that Desktop would reject.
@@ -996,12 +996,12 @@ def test_report_fields_exist_in_model():
             assert prop in fields, f"{path.parent.name}: {entity}[{prop}]"
 ```
 
-- [ ] **Step 2: Run them to verify they fail**
+- [x] **Step 2: Run them to verify they fail**
 
 Run: `pytest tests/test_powerbi_model.py -v`
 Expected: FAIL with `FileNotFoundError` on `model.tmdl`.
 
-- [ ] **Step 3: Create the project files.**
+- [x] **Step 3: Create the project files.**
 
 `powerbi/marche-regional-profile.pbip`:
 
@@ -1083,7 +1083,7 @@ annotation PBI_ProTooling = ["DevMode"]
 
 Create the empty folder `powerbi/marche-regional-profile.SemanticModel/definition/tables/` (it fills in Task 7).
 
-- [ ] **Step 4: Copy the report and drop its pages.** The old report folder brings the base theme, the built-in theme and the Italy shape map, which Phase B may reuse.
+- [x] **Step 4: Copy the report and drop its pages.** The old report folder brings the base theme, the built-in theme and the Italy shape map, which Phase B may reuse.
 
 ```bash
 cp -r powerbi/marche-regionali-2025.Report powerbi/marche-regional-profile.Report
@@ -1125,12 +1125,12 @@ Replace `powerbi/marche-regional-profile.Report/.platform` with:
 
 The page list is written in Task 14.
 
-- [ ] **Step 5: Run the tests**
+- [x] **Step 5: Run the tests**
 
 Run: `pytest tests/test_powerbi_model.py -v`
 Expected: `test_model_references_every_table_file` and `test_tmdl_lines_are_tab_indented` PASS, the relationship and measure tests SKIP, `test_report_fields_exist_in_model` PASS (no visuals yet).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add powerbi/marche-regional-profile.pbip powerbi/marche-regional-profile.SemanticModel powerbi/marche-regional-profile.Report tests/test_powerbi_model.py
@@ -1147,7 +1147,7 @@ git commit -m "Start the marche-regional-profile Power BI project with static mo
 - Modify: `.../definition/model.tmdl` (append `ref table` lines)
 - Test: `tests/test_sources.py` (real-model parameters)
 
-- [ ] **Step 1: Write the failing test** (append to `tests/test_sources.py`)
+- [x] **Step 1: Write the failing test** (append to `tests/test_sources.py`)
 
 ```python
 REAL_MODEL = Path(__file__).resolve().parents[1] / "powerbi" / sources.MODEL_DEFINITION
@@ -1172,7 +1172,7 @@ def test_real_model_parameters_are_complete():
 Run: `pytest tests/test_sources.py::test_real_model_parameters_are_complete -v`
 Expected: FAIL with `FileNotFoundError` on `expressions.tmdl`.
 
-- [ ] **Step 2: Create `expressions.tmdl`**
+- [x] **Step 2: Create `expressions.tmdl`**
 
 ```tmdl
 /// NUTS 2 region profiled by the report (ITI3 = Marche).
@@ -1276,7 +1276,7 @@ expression fnEurostat =
 	annotation PBI_ResultType = Function
 ```
 
-- [ ] **Step 3: Create `tables/Geo.tmdl`**
+- [x] **Step 3: Create `tables/Geo.tmdl`**
 
 ```tmdl
 /// Areas of the report: EU, country, focus region, peer regions and provinces, keyed on NUTS codes.
@@ -1359,7 +1359,7 @@ table Geo
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 4: Create `tables/Calendar.tmdl`**
+- [x] **Step 4: Create `tables/Calendar.tmdl`**
 
 ```tmdl
 /// Daily calendar from 1 January of StartYear to the end of the current year. Annual
@@ -1430,19 +1430,19 @@ table Calendar
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 5: Reference the tables.** Append to `model.tmdl`:
+- [x] **Step 5: Reference the tables.** Append to `model.tmdl`:
 
 ```tmdl
 ref table Geo
 ref table Calendar
 ```
 
-- [ ] **Step 6: Run the tests**
+- [x] **Step 6: Run the tests**
 
 Run: `pytest tests/test_sources.py tests/test_powerbi_model.py -v`
 Expected: PASS (relationship and measure tests still SKIP).
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add powerbi/marche-regional-profile.SemanticModel tests/test_sources.py
@@ -1457,7 +1457,7 @@ git commit -m "Add parameters, fnEurostat, Geo and Calendar to the semantic mode
 - Create: `.../definition/tables/Sex.tmdl`, `AgeGroup.tmdl`, `ISCED.tmdl`, `Sector.tmdl`, `_Measures.tmdl`
 - Modify: `.../definition/model.tmdl`
 
-- [ ] **Step 1: Create `tables/Sex.tmdl`**
+- [x] **Step 1: Create `tables/Sex.tmdl`**
 
 ```tmdl
 /// Eurostat sex codes.
@@ -1493,7 +1493,7 @@ table Sex
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 2: Create `tables/AgeGroup.tmdl`**
+- [x] **Step 2: Create `tables/AgeGroup.tmdl`**
 
 ```tmdl
 /// Eurostat five-year age groups (Y_LT5 to Y_GE90), the total and unknown age.
@@ -1551,7 +1551,7 @@ table AgeGroup
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 3: Create `tables/ISCED.tmdl`**
+- [x] **Step 3: Create `tables/ISCED.tmdl`**
 
 ```tmdl
 /// ISCED 2011 education levels used by educ_uoe_enra11. ED0-8 is the total.
@@ -1610,7 +1610,7 @@ table ISCED
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 4: Create `tables/Sector.tmdl`**
+- [x] **Step 4: Create `tables/Sector.tmdl`**
 
 ```tmdl
 /// ATECO 2007 sections (NACE Rev. 2) in the Chamber of Commerce file. X = not classified.
@@ -1660,7 +1660,7 @@ table Sector
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 5: Create `tables/_Measures.tmdl`** (measures are added in Task 12)
+- [x] **Step 5: Create `tables/_Measures.tmdl`** (measures are added in Task 12)
 
 ```tmdl
 /// All measures of the report, in display folders by page.
@@ -1680,7 +1680,7 @@ table _Measures
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 6: Reference the tables.** Append to `model.tmdl`:
+- [x] **Step 6: Reference the tables.** Append to `model.tmdl`:
 
 ```tmdl
 ref table Sex
@@ -1690,12 +1690,12 @@ ref table Sector
 ref table _Measures
 ```
 
-- [ ] **Step 7: Run the tests**
+- [x] **Step 7: Run the tests**
 
 Run: `pytest tests/test_powerbi_model.py -v`
 Expected: PASS; `test_measure_references_exist` now runs and passes (no references yet).
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add powerbi/marche-regional-profile.SemanticModel
@@ -1711,7 +1711,7 @@ git commit -m "Add the static dimensions and the measure table"
 - Modify: `.../definition/model.tmdl`
 - Test: `tests/test_sources.py`
 
-- [ ] **Step 1: Write the failing test** (append to `tests/test_sources.py`)
+- [x] **Step 1: Write the failing test** (append to `tests/test_sources.py`)
 
 ```python
 def test_real_model_eurostat_calls():
@@ -1729,7 +1729,7 @@ def test_real_model_eurostat_calls():
 Run: `pytest tests/test_sources.py::test_real_model_eurostat_calls -v`
 Expected: FAIL (the dictionary is empty).
 
-- [ ] **Step 2: Create `tables/Population.tmdl`**
+- [x] **Step 2: Create `tables/Population.tmdl`**
 
 ```tmdl
 /// Population on 1 January by sex and five-year age group (Eurostat demo_r_pjangrp3).
@@ -1799,7 +1799,7 @@ table Population
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 3: Create `tables/Deaths.tmdl`**
+- [x] **Step 3: Create `tables/Deaths.tmdl`**
 
 ```tmdl
 /// Deaths in the year by sex and five-year age group (Eurostat demo_r_magec3).
@@ -1869,7 +1869,7 @@ table Deaths
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 4: Create `tables/GDP.tmdl`**
+- [x] **Step 4: Create `tables/GDP.tmdl`**
 
 ```tmdl
 /// GDP per inhabitant as published by Eurostat: EUR_HAB (euro) and PPS_HAB_EU27_2020
@@ -1935,7 +1935,7 @@ table GDP
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 5: Create `tables/Unemployment.tmdl`**
+- [x] **Step 5: Create `tables/Unemployment.tmdl`**
 
 ```tmdl
 /// Unemployment rate, age 15-74, all education levels (Eurostat lfst_r_lfu3rt), as a fraction.
@@ -1990,7 +1990,7 @@ table Unemployment
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 6: Create `tables/Enrolment.tmdl`**
+- [x] **Step 6: Create `tables/Enrolment.tmdl`**
 
 ```tmdl
 /// Pupils and students enrolled by ISCED level and sex (Eurostat educ_uoe_enra11).
@@ -2060,7 +2060,7 @@ table Enrolment
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 7: Reference the tables.** Append to `model.tmdl`:
+- [x] **Step 7: Reference the tables.** Append to `model.tmdl`:
 
 ```tmdl
 ref table Population
@@ -2070,7 +2070,7 @@ ref table Unemployment
 ref table Enrolment
 ```
 
-- [ ] **Step 8: Run the tests, then the live check of these queries**
+- [x] **Step 8: Run the tests, then the live check of these queries**
 
 Run: `pytest tests/test_sources.py tests/test_powerbi_model.py -v`
 Expected: PASS.
@@ -2078,7 +2078,7 @@ Expected: PASS.
 Run: `marche-stats check-sources`
 Expected: `OK` for "GISCO NUTS codes", "ProvinceRegions matches GISCO" and the six Eurostat lines, each with a latest period (2023 to 2025). "Chamber of Commerce archive" is `OK`. No repository files are listed yet.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add powerbi/marche-regional-profile.SemanticModel tests/test_sources.py
@@ -2093,7 +2093,7 @@ git commit -m "Add the Eurostat fact tables through fnEurostat"
 - Create: `.../definition/tables/Companies.tmdl`, `Forecast.tmdl`, `ForecastAccuracy.tmdl`, `Reconciliation.tmdl`
 - Modify: `.../definition/model.tmdl`
 
-- [ ] **Step 1: Create `tables/Companies.tmdl`**
+- [x] **Step 1: Create `tables/Companies.tmdl`**
 
 ```tmdl
 /// Active companies by province, ATECO 2007 section and month-end, on constant boundaries.
@@ -2178,7 +2178,7 @@ table Companies
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 2: Create `tables/Forecast.tmdl`**
+- [x] **Step 2: Create `tables/Forecast.tmdl`**
 
 ```tmdl
 /// Regional active companies: series the SARIMA model is fitted on, holdout forecasts and
@@ -2262,7 +2262,7 @@ table Forecast
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 3: Create `tables/ForecastAccuracy.tmdl`**
+- [x] **Step 3: Create `tables/ForecastAccuracy.tmdl`**
 
 ```tmdl
 /// Out-of-sample errors of SARIMA and the naive baselines (powerbi/data/forecast_accuracy.csv).
@@ -2329,7 +2329,7 @@ table ForecastAccuracy
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 4: Create `tables/Reconciliation.tmdl`** (not related to other tables: its measures set their own filters)
+- [x] **Step 4: Create `tables/Reconciliation.tmdl`** (not related to other tables: its measures set their own filters)
 
 ```tmdl
 /// Totals computed by the tested Python pipeline that the Power Query cleaning must match
@@ -2378,7 +2378,7 @@ table Reconciliation
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 5: Reference the tables.** Append to `model.tmdl`:
+- [x] **Step 5: Reference the tables.** Append to `model.tmdl`:
 
 ```tmdl
 ref table Companies
@@ -2387,12 +2387,12 @@ ref table ForecastAccuracy
 ref table Reconciliation
 ```
 
-- [ ] **Step 6: Run the tests**
+- [x] **Step 6: Run the tests**
 
 Run: `pytest tests/test_powerbi_model.py tests/test_sources.py -v`
 Expected: PASS.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add powerbi/marche-regional-profile.SemanticModel
@@ -2406,7 +2406,7 @@ git commit -m "Add the Companies table cleaned in Power Query and the Python exp
 **Files:**
 - Create: `.../definition/relationships.tmdl`
 
-- [ ] **Step 1: Create `relationships.tmdl`.** Every relationship is many-to-one from the fact to the dimension, single direction (the TMDL defaults). `ForecastAccuracy` and `Reconciliation` stay unrelated.
+- [x] **Step 1: Create `relationships.tmdl`.** Every relationship is many-to-one from the fact to the dimension, single direction (the TMDL defaults). `ForecastAccuracy` and `Reconciliation` stay unrelated.
 
 ```tmdl
 relationship Population_Geo
@@ -2490,12 +2490,12 @@ relationship Forecast_Calendar
 	toColumn: Calendar.Date
 ```
 
-- [ ] **Step 2: Run the tests**
+- [x] **Step 2: Run the tests**
 
 Run: `pytest tests/test_powerbi_model.py -v`
 Expected: `test_relationships_use_existing_columns` now runs and PASSES.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add powerbi/marche-regional-profile.SemanticModel/definition/relationships.tmdl
@@ -2514,7 +2514,7 @@ Definitions follow `docs/methodology.md` (spec, "Measures"). Two patterns repeat
 **Files:**
 - Modify: `.../definition/tables/_Measures.tmdl`
 
-- [ ] **Step 1: Write a failing reference check.** Append to `tests/test_powerbi_model.py`:
+- [x] **Step 1: Write a failing reference check.** Append to `tests/test_powerbi_model.py`:
 
 ```python
 def test_measure_table_has_the_spec_indicators():
@@ -2542,7 +2542,7 @@ def test_measure_table_has_the_spec_indicators():
 Run: `pytest tests/test_powerbi_model.py::test_measure_table_has_the_spec_indicators -v`
 Expected: FAIL (the set is empty).
 
-- [ ] **Step 2: Replace `tables/_Measures.tmdl` with the full table**
+- [x] **Step 2: Replace `tables/_Measures.tmdl` with the full table**
 
 ```tmdl
 /// All measures of the report, in display folders by page.
@@ -2822,12 +2822,12 @@ table _Measures
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 3: Run the tests**
+- [x] **Step 3: Run the tests**
 
 Run: `pytest tests/test_powerbi_model.py -v`
 Expected: PASS.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add powerbi/marche-regional-profile.SemanticModel/definition/tables/_Measures.tmdl tests/test_powerbi_model.py
@@ -2842,7 +2842,7 @@ git commit -m "Add the report measures with a common reference year per comparis
 - Create: `.../definition/tables/Compare to.tmdl`, `.../definition/tables/Province indicator.tmdl`
 - Modify: `.../definition/model.tmdl`
 
-- [ ] **Step 1: Create `tables/Compare to.tmdl`.** Every item leaves text measures unchanged (`ISTEXT`), so the reconciliation status and Phase B's dynamic titles are not compared.
+- [x] **Step 1: Create `tables/Compare to.tmdl`.** Every item leaves text measures unchanged (`ISTEXT`), so the reconciliation status and Phase B's dynamic titles are not compared.
 
 ```tmdl
 /// Benchmark comparisons for any indicator measure: the value, the country, the EU, the
@@ -2923,7 +2923,7 @@ table 'Compare to'
 		sourceColumn: Ordinal
 ```
 
-- [ ] **Step 2: Create `tables/Province indicator.tmdl`** (field parameter for the Provinces page)
+- [x] **Step 2: Create `tables/Province indicator.tmdl`** (field parameter for the Provinces page)
 
 ```tmdl
 /// Indicator shown on the Provinces map (field parameter).
@@ -2967,19 +2967,19 @@ table 'Province indicator'
 				}
 ```
 
-- [ ] **Step 3: Reference the tables.** Append to `model.tmdl`:
+- [x] **Step 3: Reference the tables.** Append to `model.tmdl`:
 
 ```tmdl
 ref table 'Compare to'
 ref table 'Province indicator'
 ```
 
-- [ ] **Step 4: Run the tests**
+- [x] **Step 4: Run the tests**
 
 Run: `pytest tests/test_powerbi_model.py -v`
 Expected: PASS. `test_measure_references_exist` now checks every `ISSELECTEDMEASURE` and `NAMEOF` name against `_Measures`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add powerbi/marche-regional-profile.SemanticModel
@@ -3174,16 +3174,24 @@ git push -u origin powerbi-pbip
   - The **reconciliation** table shows ✓ in all 12 rows.
   - In **indicators by area**, compare with `docs/results.md`:
 
-    | Row | Indicator | Expected |
+    | Row | Indicator | Expected (simulated on live data, 2026-10-12) |
     |---|---|---|
-    | Pesaro e Urbino (ITI31) | Companies per 1,000 residents | about 87.0 |
-    | Pesaro e Urbino (ITI31) | Share aged 65+ | about 25.7 % |
-    | Macerata (ITI33) | Crude death rate | about 12.6 |
-    | Marche | Crude death rate | between 11 and 13 (the 2019–2023 average was 12.6 per 1,000) |
-    | Marche | Active companies | about 130,000 (March 2025) |
-    | Italy, EU | Business columns | blank |
-    | Every area | Unemployment rate | between 3 % and 12 % |
-  - In the **Compare to** matrix, the columns Value, Country, vs Country, EU, vs EU, Peers avg, vs Peers avg and Rank among peers are filled. The rank is between 1 and 6. "vs Country" equals Value − Country.
+    | Marche | Population (2025) | 1,480,545 |
+    | Marche | Share aged 0-14 / 65+ / 80+ | 11.3 % / 26.6 % / 8.9 % |
+    | Marche | Crude death rate (2024) | 11.8 |
+    | Marche | GDP per inhabitant EUR / PPS (2024) | 34,100 / 89 |
+    | Marche | Unemployment rate (2025) | 5.1 % |
+    | Marche | Students enrolled (2024) | 260,278 |
+    | Marche | Active companies (March 2025) | 130,553 |
+    | Marche | Active companies change % (Dec 2009 → Dec 2024) | −17.1 % |
+    | Marche | Companies per 1,000 residents | 88.5 |
+    | Pesaro e Urbino (ITI31) | Companies per 1,000 residents / Share aged 65+ | 87.0 / 25.7 % |
+    | Macerata (ITI33) | Crude death rate | 12.6 |
+    | Italy / EU | Unemployment rate | 6.1 % / 6.0 % |
+    | Italy, EU, peers | Business columns | blank |
+    | Provinces | Unemployment rate, students, tertiary students | blank (no NUTS 3 data) |
+    | Every region, Italy, EU | Unemployment rate | between 4 % and 7 % |
+  - In the **Compare to** matrix, the columns Value, Country, vs Country, EU, vs EU, Peers avg, vs Peers avg and Rank among peers are filled. The rank is between 1 and 6. Expected for Marche: unemployment 5.1 % | 6.1 % | −1.0 | 6.0 % | −0.9 | 5.0 % | +0.1 | 3; GDP PPS 89 | 98 | −9 | 100 | −11 | 100.4 | −11 | 4. "vs Country" equals Value − Country.
 
 - [ ] **Step 5: If a visual shows an error** (PBIR written by hand), rebuild it in Desktop with the same fields and title, listed in Task 14, Step 1. If Desktop rejects the field parameter table, delete it and recreate it with *Modeling → New parameter → Fields*, named `Province indicator`, with the five measures of Task 13, Step 2. Then save. If Desktop reports an unknown property `ordinal` in `Compare to.tmdl`, delete the eight `ordinal:` lines and set the item order in *Model view → Compare to → Calculation items* (Value, Country, vs Country, EU, vs EU, Peers avg, vs Peers avg, Rank among peers).
 
