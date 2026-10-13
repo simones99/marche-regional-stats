@@ -3446,13 +3446,13 @@ git commit -m "Scaffold the navigation, the story zone and the Overview page"
 
 The PBIR forms of the textbox, shape, image, page navigator, card and slicer come from documentation and earlier projects, not from a Desktop save. This task checks them before seven more pages are generated, together with the visual types only the later pages use (on a temporary hidden page, "Spike").
 
-- [ ] **Step 0 (executor): Scaffold the spike page.** Desktop closed (`tasklist /FI "IMAGENAME eq PBIDesktop.exe"` lists nothing). `report_layout.spike()` is a hidden page "Spike" with one visual of each kind Overview does not use, bound to real model fields: the measure image (`Map SVG`), a Dropdown slicer with header (`Calendar[Year]`), a `barChart` (the pyramid), a `scatterChart` (the dot plot), a `clusteredColumnChart` (seasonal effect), a `multiRowCard`, a ranked `clusteredBarChart`, a `tableEx` and a `pivotTable`. It is not in `pages()`, so `scaffold-report` never writes it. Write it once, from the repository root:
+- [x] **Step 0 (executor): Scaffold the spike page.** Desktop closed (`tasklist /FI "IMAGENAME eq PBIDesktop.exe"` lists nothing). `report_layout.spike()` is a hidden page "Spike" with one visual of each kind Overview does not use, bound to real model fields: the measure image (`Map SVG`), a Dropdown slicer with header (`Calendar[Year]`), a `barChart` (the pyramid), a `scatterChart` (the dot plot), a `clusteredColumnChart` (seasonal effect), a `multiRowCard`, a ranked `clusteredBarChart`, a `tableEx` and a `pivotTable`. It is not in `pages()`, so `scaffold-report` never writes it. Write it once, from the repository root:
 
 ```bash
 .venv/Scripts/python -c "from pathlib import Path; from marche_stats import pbir, report_layout; print(pbir.scaffold([report_layout.spike()], Path('powerbi/marche-regional-profile.Report/definition')))"
 ```
 
-Expected: `['Spike']`, a new folder `…Report/definition/pages/73cc33b96ddcddc98995/` and that name first in `pageOrder` of `pages.json`. Do not commit it: Step 3 deletes it.
+Expected: `['Spike']`, a new folder `…Report/definition/pages/73cc33b96ddcddc98995/` and that name first in `pageOrder` of `pages.json`. Do not commit it: Step 3 deletes it. Until then `test_pages_follow_the_layout_order` fails, because Spike comes before Overview.
 
 - [ ] **Step 1 (user): Open the report.** Open `powerbi/marche-regional-profile.pbip`. Expected on Overview, against the canvas artboard "D · Story + dashboard":
   - the dark navigation bar with "Regional profile", the region name, the page navigator listing the visible pages (only Overview at this point; Model check is hidden) and "Data up to Mar 2025";
