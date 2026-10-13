@@ -1,0 +1,59 @@
+{
+  "name": "Marche regional profile",
+  "dataColors": ["#00753A", "#6B746E", "#15201A", "#4A9C72", "#7AB696", "#D0E3D7", "#4F5A53", "#C9CEC9"],
+  "background": "#F5F6F3",
+  "foreground": "#15201A",
+  "tableAccent": "#00753A",
+  "good": "#00753A",
+  "neutral": "#6B746E",
+  "bad": "#15201A",
+  "maximum": "#00753A",
+  "center": "#7AB696",
+  "minimum": "#D0E3D7",
+  "null": "#C9CEC9",
+  "textClasses": {
+    "callout": {"fontSize": 24, "fontFace": "Segoe UI Semibold", "color": "#15201A"},
+    "title": {"fontSize": 12, "fontFace": "Segoe UI Semibold", "color": "#15201A"},
+    "header": {"fontSize": 12, "fontFace": "Segoe UI Semibold", "color": "#15201A"},
+    "label": {"fontSize": 10.5, "fontFace": "Segoe UI", "color": "#4F5A53"}
+  },
+  "visualStyles": {
+    "page": {
+      "*": {
+        "background": [{"color": {"solid": {"color": "#F5F6F3"}}, "transparency": 0}],
+        "outspace": [{"color": {"solid": {"color": "#F5F6F3"}}, "transparency": 0}]
+      }
+    },
+    "*": {
+      "*": {
+        "background": [{"show": true, "color": {"solid": {"color": "#F5F6F3"}}, "transparency": 0}],
+        "border": [{"show": false, "radius": 8}],
+        "dropShadow": [{"show": false}],
+        "title": [{"show": true, "fontColor": {"solid": {"color": "#15201A"}}, "fontSize": 12, "fontFamily": "Segoe UI Semibold"}],
+        "categoryAxis": [{"fontSize": 10.5, "fontFamily": "Segoe UI", "labelColor": {"solid": {"color": "#4F5A53"}}, "showAxisTitle": false, "gridlineShow": false}],
+        "valueAxis": [{"fontSize": 10.5, "fontFamily": "Segoe UI", "labelColor": {"solid": {"color": "#4F5A53"}}, "showAxisTitle": false, "gridlineColor": {"solid": {"color": "#C9CEC9"}}}],
+        "legend": [{"show": false, "fontSize": 10.5, "labelColor": {"solid": {"color": "#4F5A53"}}}],
+        "labels": [{"fontSize": 10.5, "color": {"solid": {"color": "#15201A"}}}]
+      }
+    },
+    "lineChart": {"*": {"markers": [{"show": true}], "labels": [{"show": false}]}},
+    "barChart": {"*": {"labels": [{"show": true}]}},
+    "clusteredBarChart": {"*": {"labels": [{"show": true}]}},
+    "clusteredColumnChart": {"*": {"labels": [{"show": true}]}},
+    "card": {
+      "*": {
+        "categoryLabels": [{"show": false}],
+        "labels": [{"color": {"solid": {"color": "#15201A"}}, "fontSize": 24, "fontFamily": "Segoe UI Semibold"}],
+        "title": [{"show": false}]
+      }
+    },
+    "multiRowCard": {"*": {"dataLabels": [{"fontSize": 12}], "categoryLabels": [{"fontSize": 10.5}]}},
+    "tableEx": {"*": {"columnHeaders": [{"fontSize": 10.5, "fontColor": {"solid": {"color": "#4F5A53"}}}], "values": [{"fontSize": 10.5, "fontColorPrimary": {"solid": {"color": "#15201A"}}}]}},
+    "pivotTable": {"*": {"columnHeaders": [{"fontSize": 10.5, "fontColor": {"solid": {"color": "#4F5A53"}}}], "values": [{"fontSize": 10.5, "fontColorPrimary": {"solid": {"color": "#15201A"}}}]}},
+    "slicer": {"*": {"items": [{"fontSize": 10.5, "fontColor": {"solid": {"color": "#15201A"}}}], "header": [{"fontSize": 10.5}]}},
+    "textbox": {"*": {"background": [{"show": false}], "title": [{"show": false}]}},
+    "shape": {"*": {"background": [{"show": false}], "title": [{"show": false}]}},
+    "image": {"*": {"background": [{"show": false}], "title": [{"show": false}]}},
+    "pageNavigator": {"*": {"background": [{"show": false}], "title": [{"show": false}]}}
+  }
+}
