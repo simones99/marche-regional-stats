@@ -311,9 +311,9 @@ git commit -m "Write the seasonal profile and province outlines with export-powe
 - Modify: `src/marche_stats/cli.py`, `requirements.txt`
 - Test: `tests/test_pngs.py`
 
-- [ ] **Step 1: Add the dependency.** Append `pypdfium2==4.30.0` to `requirements.txt` (keep the alphabetical order of the file if it has one: after `pandas`), then `pip install -r requirements-dev.txt`.
+- [x] **Step 1: Add the dependency.** Append `pypdfium2==4.30.0` to `requirements.txt` (keep the alphabetical order of the file if it has one: after `pandas`), then `pip install -r requirements-dev.txt`.
 
-- [ ] **Step 2: Write the failing tests.** Create `tests/test_pngs.py`:
+- [x] **Step 2: Write the failing tests.** Create `tests/test_pngs.py`:
 
 ```python
 import pypdfium2 as pdfium
@@ -354,9 +354,9 @@ def test_cli_export_pngs_writes_next_to_the_pdf(tmp_path):
     assert len(list((tmp_path / "png").glob("*.png"))) == len(pngs.PAGE_SLUGS)
 ```
 
-- [ ] **Step 3: Run them.** `pytest tests/test_pngs.py -v`. Expected: FAIL with `ImportError: cannot import name 'pngs'`.
+- [x] **Step 3: Run them.** `pytest tests/test_pngs.py -v`. Expected: FAIL with `ImportError: cannot import name 'pngs'`.
 
-- [ ] **Step 4: Implement.** Create `src/marche_stats/pngs.py`:
+- [x] **Step 4: Implement.** Create `src/marche_stats/pngs.py`:
 
 ```python
 """One PNG per report page, rendered from the PDF that Power BI Desktop exports.
@@ -424,9 +424,9 @@ and, before `if args.step == "check-sources":`,
         return 0
 ```
 
-- [ ] **Step 5: Run them.** `pytest tests/test_pngs.py -v`. Expected: PASS. Then `pytest -q`.
+- [x] **Step 5: Run them.** `pytest tests/test_pngs.py -v`. Expected: PASS. Then `pytest -q`.
 
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
 
 ```bash
 ruff check src tests && ruff format src tests
