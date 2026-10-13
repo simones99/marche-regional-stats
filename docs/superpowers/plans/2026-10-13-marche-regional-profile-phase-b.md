@@ -780,7 +780,7 @@ All new measures go into `tables/_Measures.tmdl`, before `column Placeholder`, i
 - Modify: `…/definition/tables/_Measures.tmdl`
 - Test: `tests/test_powerbi_model.py`
 
-- [ ] **Step 1: Write the failing test.** Append:
+- [x] **Step 1: Write the failing test.** Append:
 
 ```python
 def test_report_visual_measures():
@@ -810,9 +810,9 @@ def test_report_visual_measures():
     } <= model_tables()["_Measures"]["measures"]
 ```
 
-- [ ] **Step 2: Run it.** Expected: FAIL.
+- [x] **Step 2: Run it.** Expected: FAIL.
 
-- [ ] **Step 3: Add the names and dates.**
+- [x] **Step 3: Add the names and dates.**
 
 ```
 	/// Name of the focus region (FocusRegion parameter), as GISCO spells it.
@@ -880,7 +880,7 @@ def test_report_visual_measures():
 		displayFolder: Report text
 ```
 
-- [ ] **Step 4: Add the pyramid, butterfly and colour measures.**
+- [x] **Step 4: Add the pyramid, butterfly and colour measures.**
 
 ```
 	/// Men in each age band as negative numbers, so they draw to the left of the pyramid.
@@ -918,7 +918,7 @@ def test_report_visual_measures():
 		displayFolder: Report visuals
 ```
 
-- [ ] **Step 5: Add the business measures.**
+- [x] **Step 5: Add the business measures.**
 
 ```
 	/// Active companies at the month-ends in context; for the focus region, the sum of its provinces.
@@ -979,9 +979,9 @@ def test_report_visual_measures():
 		displayFolder: Report visuals
 ```
 
-- [ ] **Step 6: Run the model tests.** `pytest tests/test_powerbi_model.py -v`. Expected: all pass (`test_measure_column_references_exist` checks every `Table[Column]` above).
+- [x] **Step 6: Run the model tests.** `pytest tests/test_powerbi_model.py -v`. Expected: all pass (`test_measure_column_references_exist` checks every `Table[Column]` above).
 
-- [ ] **Step 7: Commit.**
+- [x] **Step 7: Commit.**
 
 ```bash
 git add powerbi/marche-regional-profile.SemanticModel tests/test_powerbi_model.py
