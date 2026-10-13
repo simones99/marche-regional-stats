@@ -1310,7 +1310,7 @@ Each page has a headline lead (text colour), a headline accent (accent colour) a
 - Modify: `…/definition/tables/_Measures.tmdl` (new measures; `Reconciliation status` wording)
 - Test: `tests/test_powerbi_model.py`
 
-- [ ] **Step 1: Write the failing test.** Append:
+- [x] **Step 1: Write the failing test.** Append:
 
 ```python
 REPORT_TEXT_PREFIXES = (
@@ -1333,9 +1333,9 @@ def test_report_text_measures():
             assert f"{prefix} {part}" in measures
 ```
 
-- [ ] **Step 2: Run it.** Expected: FAIL on `Overview headline lead`.
+- [x] **Step 2: Run it.** Expected: FAIL on `Overview headline lead`.
 
-- [ ] **Step 3: Add the helpers.**
+- [x] **Step 3: Add the helpers.**
 
 ```
 	/// Number of areas ranked on Benchmark: the focus region and its peers.
@@ -1393,7 +1393,7 @@ def test_report_text_measures():
 		displayFolder: _Helpers
 ```
 
-- [ ] **Step 4: Overview, Population & Health, Economy & Labour.**
+- [x] **Step 4: Overview, Population & Health, Economy & Labour.**
 
 ```
 	/// Overview headline, first part. Claim in _Overview claim; neutral title otherwise.
@@ -1486,7 +1486,7 @@ def test_report_text_measures():
 		displayFolder: Report text
 ```
 
-- [ ] **Step 5: Education, Provinces, Business.**
+- [x] **Step 5: Education, Provinces, Business.**
 
 ```
 	/// Education headline, first part, from the focus region's rank among its peers for
@@ -1572,7 +1572,7 @@ def test_report_text_measures():
 		displayFolder: Report text
 ```
 
-- [ ] **Step 6: Benchmark, About, Province detail.**
+- [x] **Step 6: Benchmark, About, Province detail.**
 
 ```
 	/// Benchmark headline, first part.
@@ -1657,7 +1657,7 @@ def test_report_text_measures():
 		displayFolder: Report text
 ```
 
-- [ ] **Step 7: Reword `Reconciliation status`.** The spec wants a word next to each symbol. Replace its expression and description with:
+- [x] **Step 7: Reword `Reconciliation status`.** The spec wants a word next to each symbol. Replace its expression and description with:
 
 ```
 	/// "✓ Match" when Power BI matches the Python pipeline, otherwise "✗ Differs by" and the
@@ -1677,9 +1677,9 @@ def test_report_text_measures():
 
 Keep its existing `lineageTag` line.
 
-- [ ] **Step 8: Run the model tests.** `pytest tests/test_powerbi_model.py -v`. Expected: all pass.
+- [x] **Step 8: Run the model tests.** `pytest tests/test_powerbi_model.py -v`. Expected: all pass.
 
-- [ ] **Step 9: Commit.**
+- [x] **Step 9: Commit.**
 
 ```bash
 git add powerbi/marche-regional-profile.SemanticModel tests/test_powerbi_model.py
