@@ -187,3 +187,30 @@ def test_phase_b_tables_and_columns():
     assert {"Source", "Order"} <= tables["Data source"]["columns"]
     assert "ShortName" in tables["ISCED"]["columns"]
     assert "ShortName" in tables["Sector"]["columns"]
+
+
+def test_report_visual_measures():
+    assert {
+        "Focus region name",
+        "Country name",
+        "Data up to",
+        "Population (men, negative)",
+        "Population (women)",
+        "Students (women, negative)",
+        "Students (men)",
+        "Pyramid colour",
+        "Education level colour",
+        "Area colour",
+        "Change colour",
+        "Active companies at month-end",
+        "Active companies, December",
+        "Active companies index",
+        "Sector change, ten largest",
+        "Seasonal effect",
+        "MAPE",
+        "Forecast chart actual",
+        "Forecast chart forecast",
+        "Latest period",
+        "Area name",
+        "Flags text",
+    } <= model_tables()["_Measures"]["measures"]

@@ -407,6 +407,161 @@ table _Measures
 		displayFolder: Checks
 		lineageTag: 2e156d26-2e99-482c-9c40-abb8dd9510ff
 
+	/// Name of the focus region (FocusRegion parameter), as GISCO spells it.
+	measure 'Focus region name' = CALCULATE ( SELECTEDVALUE ( Geo[Name] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
+		displayFolder: Report text
+
+	/// Name of the national benchmark (Country parameter).
+	measure 'Country name' = CALCULATE ( SELECTEDVALUE ( Geo[Name] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Country" )
+		displayFolder: Report text
+
+	/// "Data up to <month year>": the latest date of any fact table, for the navigation bar.
+	measure 'Data up to' =
+			VAR Latest =
+			    MAXX (
+			        {
+			            CALCULATE ( MAX ( Companies[Date] ), REMOVEFILTERS () ),
+			            CALCULATE ( MAX ( Population[Date] ), REMOVEFILTERS () ),
+			            CALCULATE ( MAX ( Unemployment[Date] ), REMOVEFILTERS () )
+			        },
+			        [Value]
+			    )
+			RETURN "Data up to " & FORMAT ( Latest, "mmm yyyy" )
+		displayFolder: Report text
+
+	/// Name of the area in context, for the tooltip pages.
+	measure 'Area name' = SELECTEDVALUE ( Geo[Name] )
+		displayFolder: Report text
+
+	/// Eurostat flags of the area in context, in words, for the tooltip pages. Blank when none.
+	measure 'Flags text' =
+			VAR Flags =
+			    {
+			        ( "Population", [Population flag] ),
+			        ( "Deaths", [Deaths flag] ),
+			        ( "GDP", [GDP flag] ),
+			        ( "Unemployment", [Unemployment flag] ),
+			        ( "Enrolment", [Enrolment flag] )
+			    }
+			VAR Named = FILTER ( Flags, [Value2] <> "" )
+			RETURN
+			    IF (
+			        COUNTROWS ( Named ) > 0,
+			        "Eurostat flags: "
+			            & CONCATENATEX (
+			                Named,
+			                [Value1] & " " & TRIM ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( [Value2], "p", " provisional" ), "e", " estimated" ), "b", " break in series" ) ),
+			                "; "
+			            )
+			    )
+		displayFolder: Report text
+
+	/// Latest period of the source on the row of the About freshness table.
+	measure 'Latest period' =
+			SWITCH (
+			    SELECTEDVALUE ( 'Data source'[Order] ),
+			    1, "1 Jan " & FORMAT ( YEAR ( CALCULATE ( MAX ( Population[Date] ), REMOVEFILTERS () ) ), "0" ),
+			    2, FORMAT ( YEAR ( CALCULATE ( MAX ( Deaths[Date] ), REMOVEFILTERS () ) ), "0" ),
+			    3, FORMAT ( YEAR ( CALCULATE ( MAX ( GDP[Date] ), REMOVEFILTERS (), Geo[Level] <> "NUTS3" ) ), "0" ),
+			    4, FORMAT ( YEAR ( CALCULATE ( MAX ( GDP[Date] ), REMOVEFILTERS (), Geo[Level] = "NUTS3" ) ), "0" ),
+			    5, FORMAT ( YEAR ( CALCULATE ( MAX ( Unemployment[Date] ), REMOVEFILTERS () ) ), "0" ),
+			    6, FORMAT ( YEAR ( CALCULATE ( MAX ( Enrolment[Date] ), REMOVEFILTERS () ) ), "0" ),
+			    7, FORMAT ( CALCULATE ( MAX ( Companies[Date] ), REMOVEFILTERS () ), "mmm yyyy" ),
+			    8, "to " & FORMAT ( CALCULATE ( MAX ( Forecast[Date] ), REMOVEFILTERS () ), "mmm yyyy" )
+			)
+		displayFolder: Report text
+
+	/// Men in each age band as negative numbers, so they draw to the left of the pyramid.
+	/// The format string hides the sign.
+	measure 'Population (men, negative)' = - CALCULATE ( [Population], Sex[Code] = "M" )
+		formatString: #,0;#,0
+		displayFolder: Report visuals
+
+	/// Women in each age band, the right side of the pyramid.
+	measure 'Population (women)' = CALCULATE ( [Population], Sex[Code] = "F" )
+		formatString: #,0
+		displayFolder: Report visuals
+
+	/// Women enrolled at each level as negative numbers (left side of the butterfly chart).
+	measure 'Students (women, negative)' = - CALCULATE ( [Students enrolled], Sex[Code] = "F" )
+		formatString: #,0;#,0
+		displayFolder: Report visuals
+
+	/// Men enrolled at each level (right side of the butterfly chart).
+	measure 'Students (men)' = CALCULATE ( [Students enrolled], Sex[Code] = "M" )
+		formatString: #,0
+		displayFolder: Report visuals
+
+	/// Bar colour of the pyramid: accent for the bands aged 65 and over.
+	measure 'Pyramid colour' = IF ( SELECTEDVALUE ( AgeGroup[BroadGroup] ) = "65+", "#00753A", "#6B746E" )
+		displayFolder: Report visuals
+
+	/// Bar colour of the butterfly chart: accent for the tertiary levels.
+	measure 'Education level colour' = IF ( SELECTEDVALUE ( ISCED[Group] ) = "ISCED 5-8", "#00753A", "#6B746E" )
+		displayFolder: Report visuals
+
+	/// Bar colour by area role: accent for the focus region, text colour for the country and the
+	/// EU (the fallback when a bar outline cannot be set per bar), grey for the peer regions.
+	measure 'Area colour' = SWITCH ( SELECTEDVALUE ( Geo[Role] ), "Focus", "#00753A", "Country", "#15201A", "EU", "#15201A", "#6B746E" )
+		displayFolder: Report visuals
+
+	/// Active companies at the month-ends in context; for the focus region, the sum of its provinces.
+	measure 'Active companies at month-end' =
+			VAR Areas = VALUES ( Geo[Code] )
+			VAR WithProvinces = UNION ( Areas, CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), TREATAS ( Areas, Geo[ParentCode] ) ) )
+			RETURN CALCULATE ( SUM ( Companies[Companies] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ) )
+		formatString: #,0
+		displayFolder: Report visuals
+
+	/// Active companies on 31 December of each year in context.
+	measure 'Active companies, December' = CALCULATE ( [Active companies at month-end], Calendar[MonthNumber] = 12 )
+		formatString: #,0
+		displayFolder: Report visuals
+
+	/// Active companies in December as an index: the first full-year December = 100.
+	measure 'Active companies index' =
+			VAR FirstDec = CALCULATE ( MIN ( Companies[Date] ), REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Calendar[MonthNumber] = 12 )
+			VAR Base = CALCULATE ( [Active companies at month-end], REMOVEFILTERS ( Calendar ), Calendar[Date] = FirstDec )
+			RETURN DIVIDE ( 100 * [Active companies, December], Base )
+		formatString: 0.0
+		displayFolder: Report visuals
+
+	/// Change since the first full-year December for the ten sections with most active
+	/// companies. Blank for the other sections and for X (not classified).
+	measure 'Sector change, ten largest' =
+			VAR Size = RANKX ( FILTER ( ALL ( Sector ), Sector[Code] <> "X" ), [Active companies], , DESC )
+			RETURN IF ( SELECTEDVALUE ( Sector[Code] ) <> "X" && Size <= 10, [Active companies change %] )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Report visuals
+
+	/// Bar colour of the sector chart: accent for the growing sections.
+	measure 'Change colour' = IF ( [Sector change, ten largest] > 0, "#00753A", "#6B746E" )
+		displayFolder: Report visuals
+
+	/// Average seasonal effect of the calendar month, in active companies.
+	measure 'Seasonal effect' = SUM ( Seasonality[Effect] )
+		formatString: +#,0;-#,0;0
+		displayFolder: Report visuals
+
+	/// Mean absolute percentage error of the method in context on the holdout months.
+	measure MAPE = DIVIDE ( SUM ( ForecastAccuracy[MAPE] ), 100 )
+		formatString: 0.00%
+		displayFolder: Report visuals
+
+	/// Modelled companies in the last 24 months of the series, for the forecast chart.
+	measure 'Forecast chart actual' =
+			VAR LastActual = CALCULATE ( MAX ( Forecast[Date] ), REMOVEFILTERS (), NOT ISBLANK ( Forecast[Actual] ) )
+			RETURN IF ( MAX ( Calendar[Date] ) > EOMONTH ( LastActual, -24 ), [Modelled companies] )
+		formatString: #,0
+		displayFolder: Report visuals
+
+	/// SARIMA forecast, starting from the last actual month so the two lines join.
+	measure 'Forecast chart forecast' =
+			VAR LastActual = CALCULATE ( MAX ( Forecast[Date] ), REMOVEFILTERS (), NOT ISBLANK ( Forecast[Actual] ) )
+			RETURN IF ( MAX ( Calendar[Date] ) = LastActual, [Modelled companies], [SARIMA forecast] )
+		formatString: #,0
+		displayFolder: Report visuals
+
 	column Placeholder
 		dataType: string
 		isHidden
