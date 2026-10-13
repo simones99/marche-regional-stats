@@ -1921,7 +1921,7 @@ def test_registered_resources_exist_and_photos_are_small():
     "multiRowCard": {"*": {"dataLabels": [{"fontSize": 12}], "categoryLabels": [{"fontSize": 10.5}]}},
     "tableEx": {"*": {"columnHeaders": [{"fontSize": 10.5, "fontColor": {"solid": {"color": "#4F5A53"}}}], "values": [{"fontSize": 10.5, "fontColorPrimary": {"solid": {"color": "#15201A"}}, "fontColorSecondary": {"solid": {"color": "#15201A"}}, "backColorSecondary": {"solid": {"color": "#ECEEEA"}}}]}},
     "pivotTable": {"*": {"columnHeaders": [{"fontSize": 10.5, "fontColor": {"solid": {"color": "#4F5A53"}}}], "values": [{"fontSize": 10.5, "fontColorPrimary": {"solid": {"color": "#15201A"}}, "fontColorSecondary": {"solid": {"color": "#15201A"}}, "backColorSecondary": {"solid": {"color": "#ECEEEA"}}}]}},
-    "slicer": {"*": {"items": [{"fontSize": 10.5, "fontColor": {"solid": {"color": "#15201A"}}}], "header": [{"fontSize": 10.5}]}},
+    "slicer": {"*": {"items": [{"fontSize": 10.5, "fontColor": {"solid": {"color": "#15201A"}}}], "header": [{"fontSize": 10.5}], "title": [{"show": false}]}},
     "textbox": {"*": {"background": [{"show": false}], "title": [{"show": false}]}},
     "shape": {"*": {"background": [{"show": false}], "title": [{"show": false}]}},
     "image": {"*": {"background": [{"show": false}], "title": [{"show": false}]}},
@@ -2132,6 +2132,22 @@ def test_visual_json_binds_fields_title_and_alt_text():
     )
 
 
+def test_alt_text_bound_to_a_measure_and_container_objects():
+    off = {"background": [{"properties": {"show": pbir.literal(False)}}]}
+    visual = Visual("name", "card", 0, 0, 8, 8, alt=M("Focus region name"), container=off)
+    container = pbir.visual_json("page", visual, order=0)["visual"]["visualContainerObjects"]
+    assert container["general"][0]["properties"]["altText"] == {
+        "expr": pbir.field_expr(M("Focus region name"))
+    }
+    assert container["background"] == off["background"]
+
+
+def test_visuals_other_than_shapes_and_textboxes_need_alt_text(tmp_path):
+    page = Page("one", "One", [Visual("kpi", "card", 0, 0, 8, 8, roles={"Values": [M("X")]})])
+    with pytest.raises(ValueError, match="One: kpi has no alt text"):
+        pbir.scaffold([page], _definition(tmp_path))
+
+
 def test_in_filter_lists_values():
     roles = pbir.in_filter(C("Geo", "Role"), ["Focus", "Peer"])
     condition = roles["filter"]["Where"][0]["Condition"]["In"]
@@ -2260,7 +2276,8 @@ def test_duplicate_visual_keys_are_rejected(tmp_path):
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="Windows file locking")
-def test_locked_page_is_left_intact_when_forced(tmp_path):
+def test_locked_page_is_left_intact_when_forced(tmp_path, monkeypatch):
+    monkeypatch.setattr(pbir.time, "sleep", lambda seconds: None)
     definition = _definition(tmp_path)
     page = Page("one", "One", [Visual("a", "shape", 0, 0, 8, 8)])
     pbir.scaffold([page], definition)
@@ -2276,6 +2293,48 @@ def test_force_keys_must_be_page_keys(tmp_path):
     page = Page("one", "One", [])
     with pytest.raises(ValueError, match="unknown page keys.*One"):
         pbir.scaffold([page], _definition(tmp_path), force={"One"})
+
+
+def test_hidden_active_page_moves_to_the_first_visible_layout_page(tmp_path):
+    definition = _definition(tmp_path)
+    old = definition / "pages" / "old"
+    old.mkdir()
+    (old / "page.json").write_text(json.dumps({"visibility": "HiddenInViewMode"}), "utf-8")
+    pbir.scaffold([Page("tip", "Tip", [], hidden=True), Page("one", "One", [])], definition)
+    assert _meta(definition)["activePageName"] == pbir.object_id("one")
+
+
+def _flaky_rename(monkeypatch, failures):
+    """Path.rename that raises PermissionError for the first `failures` calls."""
+    real, calls, sleeps = pbir.Path.rename, [], []
+
+    def rename(self, target):
+        calls.append(self)
+        if len(calls) <= failures:
+            raise PermissionError(13, "locked", str(self))
+        return real(self, target)
+
+    monkeypatch.setattr(pbir.Path, "rename", rename)
+    monkeypatch.setattr(pbir.time, "sleep", sleeps.append)
+    return sleeps
+
+
+def test_rename_is_retried_while_a_file_is_briefly_locked(tmp_path, monkeypatch):
+    definition = _definition(tmp_path)
+    sleeps = _flaky_rename(monkeypatch, failures=2)
+    assert pbir.scaffold([Page("one", "One", [])], definition) == ["One"]
+    assert sleeps == [0.1, 0.2]
+    assert (definition / "pages" / pbir.object_id("one") / "page.json").exists()
+
+
+def test_rename_gives_up_after_five_attempts(tmp_path, monkeypatch):
+    definition = _definition(tmp_path)
+    sleeps = _flaky_rename(monkeypatch, failures=99)
+    with pytest.raises(PermissionError):
+        pbir.scaffold([Page("one", "One", [])], definition)
+    assert sleeps == [0.1, 0.2, 0.4, 0.8]
+    assert [p.name for p in (definition / "pages").iterdir()] == ["pages.json"]
+
 ```
 
 - [x] **Step 2: Run them.** `pytest tests/test_pbir.py -v`. Expected: FAIL with `ImportError`.
@@ -2295,6 +2354,7 @@ from __future__ import annotations
 import hashlib
 import json
 import shutil
+import time
 from collections.abc import Collection
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -2303,6 +2363,8 @@ SCHEMAS = "https://developer.microsoft.com/json-schemas/fabric/item/report/defin
 VISUAL_SCHEMA = f"{SCHEMAS}/visualContainer/2.13.0/schema.json"
 PAGE_SCHEMA = f"{SCHEMAS}/page/2.1.0/schema.json"
 HIDDEN = "HiddenInViewMode"
+DECORATIVE = {"shape", "textbox"}  # every other visual needs alt text
+RENAME_ATTEMPTS, RENAME_DELAY = 5, 0.1  # seconds, doubled after each failed attempt
 
 
 @dataclass(frozen=True)
@@ -2334,10 +2396,11 @@ class Visual:
     h: int
     roles: dict[str, list[Field]] = field(default_factory=dict)
     title: str | None = None
-    alt: str | None = None
+    alt: str | Field | None = None  # a Field binds the alt text to a text measure
     objects: dict | None = None
     filters: list[dict] = field(default_factory=list)
     sort: tuple[Field, str] | None = None
+    container: dict | None = None  # visualContainerObjects besides the title and alt text
 
 
 @dataclass(frozen=True)
@@ -2427,11 +2490,12 @@ def visual_json(page_key: str, v: Visual, order: int) -> dict:
             }
     if v.objects:
         visual["objects"] = v.objects
-    container = {}
+    container = dict(v.container or {})
     if v.title is not None:
         container["title"] = [{"properties": {"show": literal(True), "text": literal(v.title)}}]
     if v.alt is not None:
-        container["general"] = [{"properties": {"altText": literal(v.alt)}}]
+        alt = {"expr": field_expr(v.alt)} if isinstance(v.alt, Field) else literal(v.alt)
+        container["general"] = [{"properties": {"altText": alt}}]
     if container:
         visual["visualContainerObjects"] = container
     visual["drillFilterOtherVisuals"] = True
@@ -2480,6 +2544,20 @@ def _page_files(page: Page) -> dict[Path, str]:
     return files
 
 
+def _rename(source: Path, target: Path) -> None:
+    """Rename, retrying while Windows reports a file briefly locked (antivirus, indexer)."""
+    delay = RENAME_DELAY
+    for attempt in range(1, RENAME_ATTEMPTS + 1):
+        try:
+            source.rename(target)
+            return
+        except PermissionError:
+            if attempt == RENAME_ATTEMPTS:
+                raise
+            time.sleep(delay)
+            delay *= 2
+
+
 def _write_page(folder: Path, files: dict[Path, str]) -> None:
     """Stage the page, swap it in, and keep the old folder until the swap succeeds."""
     staging = folder.with_name(folder.name + ".tmp")
@@ -2495,12 +2573,12 @@ def _write_page(folder: Path, files: dict[Path, str]) -> None:
             with target.open("w", encoding="utf-8", newline="\n") as handle:
                 handle.write(text)
         if folder.exists():
-            folder.rename(backup)  # PermissionError if a file is locked: nothing is lost
+            _rename(folder, backup)  # PermissionError if a file stays locked: nothing is lost
         try:
-            staging.rename(folder)
+            _rename(staging, folder)
         except BaseException:
             if backup.exists():
-                backup.rename(folder)
+                _rename(backup, folder)
             raise
     except BaseException:
         shutil.rmtree(staging, ignore_errors=True)
@@ -2535,6 +2613,17 @@ def _validate(pages: list[Page]) -> None:
         duplicates = {k for k in keys if keys.count(k) > 1}
         if duplicates:
             raise ValueError(f"{page.name}: duplicate visual keys {sorted(duplicates)}")
+        for v in page.visuals:
+            if v.alt is None and v.type not in DECORATIVE:
+                raise ValueError(f"{page.name}: {v.key} has no alt text")
+
+
+def _is_hidden(pages_dir: Path, name: str) -> bool:
+    try:
+        body = json.loads((pages_dir / name / "page.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    return isinstance(body, dict) and body.get("visibility") == HIDDEN
 
 
 def scaffold(pages: list[Page], definition: Path, force: Collection[str] = ()) -> list[str]:
@@ -2546,7 +2635,9 @@ def scaffold(pages: list[Page], definition: Path, force: Collection[str] = ()) -
 
     pages.json keeps Desktop's page order and active page: layout pages it does not list
     are inserted after their nearest earlier layout page, and it is rewritten only if that
-    changes something. Pages the layout does not know (the Phase A model check page) stay.
+    changes something. An active page that is missing or hidden becomes the first visible
+    layout page, so the report never opens on a hidden page. Pages the layout does not
+    know (the Phase A model check page) stay.
     """
     _validate(pages)
     unknown = set(force) - {p.key for p in pages}
@@ -2566,8 +2657,8 @@ def scaffold(pages: list[Page], definition: Path, force: Collection[str] = ()) -
     ours = [object_id(p.key) for p in pages]
     order = _merged_order(meta["pageOrder"], ours)
     active = meta.get("activePageName")
-    if active not in order:
-        active = ours[0]
+    if active not in order or _is_hidden(pages_dir, active):
+        active = next((object_id(p.key) for p in pages if not p.hidden), ours[0])
     if order != meta["pageOrder"] or active != meta.get("activePageName"):
         meta["pageOrder"], meta["activePageName"] = order, active
         meta_path.write_text(_dump(meta), encoding="utf-8", newline="\n")
@@ -2590,7 +2681,7 @@ git commit -m "Add a PBIR writer that scaffolds report pages without overwriting
 
 **Files:**
 - Create: `src/marche_stats/report_layout.py`
-- Modify: `src/marche_stats/cli.py`, `tests/test_powerbi_report.py`
+- Modify: `src/marche_stats/cli.py`, `tests/test_powerbi_report.py`, `tests/test_pbir.py`
 - Creates (by running the step): `…Report/definition/pages/<Overview>/…`
 
 - [ ] **Step 1: Write the failing layout tests.** Append to `tests/test_powerbi_report.py`, and add `from marche_stats import report_layout` to its imports:
@@ -2640,13 +2731,47 @@ def test_visuals_sit_on_the_grid_inside_the_page():
             assert pos["y"] + pos["height"] <= page["height"], where
 
 
-def test_data_visuals_have_alt_text():
+def test_pages_have_the_layout_size():
+    sizes = {p.name: (p.width, p.height) for p in report_layout.pages()}
+    for page, _ in layout_pages():
+        assert (page["width"], page["height"]) == sizes[page["displayName"]]
+        if page.get("visibility") != "HiddenInViewMode":
+            assert (page["width"], page["height"]) == (1280, 720), page["displayName"]
+
+
+def test_visuals_have_alt_text():
+    """Every visual but shapes and textboxes: a literal, or an expression bound to a measure."""
     for page, visuals in layout_pages():
         for v in visuals:
-            if "query" not in v["visual"]:
+            if v["visual"]["visualType"] in ("shape", "textbox"):
                 continue
             general = v["visual"].get("visualContainerObjects", {}).get("general", [{}])
-            assert "altText" in general[0].get("properties", {}), (
+            alt = general[0].get("properties", {}).get("altText", {}).get("expr", {})
+            assert "Literal" in alt or "Measure" in alt, f"{page['displayName']}: {v['name']}"
+
+
+def _box(v):
+    pos = v["position"]
+    return pos["x"], pos["y"], pos["x"] + pos["width"], pos["y"] + pos["height"]
+
+
+def test_visuals_do_not_overlap():
+    for page, visuals in layout_pages():
+        boxes = [(v["name"], _box(v)) for v in visuals if v["visual"]["visualType"] != "shape"]
+        for i, (name, (x0, y0, x1, y1)) in enumerate(boxes):
+            for other, (a0, b0, a1, b1) in boxes[i + 1 :]:
+                overlap = x0 < a1 and a0 < x1 and y0 < b1 and b0 < y1
+                assert not overlap, f"{page['displayName']}: {name} and {other}"
+
+
+def test_cards_on_the_dark_rail_have_no_background():
+    off = {"show": {"expr": {"Literal": {"Value": "false"}}}}
+    for page, visuals in layout_pages():
+        for v in visuals:
+            if v["visual"]["visualType"] != "card" or _box(v)[2] > 192:
+                continue
+            background = v["visual"].get("visualContainerObjects", {}).get("background")
+            assert background and background[0]["properties"] == off, (
                 f"{page['displayName']}: {v['name']}"
             )
 
@@ -2656,9 +2781,48 @@ def test_pages_use_the_palette_and_the_font_minimum():
         for v in visuals:
             assert colours(v) <= PALETTE, f"{page['displayName']}: {v['name']}"
             assert all(size >= MIN_POINTS for size in font_sizes(v)), v["name"]
+
+
+def test_spike_page_is_hidden_and_outside_the_layout():
+    spike = report_layout.spike()
+    assert spike.hidden and spike.key == "spike"
+    assert spike.key not in {p.key for p in report_layout.pages()}
+    assert all(v.alt for v in spike.visuals)
 ```
 
-- [ ] **Step 2: Run them.** `pytest tests/test_powerbi_report.py -v`. Expected: FAIL with `ImportError: cannot import name 'report_layout'`.
+Append to `tests/test_pbir.py`, and change its import to `from marche_stats import cli, pbir`:
+
+```python
+def test_cli_scaffold_report_rejects_an_unknown_page(tmp_path):
+    with pytest.raises(SystemExit):
+        cli.main(["scaffold-report", "--powerbi", str(tmp_path), "--force", "nowhere"])
+
+
+def test_cli_scaffold_report_warns_when_desktop_is_open(tmp_path, monkeypatch, capsys):
+    calls = []
+    monkeypatch.setattr(cli, "_desktop_running", lambda: True)
+    monkeypatch.setattr(
+        pbir, "scaffold", lambda pages, definition, force: calls.append(force) or ["Overview"]
+    )
+    assert cli.main(["scaffold-report", "--powerbi", str(tmp_path), "--force", "overview"]) == 0
+    out, err = capsys.readouterr()
+    assert out == "wrote Overview\n"
+    assert "Power BI Desktop is open" in err
+    assert calls == [["overview"]]
+
+
+def test_cli_scaffold_report_explains_a_locked_file(tmp_path, monkeypatch, capsys):
+    def locked(pages, definition, force):
+        raise PermissionError(13, "Access is denied", "pages/x/page.json")
+
+    monkeypatch.setattr(cli, "_desktop_running", lambda: False)
+    monkeypatch.setattr(pbir, "scaffold", locked)
+    assert cli.main(["scaffold-report", "--powerbi", str(tmp_path)]) == 1
+    _, err = capsys.readouterr()
+    assert err.startswith("cannot replace pages/x/page.json: a file is locked")
+```
+
+- [ ] **Step 2: Run them.** `pytest tests/test_powerbi_report.py tests/test_pbir.py -v`. Expected: `test_powerbi_report.py` fails with `ImportError: cannot import name 'report_layout'`; the CLI tests of `test_pbir.py` fail (`cli` has no `_desktop_running`).
 
 - [ ] **Step 3: Create** `src/marche_stats/report_layout.py` with the shared parts and the Overview page:
 
@@ -2672,7 +2836,7 @@ done in Power BI Desktop, and Desktop's saved files are then the source of truth
 
 from __future__ import annotations
 
-from marche_stats.pbir import C, Field, M, Page, Visual, in_filter, literal, solid
+from marche_stats.pbir import C, Field, M, Page, Visual, field_expr, in_filter, literal, solid
 
 ACCENT, TEXT, MUTED = "#00753A", "#15201A", "#4F5A53"
 BASE, SURFACE, RULE = "#F5F6F3", "#ECEEEA", "#C9CEC9"
@@ -2720,7 +2884,13 @@ def textbox(
         }
         paragraphs.append({"textRuns": [{"value": line.removeprefix("# "), "textStyle": style}]})
     return Visual(
-        key, "textbox", x, y, w, h, objects={"general": [{"properties": {"paragraphs": paragraphs}}]}
+        key,
+        "textbox",
+        x,
+        y,
+        w,
+        h,
+        objects={"general": [{"properties": {"paragraphs": paragraphs}}]},
     )
 
 
@@ -2734,10 +2904,23 @@ def card(
     size: float = 12,
     color: str = TEXT,
     title: str | None = None,
-    alt: str | None = None,
+    alt: str | Field | None = None,
     filters: tuple[dict, ...] = (),
+    font: str | None = None,
+    background: bool = True,
 ) -> Visual:
-    """Classic card showing one measure (a number, or a text measure for the story)."""
+    """Classic card showing one measure (a number, or a text measure for the story).
+
+    alt is required (pbir raises without it): a literal, or M(<text measure>) to have the
+    shown text read aloud. font None keeps the theme's Segoe UI Semibold. background False
+    drops the theme's light background, for cards on the dark navigation rail.
+    """
+    labels = {"color": solid(color), "fontSize": literal(size)}
+    if font:
+        labels["fontFamily"] = literal(font)
+    container = None
+    if not background:
+        container = {"background": [{"properties": {"show": literal(False)}}]}
     return Visual(
         key,
         "card",
@@ -2747,12 +2930,13 @@ def card(
         h,
         roles={"Values": [M(measure)]},
         title=title,
-        alt=alt or measure,
+        alt=alt,
         objects={
-            "labels": [{"properties": {"color": solid(color), "fontSize": literal(size)}}],
+            "labels": [{"properties": labels}],
             "categoryLabels": [{"properties": {"show": literal(False)}}],
         },
         filters=list(filters),
+        container=container,
     )
 
 
@@ -2792,7 +2976,7 @@ def measure_image(key: str, x: int, y: int, w: int, h: int, measure: str, alt: s
         h,
         alt=alt,
         objects={
-            "general": [{"properties": {"imageUrl": {"expr": {"Measure": {"Expression": {"SourceRef": {"Entity": "_Measures"}}, "Property": measure}}}}}],
+            "general": [{"properties": {"imageUrl": {"expr": field_expr(M(measure))}}}],
             "imageScaling": [{"properties": {"imageScalingType": literal("Fit")}}],
         },
     )
@@ -2809,7 +2993,16 @@ def slicer(
     mode: str = "Basic",
     header: bool = False,
     filters: tuple[dict, ...] = (),
+    horizontal: bool = False,
 ) -> Visual:
+    """Single-select slicer; horizontal lays a Basic slicer out as a row of buttons."""
+    objects = {
+        "data": [{"properties": {"mode": literal(mode)}}],
+        "selection": [{"properties": {"singleSelect": literal(True)}}],
+        "header": [{"properties": {"show": literal(header)}}],
+    }
+    if horizontal:
+        objects["general"] = [{"properties": {"orientation": literal(1)}}]
     return Visual(
         key,
         "slicer",
@@ -2819,11 +3012,7 @@ def slicer(
         h,
         roles={"Values": [column]},
         alt=alt,
-        objects={
-            "data": [{"properties": {"mode": literal(mode)}}],
-            "selection": [{"properties": {"singleSelect": literal(True)}}],
-            "header": [{"properties": {"show": literal(header)}}],
-        },
+        objects=objects,
         filters=list(filters),
     )
 
@@ -2859,18 +3048,57 @@ def ranked_bars(
 ) -> Visual:
     """Bars of the focus region, peers, country and EU, highest first."""
     return chart(
-        key, "clusteredBarChart", x, y, w, h, title, C("Geo", "Name"), [M(measure)], alt,
-        filters=(AREAS,), sort=(M(measure), "Descending"),
+        key,
+        "clusteredBarChart",
+        x,
+        y,
+        w,
+        h,
+        title,
+        C("Geo", "Name"),
+        [M(measure)],
+        alt,
+        filters=(AREAS,),
+        sort=(M(measure), "Descending"),
     )
 
 
 def table(
-    key: str, x: int, y: int, w: int, h: int, title: str, fields: list[Field], alt: str,
+    key: str,
+    x: int,
+    y: int,
+    w: int,
+    h: int,
+    title: str,
+    fields: list[Field],
+    alt: str,
     filters: tuple[dict, ...] = (),
 ) -> Visual:
     return Visual(
-        key, "tableEx", x, y, w, h, roles={"Values": fields}, title=title, alt=alt,
+        key,
+        "tableEx",
+        x,
+        y,
+        w,
+        h,
+        roles={"Values": fields},
+        title=title,
+        alt=alt,
         filters=list(filters),
+    )
+
+
+def navigator(key: str, x: int, y: int, w: int, h: int) -> Visual:
+    """Page navigator: one button per visible page, stacked vertically."""
+    return Visual(
+        key,
+        NAVIGATOR_TYPE,
+        x,
+        y,
+        w,
+        h,
+        alt="Report pages",
+        objects={"layout": [{"properties": {"orientation": literal(1)}}]},
     )
 
 
@@ -2881,22 +3109,68 @@ def chrome(prefix: str, page_name: str) -> list[Visual]:
         shape("surface", 640, 0, 640, 720, SURFACE),
         shape("rule", 640, 0, 1, 720, RULE),
         textbox("nav-kicker", 24, 32, 144, 24, "Regional profile", color=RULE),
-        card("nav-region", 24, 56, 144, 32, "Focus region name", size=18, color=BASE,
-             alt="Focus region"),
-        Visual("navigator", NAVIGATOR_TYPE, 16, 112, 160, 320),
-        card("nav-data", 24, 656, 144, 32, "Data up to", size=10.5, color=RULE,
-             alt="Latest data"),
+        card(
+            "nav-region",
+            24,
+            56,
+            144,
+            32,
+            "Focus region name",
+            size=18,
+            color=BASE,
+            alt=M("Focus region name"),
+            background=False,
+        ),
+        navigator("navigator", 16, 112, 160, 320),
+        card(
+            "nav-data",
+            24,
+            656,
+            144,
+            32,
+            "Data up to",
+            size=10.5,
+            color=RULE,
+            alt=M("Data up to"),
+            background=False,
+        ),
         textbox("eyebrow", STORY_X, 32, STORY_W, 24, page_name.upper()),
-        card("headline", STORY_X, 72, STORY_W, 96, f"{prefix} headline lead", size=30,
-             alt="Headline"),
-        card("headline-accent", STORY_X, 168, STORY_W, 48, f"{prefix} headline accent",
-             size=30, color=ACCENT, alt="Headline, key phrase"),
-        card("paragraph", STORY_X, 232, STORY_W, 96, f"{prefix} paragraph", alt="Summary"),
+        card(
+            "headline",
+            STORY_X,
+            72,
+            STORY_W,
+            96,
+            f"{prefix} headline lead",
+            size=30,
+            alt=M(f"{prefix} headline lead"),
+        ),
+        card(
+            "headline-accent",
+            STORY_X,
+            168,
+            STORY_W,
+            48,
+            f"{prefix} headline accent",
+            size=30,
+            color=ACCENT,
+            alt=M(f"{prefix} headline accent"),
+        ),
+        card(
+            "paragraph",
+            STORY_X,
+            232,
+            STORY_W,
+            96,
+            f"{prefix} paragraph",
+            alt=M(f"{prefix} paragraph"),
+            font="Segoe UI",
+        ),
     ]
 
 
 def source(text: str) -> Visual:
-    return textbox("source", STORY_X, 664, STORY_W, 24, text)
+    return textbox("source", STORY_X, 656, STORY_W, 40, text)
 
 
 KPIS = (
@@ -2913,36 +3187,166 @@ def overview() -> Page:
     v = chrome("Overview", "Overview")
     v.append(
         image(
-            "photo", STORY_X, SLOT_Y, STORY_W, SLOT_H, "photo-overview-valadier.jpg",
-            "The Tempio del Valadier, a white octagonal church under a rock overhang in the Frasassi gorge",
+            "photo",
+            STORY_X,
+            SLOT_Y,
+            STORY_W,
+            SLOT_H,
+            "photo-overview-valadier.jpg",
+            "The Tempio del Valadier, a white octagonal church"
+            " under a rock overhang in the Frasassi gorge",
         )
     )
     v.append(source("Eurostat, Chamber of Commerce of the Marche · Photo: Kimahri88, CC0"))
     v.append(textbox("compare-label", DASH_X, 40, 280, 24, "Compare with"))
     v.append(
-        slicer("benchmark", RIGHT_X, 32, HALF_W, 40, C("Benchmark", "Benchmark"),
-               "Benchmark for the KPI gaps: country, EU or peer average")
+        slicer(
+            "benchmark",
+            RIGHT_X,
+            32,
+            HALF_W,
+            40,
+            C("Benchmark", "Benchmark"),
+            "Benchmark for the KPI gaps: country, EU or peer average",
+            horizontal=True,
+        )
     )
     for i, (key, title, value, gap) in enumerate(KPIS):
         x, y = THIRDS[i % 3], 96 + (i // 3) * 144
-        v.append(card(f"kpi-{key}", x, y, THIRD_W, 88, value, size=24, title=title,
-                      alt=f"{title} of the focus region", filters=(FOCUS,)))
-        v.append(card(f"kpi-{key}-gap", x, y + 88, THIRD_W, 32, gap, size=10.5,
-                      alt=f"{title}: gap to the benchmark", filters=(FOCUS,)))
+        v.append(
+            card(
+                f"kpi-{key}",
+                x,
+                y,
+                THIRD_W,
+                88,
+                value,
+                size=24,
+                title=title,
+                alt=f"{title} of the focus region",
+                filters=(FOCUS,),
+            )
+        )
+        v.append(
+            card(
+                f"kpi-{key}-gap",
+                x,
+                y + 88,
+                THIRD_W,
+                48,
+                gap,
+                size=10.5,
+                alt=M(gap),
+                filters=(FOCUS,),
+                font="Segoe UI",
+            )
+        )
     v.append(
-        chart("population", "lineChart", DASH_X, 384, HALF_W, 304, "Population on 1 January",
-              C("Calendar", "Year"), [M("Population")],
-              "Line chart of the focus region's population on 1 January, by year",
-              filters=(FOCUS,))
+        chart(
+            "population",
+            "lineChart",
+            DASH_X,
+            384,
+            HALF_W,
+            304,
+            "Population on 1 January",
+            C("Calendar", "Year"),
+            [M("Population")],
+            "Line chart of the focus region's population on 1 January, by year",
+            filters=(FOCUS,),
+        )
     )
     v.append(
-        chart("companies", "lineChart", RIGHT_X, 384, HALF_W, 304,
-              "Active companies in December", C("Calendar", "Year"),
-              [M("Active companies, December")],
-              "Line chart of the focus region's active companies in December, by year",
-              filters=(FOCUS,))
+        chart(
+            "companies",
+            "lineChart",
+            RIGHT_X,
+            384,
+            HALF_W,
+            304,
+            "Active companies in December",
+            C("Calendar", "Year"),
+            [M("Active companies, December")],
+            "Line chart of the focus region's active companies in December, by year",
+            filters=(FOCUS,),
+        )
     )
     return Page("overview", "Overview", v)
+
+
+def spike() -> Page:
+    """Hidden page for the Task 15 Desktop spike: one visual of each kind Overview lacks.
+
+    Not in pages(): it is scaffolded once by hand, checked in Desktop, then deleted.
+    """
+    xs, ys, w, h = (16, 440, 864), (16, 256, 496), 400, 224
+    slots = [(x, y, w, h) for y in ys for x in xs]
+    pyramid = [M("Population (men, negative)"), M("Population (women)")]
+    visuals = [
+        measure_image("map", *slots[0], "Map SVG", "Spike: map of the provinces"),
+        slicer(
+            "year", *slots[1], C("Calendar", "Year"), "Spike: year", mode="Dropdown", header=True
+        ),
+        chart(
+            "pyramid",
+            "barChart",
+            *slots[2],
+            "Spike: pyramid",
+            C("AgeGroup", "Name"),
+            pyramid,
+            "Spike: population pyramid",
+            filters=(FOCUS, in_filter(C("AgeGroup", "IsBand"), [True])),
+        ),
+        Visual(
+            "dots",
+            "scatterChart",
+            *slots[3],
+            roles={
+                "Category": [C("Benchmark point", "Point")],
+                "Series": [C("Benchmark point", "Role")],
+                "X": [M("Dot position")],
+                "Y": [M("Dot row")],
+            },
+            title="Spike: dot plot",
+            alt="Spike: dot plot",
+        ),
+        chart(
+            "season",
+            "clusteredColumnChart",
+            *slots[4],
+            "Spike: seasonal effect",
+            C("Seasonality", "MonthName"),
+            [M("Seasonal effect")],
+            "Spike: seasonal effect",
+        ),
+        Visual(
+            "values",
+            "multiRowCard",
+            *slots[5],
+            roles={"Values": [M("Population"), M("Share aged 65+")]},
+            alt="Spike: multi-row card",
+            filters=[FOCUS],
+        ),
+        ranked_bars("ranked", *slots[6], "Spike: aged 65+", "Share aged 65+", "Spike: ranked"),
+        table(
+            "table",
+            *slots[7],
+            "Spike: table",
+            [C("Geo", "Name"), M("Share aged 65+")],
+            "Spike: table",
+            filters=(PROVINCES,),
+        ),
+        Visual(
+            "matrix",
+            "pivotTable",
+            *slots[8],
+            roles={"Rows": [C("Geo", "Name")], "Values": [M("Share aged 65+")]},
+            title="Spike: matrix",
+            alt="Spike: matrix",
+            filters=[AREAS],
+        ),
+    ]
+    return Page("spike", "Spike", visuals, hidden=True)
 
 
 def pages() -> list[Page]:
@@ -2952,15 +3356,41 @@ def pages() -> list[Page]:
 PAGE_NAMES = [p.name for p in pages()]
 ```
 
-Run `ruff format src` afterwards: it re-wraps the long lines; the content stays the same.
+`spike()` is not in `pages()`: Task 15 writes it once by hand and deletes it. A visual other than a shape or a textbox without alt text makes `scaffold()` raise; `alt=M(...)` binds the alt text to a text measure, so a screen reader reads what the card shows.
 
-- [ ] **Step 4: Add the CLI step.** In `cli.py`: add `pbir, report_layout` to the `from marche_stats import …` line; add `"scaffold-report"` to the step choices; add
+- [ ] **Step 4: Add the CLI step.** In `cli.py`: add `pbir, report_layout` to the `from marche_stats import …` line and `import subprocess`, `import sys` to the imports; add `"scaffold-report"` to the step choices; after `ROOT = …` add
+
+```python
+LOCKED = (
+    "cannot replace {}: a file is locked — close Power BI Desktop"
+    " (antivirus/OneDrive can also hold files briefly) and run again"
+)
+
+
+def _desktop_running() -> bool:
+    """True if Power BI Desktop is open (Windows only)."""
+    if sys.platform != "win32":
+        return False
+    try:
+        listing = subprocess.run(
+            ["tasklist", "/FI", "IMAGENAME eq PBIDesktop.exe", "/NH"],
+            capture_output=True,
+            text=True,
+            check=False,
+        ).stdout
+    except OSError:
+        return False
+    return "pbidesktop.exe" in listing.lower()
+```
+
+add
 
 ```python
     parser.add_argument(
         "--force",
         action="append",
         default=[],
+        choices=[p.key for p in report_layout.pages()],
         metavar="PAGE",
         help="scaffold-report: rewrite this page (repeatable)",
     )
@@ -2970,8 +3400,18 @@ and, before `if args.step == "check-sources":`,
 
 ```python
     if args.step == "scaffold-report":
+        if _desktop_running():
+            print(
+                "warning: Power BI Desktop is open: close it without saving,"
+                " or its next save may overwrite these pages",
+                file=sys.stderr,
+            )
         definition = args.powerbi / "marche-regional-profile.Report" / "definition"
-        written = pbir.scaffold(report_layout.pages(), definition, force=args.force)
+        try:
+            written = pbir.scaffold(report_layout.pages(), definition, force=args.force)
+        except PermissionError as error:
+            print(LOCKED.format(error.filename or definition), file=sys.stderr)
+            return 1
         print("\n".join(f"wrote {name}" for name in written) or "no new pages")
         return 0
 ```
@@ -2988,7 +3428,7 @@ and, before `if args.step == "check-sources":`,
 marche-stats scaffold-report
 ```
 
-Expected output: `wrote Overview`.
+Expected output: `wrote Overview`. If it first warns that Power BI Desktop is open, close Desktop without saving and run `marche-stats scaffold-report --force overview`. A `cannot replace … a file is locked` error leaves the old page intact: close whatever holds the file and run it again.
 
 - [ ] **Step 7: Run the tests.** `pytest -q`. Expected: all pass, including `test_report_fields_exist_in_model` (Phase A), which checks every field of the new visuals.
 
@@ -3004,21 +3444,46 @@ git commit -m "Scaffold the navigation, the story zone and the Overview page"
 
 ### Task 15: Desktop spike on the Overview page (user, then executor)
 
-The PBIR forms of the textbox, shape, image, page navigator and card come from documentation and earlier projects, not from a Desktop save. This task checks them before seven more pages are generated.
+The PBIR forms of the textbox, shape, image, page navigator, card and slicer come from documentation and earlier projects, not from a Desktop save. This task checks them before seven more pages are generated, together with the visual types only the later pages use (on a temporary hidden page, "Spike").
+
+- [ ] **Step 0 (executor): Scaffold the spike page.** Desktop closed (`tasklist /FI "IMAGENAME eq PBIDesktop.exe"` lists nothing). `report_layout.spike()` is a hidden page "Spike" with one visual of each kind Overview does not use, bound to real model fields: the measure image (`Map SVG`), a Dropdown slicer with header (`Calendar[Year]`), a `barChart` (the pyramid), a `scatterChart` (the dot plot), a `clusteredColumnChart` (seasonal effect), a `multiRowCard`, a ranked `clusteredBarChart`, a `tableEx` and a `pivotTable`. It is not in `pages()`, so `scaffold-report` never writes it. Write it once, from the repository root:
+
+```bash
+.venv/Scripts/python -c "from pathlib import Path; from marche_stats import pbir, report_layout; print(pbir.scaffold([report_layout.spike()], Path('powerbi/marche-regional-profile.Report/definition')))"
+```
+
+Expected: `['Spike']`, a new folder `…Report/definition/pages/73cc33b96ddcddc98995/` and that name first in `pageOrder` of `pages.json`. Do not commit it: Step 3 deletes it.
 
 - [ ] **Step 1 (user): Open the report.** Open `powerbi/marche-regional-profile.pbip`. Expected on Overview, against the canvas artboard "D · Story + dashboard":
   - the dark navigation bar with "Regional profile", the region name, the page navigator listing the visible pages (only Overview at this point; Model check is hidden) and "Data up to Mar 2025";
   - the light story column with OVERVIEW, the two-part headline, the paragraph, the Valadier photo and the source line;
   - the surface on the right with "Compare with", the benchmark buttons, six KPI cards with their gap lines, and the two line charts.
 
+  Check in particular:
+  - the region name and "Data up to …" are readable on the dark bar, light text with no light box behind them;
+  - the benchmark slicer is a row of horizontal buttons (Country, EU, Peers) with no title above it;
+  - the page navigator stacks its buttons vertically;
+  - the headline, the headline accent, the paragraph and the six KPI gap lines wrap inside their cards and are not cut off with "…";
+  - the three shapes have their own fill (bar `#15201A`, surface `#ECEEEA`, rule `#C9CEC9`), not the first data colour `#00753A`;
+  - on the hidden page "Spike" (visible in edit mode), each of the nine visuals renders without an error icon: map image, year dropdown, pyramid bars, dot plot, column chart, multi-row card, ranked bars, table, matrix.
+
 - [ ] **Step 2 (user): Fix what Desktop did not accept.** For each visual that is missing, blank or shows an error: delete it, insert the same visual type at the same position and size, bind the same fields (Task 14, `overview()`), and set the same title and alt text. Typical cases:
   - the page navigator (*Insert → Buttons → Navigator → Page navigator*);
   - the photo (*Insert → Image*, then pick `photo-overview-valadier.jpg` from the report's resources);
-  - a textbox whose text is missing (*Insert → Text box*, type the text, Segoe UI 10.5 pt, colour `#4F5A53`).
+  - a textbox whose text is missing (*Insert → Text box*, type the text, Segoe UI 10.5 pt, colour `#4F5A53`);
+  - nav text hidden by a light box: select the card, *Format → General → Effects → Background* off;
+  - benchmark slicer not in a row: *Format → Visual → Slicer settings → Options → Orientation* = *Horizontal*; *Format → General → Title* off;
+  - page navigator not vertical: *Format → Visual → Grid layout → Orientation* = *Vertical*;
+  - a shape filled with the data colour: *Format → Shape → Fill*, colour as listed in Step 1;
+  - a Spike visual that fails: insert the same visual type at the same position and size and bind the same fields (`spike()` in `report_layout.py`).
 
-  Then save and close Desktop. If the headline text does not wrap in the classic card, switch that card to the new *Card* visual, turn off its label, turn on text wrap, and save.
+  Remove the decorative shapes from the tab order, so keyboard and screen-reader users skip them: *View → Selection → Tab order*, then hide `nav`, `surface` and `rule` from the tab order. Step 3 learns the form Desktop saves for this.
 
-- [ ] **Step 3 (executor): Learn Desktop's form.** Run `git diff --stat powerbi/marche-regional-profile.Report` and `git diff` on each changed or new `visual.json`. For each visual type Desktop rewrote, update the matching helper in `report_layout.py` (`textbox`, `shape`, `image`, `measure_image`, `card`, `slicer`, or `NAVIGATOR_TYPE`) so that it writes what Desktop wrote: same `visualType`, same object and property names, same expression form. Keep positions, fields, titles and alt text as they are. Do not re-run `scaffold-report` on Overview (Desktop's files stay).
+  If the headline, the paragraph or a KPI gap line is cut off in the classic card, switch that card to the new *Card* visual, turn off its label, turn on text wrap. Then save and close Desktop.
+
+- [ ] **Step 3 (executor): Learn Desktop's form.** Run `git diff --stat powerbi/marche-regional-profile.Report` and `git diff` on each changed or new `visual.json`. For each visual type Desktop rewrote, on Overview and on Spike, update the matching helper in `report_layout.py` (`textbox`, `shape`, `image`, `measure_image`, `card`, `slicer`, `navigator`, `chart`, `table`) or the `Visual(…)` calls of Tasks 17–18 (`scatterChart`, `pivotTable`, `multiRowCard`) so that it writes what Desktop wrote: same `visualType`, same object and property names, same expression form, including the tab-order setting of the shapes. Keep positions, fields, titles and alt text as they are. Do not re-run `scaffold-report` on Overview (Desktop's files stay).
+
+  Then delete the spike page: remove the folder `…Report/definition/pages/73cc33b96ddcddc98995/` and its entry in `pageOrder` of `pages.json`; if `activePageName` is `73cc33b96ddcddc98995`, set it to `fed758b7a842befdf49b` (Overview). `git status --short powerbi` must not list the spike folder.
 
 - [ ] **Step 4: Run the tests.** `pytest -q`. If `test_pages_use_the_palette_and_the_font_minimum` fails on a value Desktop wrote, set that value in Desktop to a palette colour or to 10.5 pt and save again.
 
@@ -3104,7 +3569,8 @@ def education() -> Page:
     v.append(textbox("level-label", DASH_X, 40, 120, 24, "ISCED level"))
     v.append(
         slicer("level", 800, 32, 448, 40, C("ISCED", "Group"), "Filter by education level",
-               filters=(in_filter(C("ISCED", "Group"), ["ISCED 0-3", "ISCED 4", "ISCED 5-8"]),))
+               filters=(in_filter(C("ISCED", "Group"), ["ISCED 0-3", "ISCED 4", "ISCED 5-8"]),),
+               horizontal=True)
     )
     v.append(
         chart("butterfly", "barChart", DASH_X, 96, DASH_W, 304,
@@ -3249,7 +3715,8 @@ def benchmark() -> Page:
         slicer("compare", 800, 32, 448, 40, C("Compare to", "Comparison"),
                "Show values or differences from a benchmark",
                filters=(in_filter(C("Compare to", "Comparison"),
-                                  ["Value", "vs Country", "vs EU", "vs Peers avg"]),))
+                                  ["Value", "vs Country", "vs EU", "vs Peers avg"]),),
+               horizontal=True)
     )
     v.append(
         Visual("matrix", "pivotTable", DASH_X, 96, DASH_W, 432,
@@ -3354,8 +3821,9 @@ def province_detail() -> Page:
         x, y = THIRDS[i % 3], 32 + (i // 3) * 144
         v.append(card(f"kpi-{i}", x, y, THIRD_W, 88, "Province indicator value", size=24,
                       title=name, alt=f"{name} of the province", filters=(only,)))
-        v.append(card(f"kpi-{i}-gap", x, y + 88, THIRD_W, 32, "Province gap to region",
-                      size=10.5, alt=f"{name}: gap to the region", filters=(only,)))
+        v.append(card(f"kpi-{i}-gap", x, y + 88, THIRD_W, 48, "Province gap to region",
+                      size=10.5, alt=M("Province gap to region"), filters=(only,),
+                      font="Segoe UI"))
     v.append(
         chart("sectors", "clusteredBarChart", DASH_X, 320, DASH_W, 368,
               "Change by sector since December 2009", C("Sector", "ShortName"),
