@@ -214,3 +214,28 @@ def test_report_visual_measures():
         "Area name",
         "Flags text",
     } <= model_tables()["_Measures"]["measures"]
+
+
+def test_kpi_province_map_and_dot_measures():
+    assert {
+        "KPI gap Population",
+        "KPI gap Share aged 65+",
+        "KPI gap Crude death rate",
+        "KPI gap Unemployment rate",
+        "KPI gap GDP per inhabitant",
+        "KPI gap Active companies",
+        "Province indicator value",
+        "Province indicator label",
+        "Province gap to region",
+        "Highlight population change",
+        "Highlight aged 65+",
+        "Highlight death rate",
+        "Highlight companies",
+        "Highlight GDP",
+        "Map SVG",
+        "Dot value",
+        "Dot position",
+        "Dot row",
+        "Rank row label",
+        "Benchmark years",
+    } <= model_tables()["_Measures"]["measures"]

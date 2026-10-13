@@ -562,6 +562,256 @@ table _Measures
 		formatString: #,0
 		displayFolder: Report visuals
 
+
+	/// Five-year population change of the focus region and of the benchmark chosen on Overview.
+	measure 'KPI gap Population' =
+			VAR Label = SELECTEDVALUE ( Benchmark[Benchmark], [Country name] )
+			VAR Item = SELECTEDVALUE ( Benchmark[ValueItem], "Country" )
+			VAR Own = [Population change 5y %]
+			VAR Other = CALCULATE ( [Population change 5y %], 'Compare to'[Comparison] = Item )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( Own ),
+			        IF ( Own < 0, "−", "+" ) & FORMAT ( ABS ( Own ) * 100, "0.0" ) & " % in 5 years · " & Label & " "
+			            & IF ( Other < 0, "−", "+" ) & FORMAT ( ABS ( Other ) * 100, "0.0" ) & " %"
+			    )
+		displayFolder: Report text
+
+	/// Gap in the share aged 65+ to the benchmark chosen on Overview, in percentage points.
+	measure 'KPI gap Share aged 65+' =
+			VAR Label = SELECTEDVALUE ( Benchmark[Benchmark], [Country name] )
+			VAR Item = SELECTEDVALUE ( Benchmark[Item], "vs Country" )
+			VAR Gap = CALCULATE ( [Share aged 65+], 'Compare to'[Comparison] = Item )
+			VAR Year = YEAR ( CALCULATE ( [_Ref date Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "65+" ) )
+			RETURN IF ( NOT ISBLANK ( Gap ), IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ) * 100, "0.0" ) & " pp vs " & Label & " · " & Year )
+		displayFolder: Report text
+
+	/// Gap in the crude death rate to the benchmark chosen on Overview.
+	measure 'KPI gap Crude death rate' =
+			VAR Label = SELECTEDVALUE ( Benchmark[Benchmark], [Country name] )
+			VAR Item = SELECTEDVALUE ( Benchmark[Item], "vs Country" )
+			VAR Gap = CALCULATE ( [Crude death rate per 1,000], 'Compare to'[Comparison] = Item )
+			RETURN IF ( NOT ISBLANK ( Gap ), IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ), "0.0" ) & " vs " & Label & " · " & YEAR ( [_Ref date Deaths] ) )
+		displayFolder: Report text
+
+	/// Gap in the unemployment rate to the benchmark chosen on Overview, in percentage points.
+	measure 'KPI gap Unemployment rate' =
+			VAR Label = SELECTEDVALUE ( Benchmark[Benchmark], [Country name] )
+			VAR Item = SELECTEDVALUE ( Benchmark[Item], "vs Country" )
+			VAR Gap = CALCULATE ( [Unemployment rate], 'Compare to'[Comparison] = Item )
+			RETURN IF ( NOT ISBLANK ( Gap ), IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ) * 100, "0.0" ) & " pp vs " & Label & " · " & YEAR ( [_Ref date Unemployment] ) )
+		displayFolder: Report text
+
+	/// Gap in GDP per inhabitant to the benchmark chosen on Overview, in euro.
+	measure 'KPI gap GDP per inhabitant' =
+			VAR Label = SELECTEDVALUE ( Benchmark[Benchmark], [Country name] )
+			VAR Item = SELECTEDVALUE ( Benchmark[Item], "vs Country" )
+			VAR Gap = CALCULATE ( [GDP per inhabitant (EUR)], 'Compare to'[Comparison] = Item )
+			RETURN IF ( NOT ISBLANK ( Gap ), IF ( Gap < 0, "−€", "+€" ) & FORMAT ( ABS ( Gap ), "#,0" ) & " vs " & Label & " · " & YEAR ( [_Ref date GDP] ) )
+		displayFolder: Report text
+
+	/// Change in active companies since the first full-year December (no benchmark: the
+	/// register covers the focus region only).
+	measure 'KPI gap Active companies' =
+			VAR Change = [Active companies change %]
+			VAR FirstYear = YEAR ( CALCULATE ( MIN ( Companies[Date] ), REMOVEFILTERS (), Calendar[MonthNumber] = 12 ) )
+			RETURN IF ( NOT ISBLANK ( Change ), IF ( Change < 0, "−", "+" ) & FORMAT ( ABS ( Change ) * 100, "0.0" ) & " % since December " & FirstYear )
+		displayFolder: Report text
+
+	/// Value of the indicator chosen in the Province indicator field parameter (default:
+	/// companies per 1,000 residents), with that indicator's format.
+	measure 'Province indicator value' =
+			SWITCH (
+			    SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ),
+			    0, [Population change 5y %],
+			    1, [Share aged 65+],
+			    2, [Crude death rate per 1,000],
+			    3, [Companies per 1,000 residents],
+			    4, [GDP per inhabitant (EUR)]
+			)
+		formatStringDefinition = SWITCH ( SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ), 0, "+0.0%;-0.0%;0.0%", 1, "0.0%", 4, "#,0", "0.0" )
+		displayFolder: Report visuals
+
+	/// Province indicator value as text, as the map and the headlines print it.
+	measure 'Province indicator label' =
+			VAR v = [Province indicator value]
+			RETURN
+			    IF (
+			        NOT ISBLANK ( v ),
+			        SWITCH (
+			            SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ),
+			            0, IF ( v < 0, "−", "+" ) & FORMAT ( ABS ( v ) * 100, "0.0" ) & " %",
+			            1, FORMAT ( v * 100, "0.0" ) & " %",
+			            4, "€" & FORMAT ( v / 1000, "0.0" ) & "K",
+			            FORMAT ( v, "0.0" )
+			        )
+			    )
+		displayFolder: Report text
+
+	/// Gap between the province and the focus region for the chosen indicator. GDP compares
+	/// the same year: provincial GDP lags the regional series.
+	measure 'Province gap to region' =
+			VAR Order = SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 )
+			VAR Region = [Focus region name]
+			VAR v = [Province indicator value]
+			VAR d = [_Ref date GDP]
+			VAR r =
+			    IF (
+			        Order = 4,
+			        CALCULATE ( SUM ( GDP[Value] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", GDP[Date] = d, GDP[UnitCode] = "EUR_HAB" ),
+			        CALCULATE ( [Province indicator value], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
+			    )
+			VAR Gap = v - r
+			RETURN
+			    IF (
+			        NOT ISBLANK ( v ) && NOT ISBLANK ( r ),
+			        SWITCH (
+			            Order,
+			            0, IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ) * 100, "0.0" ) & " pp vs " & Region,
+			            1, IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ) * 100, "0.0" ) & " pp vs " & Region,
+			            4, IF ( Gap < 0, "−€", "+€" ) & FORMAT ( ABS ( Gap ), "#,0" ) & " vs " & Region & " · " & YEAR ( d ),
+			            IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ), "0.0" ) & " vs " & Region
+			        )
+			    )
+		displayFolder: Report text
+
+	/// Background of the Provinces table column when its indicator is the one on the map.
+	measure 'Highlight population change' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" ) = "Population change 5y %", "#D0E3D7" )
+		displayFolder: Report visuals
+
+	/// Background of the Provinces table column when its indicator is the one on the map.
+	measure 'Highlight aged 65+' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" ) = "Share aged 65+", "#D0E3D7" )
+		displayFolder: Report visuals
+
+	/// Background of the Provinces table column when its indicator is the one on the map.
+	measure 'Highlight death rate' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" ) = "Crude death rate per 1,000", "#D0E3D7" )
+		displayFolder: Report visuals
+
+	/// Background of the Provinces table column when its indicator is the one on the map.
+	measure 'Highlight companies' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" ) = "Companies per 1,000 residents", "#D0E3D7" )
+		displayFolder: Report visuals
+
+	/// Background of the Provinces table column when its indicator is the one on the map.
+	measure 'Highlight GDP' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" ) = "GDP per inhabitant (EUR)", "#D0E3D7" )
+		displayFolder: Report visuals
+
+	/// SVG map of the provinces for the indicator chosen in Province indicator: four equal
+	/// classes between the lowest and highest province, each province labelled with its name
+	/// and value, legend on the right. Shown in an Image visual (data category Image URL).
+	measure 'Map SVG' =
+			VAR Ind = SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 )
+			VAR IndName = SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" )
+			VAR Rows =
+			    CALCULATETABLE (
+			        ADDCOLUMNS (
+			            VALUES ( Geo[Code] ),
+			            "@name", CALCULATE ( SELECTEDVALUE ( Geo[Name] ) ),
+			            "@v", [Province indicator value],
+			            "@label", [Province indicator label],
+			            "@path", LOOKUPVALUE ( ProvinceShape[Path], ProvinceShape[GeoCode], Geo[Code] ),
+			            "@x", LOOKUPVALUE ( ProvinceShape[LabelX], ProvinceShape[GeoCode], Geo[Code] ),
+			            "@y", LOOKUPVALUE ( ProvinceShape[LabelY], ProvinceShape[GeoCode], Geo[Code] )
+			        ),
+			        REMOVEFILTERS ( Geo ),
+			        Geo[Role] = "Province"
+			    )
+			VAR Lo = MINX ( Rows, [@v] )
+			VAR Hi = MAXX ( Rows, [@v] )
+			VAR Step = ( Hi - Lo ) / 4
+			VAR Classes =
+			    ADDCOLUMNS (
+			        Rows,
+			        "@class", IF ( Step = 0, 4, MIN ( 4, INT ( ( [@v] - Lo ) / Step ) + 1 ) )
+			    )
+			VAR Painted =
+			    ADDCOLUMNS (
+			        Classes,
+			        "@fill", SWITCH ( [@class], 1, "#D0E3D7", 2, "#7AB696", 3, "#4A9C72", "#00753A" ),
+			        "@ink", IF ( [@class] = 4, "#F5F6F3", "#15201A" )
+			    )
+			VAR Shapes =
+			    CONCATENATEX (
+			        Painted,
+			        "<path d='" & [@path] & "' fill='" & [@fill] & "' stroke='#F5F6F3' stroke-width='3' fill-rule='evenodd'/>",
+			        ""
+			    )
+			VAR Labels =
+			    CONCATENATEX (
+			        Painted,
+			        "<text x='" & [@x] & "' y='" & [@y] - 4 & "' text-anchor='middle' font-size='22' fill='" & [@ink] & "'>" & [@name] & "</text>"
+			            & "<text x='" & [@x] & "' y='" & [@y] + 22 & "' text-anchor='middle' font-size='22' font-weight='600' fill='" & [@ink] & "'>" & [@label] & "</text>",
+			        ""
+			    )
+			VAR Bounds = GENERATESERIES ( 1, 4, 1 )
+			VAR Legend =
+			    "<text x='424' y='40' font-size='22' fill='#4F5A53'>" & IndName & "</text>"
+			        & CONCATENATEX (
+			            Bounds,
+			            VAR i = [Value]
+			            VAR a = Lo + ( i - 1 ) * Step
+			            VAR b = Lo + i * Step
+			            VAR Fmt = SWITCH ( Ind, 0, FORMAT ( a * 100, "0.0" ) & " to " & FORMAT ( b * 100, "0.0" ) & " %", 1, FORMAT ( a * 100, "0.0" ) & " to " & FORMAT ( b * 100, "0.0" ) & " %", 4, "€" & FORMAT ( a / 1000, "0.0" ) & "K to " & FORMAT ( b / 1000, "0.0" ) & "K", FORMAT ( a, "0.0" ) & " to " & FORMAT ( b, "0.0" ) )
+			            VAR y = 72 + ( 4 - i ) * 40
+			            RETURN
+			                "<rect x='424' y='" & y & "' width='32' height='24' fill='" & SWITCH ( i, 1, "#D0E3D7", 2, "#7AB696", 3, "#4A9C72", "#00753A" ) & "' stroke='#6B746E'/>"
+			                    & "<text x='468' y='" & y + 19 & "' font-size='22' fill='#15201A'>" & Fmt & "</text>",
+			            ""
+			        )
+			VAR Svg =
+			    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 400' font-family='Segoe UI, sans-serif'>"
+			        & Shapes & Labels & Legend & "</svg>"
+			RETURN IF ( NOT ISBLANK ( Lo ), "data:image/svg+xml;utf8," & SUBSTITUTE ( Svg, "#", "%23" ) )
+		dataCategory: ImageUrl
+		displayFolder: Report visuals
+
+	/// Value of the indicator on the row of Benchmark point, for the area of that row.
+	measure 'Dot value' =
+			VAR r = SELECTEDVALUE ( 'Benchmark point'[Row] )
+			VAR c = SELECTEDVALUE ( 'Benchmark point'[Code] )
+			RETURN
+			    CALCULATE (
+			        SWITCH ( r, 1, [Population change 5y %], 2, [Share aged 65+], 3, [Crude death rate per 1,000], 4, [GDP per inhabitant (EUR)], 5, [Unemployment rate], 6, [Tertiary students per 1,000 residents] ),
+			        REMOVEFILTERS ( Geo ),
+			        Geo[Code] = c
+			    )
+		displayFolder: Report visuals
+
+	/// Position of the area between the lowest (0) and the highest (1) area for the indicator.
+	measure 'Dot position' =
+			VAR r = SELECTEDVALUE ( 'Benchmark point'[Row] )
+			VAR v = [Dot value]
+			VAR Others = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( 'Benchmark point'[Code] ), "@v", [Dot value] ), REMOVEFILTERS ( 'Benchmark point' ), 'Benchmark point'[Row] = r )
+			VAR Lo = MINX ( Others, [@v] )
+			VAR Hi = MAXX ( Others, [@v] )
+			RETURN IF ( NOT ISBLANK ( v ), DIVIDE ( v - Lo, Hi - Lo ) )
+		formatString: 0.00
+		displayFolder: Report visuals
+
+	/// Row of the dot plot, negative so the first indicator is on top.
+	measure 'Dot row' = - SELECTEDVALUE ( 'Benchmark point'[Row] )
+		formatString: 0
+		displayFolder: Report visuals
+
+	/// Label of the Benchmark rank row, e.g. "Marche rank of 6".
+	measure 'Rank row label' =
+			[Focus region name] & " rank of "
+			    & COUNTROWS ( CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] IN { "Focus", "Peer" } ) )
+		displayFolder: Report text
+
+	/// Years compared on the Benchmark page (the latest year common to the areas) and the rank direction.
+	measure 'Benchmark years' =
+			VAR yp = YEAR ( CALCULATE ( [_Ref date Population], REMOVEFILTERS ( Geo ), REMOVEFILTERS ( Calendar ) ) )
+			VAR yo = YEAR ( CALCULATE ( [_Ref date Population], REMOVEFILTERS ( Geo ), REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "65+" ) )
+			VAR yd = YEAR ( CALCULATE ( [_Ref date Deaths], REMOVEFILTERS ( Geo ), REMOVEFILTERS ( Calendar ) ) )
+			VAR yg = YEAR ( CALCULATE ( [_Ref date GDP], REMOVEFILTERS ( Geo ), REMOVEFILTERS ( Calendar ) ) )
+			VAR yu = YEAR ( CALCULATE ( [_Ref date Unemployment], REMOVEFILTERS ( Geo ), REMOVEFILTERS ( Calendar ) ) )
+			VAR ye = YEAR ( CALCULATE ( [_Ref date Enrolment], REMOVEFILTERS ( Geo ), REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( ISCED ), ISCED[Group] = "ISCED 5-8" ) )
+			RETURN
+			    "Years: population change " & yp - 5 & "–" & yp & " · aged 65+ " & yo & " · deaths " & yd & " · GDP " & yg
+			        & " · unemployment " & yu & " · tertiary " & ye & ". Rank 1 = highest value among the "
+			        & [Focus region name] & " and its peers."
+		displayFolder: Report text
+
 	column Placeholder
 		dataType: string
 		isHidden
