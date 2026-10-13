@@ -124,7 +124,9 @@ def text_card(
     """New card (cardVisual) showing a text measure in Segoe UI 10.5 pt that wraps.
 
     The classic card keeps its text on one line and cuts it; the new card wraps it. Object
-    and property names follow the cardVisual section of the report theme schema.
+    and property names follow the cardVisual section of the report theme schema. The new
+    card reads them per series: the selector {"id": "default"} is its "All" series, and
+    without it Desktop ignores them.
     """
     value = {
         "fontSize": literal(10.5),
@@ -132,6 +134,7 @@ def text_card(
         "fontFamily": literal("Segoe UI"),
         "textWrap": literal(True),
     }
+    every = {"id": "default"}
     return Visual(
         key,
         "cardVisual",
@@ -142,8 +145,8 @@ def text_card(
         roles={"Data": [M(measure)]},
         alt=alt,
         objects={
-            "value": [{"properties": value}],
-            "label": [{"properties": {"show": literal(False)}}],
+            "value": [{"properties": value, "selector": every}],
+            "label": [{"properties": {"show": literal(False)}, "selector": every}],
         },
         filters=list(filters),
     )

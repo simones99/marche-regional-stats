@@ -2968,7 +2968,9 @@ def text_card(
     """New card (cardVisual) showing a text measure in Segoe UI 10.5 pt that wraps.
 
     The classic card keeps its text on one line and cuts it; the new card wraps it. Object
-    and property names follow the cardVisual section of the report theme schema.
+    and property names follow the cardVisual section of the report theme schema. The new
+    card reads them per series: the selector {"id": "default"} is its "All" series, and
+    without it Desktop ignores them.
     """
     value = {
         "fontSize": literal(10.5),
@@ -2976,6 +2978,7 @@ def text_card(
         "fontFamily": literal("Segoe UI"),
         "textWrap": literal(True),
     }
+    every = {"id": "default"}
     return Visual(
         key,
         "cardVisual",
@@ -2986,8 +2989,8 @@ def text_card(
         roles={"Data": [M(measure)]},
         alt=alt,
         objects={
-            "value": [{"properties": value}],
-            "label": [{"properties": {"show": literal(False)}}],
+            "value": [{"properties": value, "selector": every}],
+            "label": [{"properties": {"show": literal(False)}, "selector": every}],
         },
         filters=list(filters),
     )
@@ -3521,7 +3524,7 @@ Expected: `['Spike']`, a new folder `…Report/definition/pages/73cc33b96ddcddc9
 
   If the headline, the paragraph or a KPI gap line is cut off in the classic card, switch that card to the new *Card* visual, turn off its label, turn on text wrap. Then save and close Desktop.
 
-  Outcome (13 October 2026): the six KPI gap lines were cut off, and the classic card's word wrap did not help. The executor replaced them with `text_card` (the new card, `cardVisual`, role `Data`, value in Segoe UI 10.5 pt with `textWrap`, label off), writing only those six `visual.json` files; object and property names come from the `cardVisual` section of Microsoft's report theme schema (`reportThemeSchema-2.157.json`), the role name from Desktop's own scripts. `test_kpi_gap_lines_wrap_in_the_new_card` checks them. Step 3 compares them with what Desktop saves.
+  Outcome (13 October 2026): the six KPI gap lines were cut off, and the classic card's word wrap did not help. The executor replaced them with `text_card` (the new card, `cardVisual`, role `Data`, value in Segoe UI 10.5 pt with `textWrap`, label off, both with the "All" series selector `{"id": "default"}`, without which Desktop ignored the font size), writing only those six `visual.json` files; object and property names come from the `cardVisual` section of Microsoft's report theme schema (`reportThemeSchema-2.157.json`), the role name from Desktop's own scripts. `test_kpi_gap_lines_wrap_in_the_new_card` checks them. Step 3 compares them with what Desktop saves.
 
 - [ ] **Step 3 (executor): Learn Desktop's form.** Run `git diff --stat powerbi/marche-regional-profile.Report` and `git diff` on each changed or new `visual.json`. For each visual type Desktop rewrote, on Overview and on Spike, update the matching helper in `report_layout.py` (`textbox`, `shape`, `image`, `measure_image`, `card`, `slicer`, `navigator`, `chart`, `table`) or the `Visual(…)` calls of Tasks 17–18 (`scatterChart`, `pivotTable`, `multiRowCard`) so that it writes what Desktop wrote: same `visualType`, same object and property names, same expression form, including the tab-order setting of the shapes. Keep positions, fields, titles and alt text as they are. Do not re-run `scaffold-report` on Overview (Desktop's files stay).
 

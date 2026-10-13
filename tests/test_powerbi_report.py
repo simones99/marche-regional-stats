@@ -189,8 +189,11 @@ def test_kpi_gap_lines_wrap_in_the_new_card():
         for gap in gaps:
             v = written[pbir.object_id("overview", gap.key)]["visual"]
             assert v["visualType"] == "cardVisual", gap.key
-            assert v["objects"]["value"][0]["properties"]["textWrap"] == on, gap.key
-            assert v["objects"]["label"][0]["properties"]["show"] == off, gap.key
+            value, label = v["objects"]["value"][0], v["objects"]["label"][0]
+            assert value["properties"]["textWrap"] == on, gap.key
+            assert label["properties"]["show"] == off, gap.key
+            # Without the "All" series selector Desktop ignores the font size.
+            assert value["selector"] == label["selector"] == {"id": "default"}, gap.key
 
 
 def test_pages_use_the_palette_and_the_font_minimum():

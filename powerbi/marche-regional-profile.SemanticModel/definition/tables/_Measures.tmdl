@@ -706,15 +706,6 @@ table _Measures
 
 		formatStringDefinition = SWITCH ( SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ), 0, "+0.0%;-0.0%;0.0%", 1, "0.0%", 4, "#,0", "0.0" )
 
-	/// Name of the indicator chosen for the Provinces map. The field parameter's name column
-	/// cannot be read alone (it is grouped by the Fields column), so it is looked up by Order.
-	measure 'Province indicator name' =
-			VAR Ind = SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 )
-			RETURN MAXX ( FILTER ( ALL ( 'Province indicator' ), 'Province indicator'[Province indicator Order] = Ind ), 'Province indicator'[Province indicator] )
-		displayFolder: Report text
-
-		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
-
 	/// Province indicator value as text, as the map and the headlines print it.
 	measure 'Province indicator label' =
 			VAR v = [Province indicator value]
@@ -1332,6 +1323,16 @@ table _Measures
 			    )
 		displayFolder: Report text
 		lineageTag: 6dab6c61-15c6-48b7-a653-abed35f32857
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Name of the indicator chosen for the Provinces map. The field parameter's name column
+	/// cannot be read alone (it is grouped by the Fields column), so it is looked up by Order.
+	measure 'Province indicator name' =
+			VAR Ind = SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 )
+			RETURN MAXX ( FILTER ( ALL ( 'Province indicator' ), 'Province indicator'[Province indicator Order] = Ind ), 'Province indicator'[Province indicator] )
+		displayFolder: Report text
+		lineageTag: 3a1c8f28-8d83-498b-92d8-a19770549ad6
 
 		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
 
