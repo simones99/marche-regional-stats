@@ -47,21 +47,21 @@
 **Files:**
 - Modify: `docs/superpowers/specs/2026-10-13-marche-regional-profile-phase-b-design.md`
 
-- [ ] **Step 1: Population years.** In "### 1 · Overview", replace `two line charts with markers: population on 1 January 2009–2025, active companies in December 2009–2024.` with:
+- [x] **Step 1: Population years.** In "### 1 · Overview", replace `two line charts with markers: population on 1 January 2009–2025, active companies in December 2009–2024.` with:
 
 ```markdown
 two line charts with markers: population on 1 January from the first year of `demo_r_pjangrp3` (2014) to the latest, active companies in December 2009–2024.
 ```
 
-- [ ] **Step 2: Alt text.** In "## Accessibility", replace item 6 with:
+- [x] **Step 2: Alt text.** In "## Accessibility", replace item 6 with:
 
 ```markdown
 6. Every visual has a title that says what and when, and alt text that names the chart and what it compares. The values themselves are written on the chart (rule 4).
 ```
 
-- [ ] **Step 3: Benchmark buttons label.** In "### 1 · Overview", replace `"Compare the Marche with" buttons Italy / EU / Peers` with `"Compare with" buttons (country, EU, peers; the country button shows the country's name)`. The label stays region-neutral, like the parameters.
+- [x] **Step 3: Benchmark buttons label.** In "### 1 · Overview", replace `"Compare the Marche with" buttons Italy / EU / Peers` with `"Compare with" buttons (country, EU, peers; the country button shows the country's name)`. The label stays region-neutral, like the parameters.
 
-- [ ] **Step 4: Commit.**
+- [x] **Step 4: Commit.**
 
 ```bash
 git add docs/superpowers/specs/2026-10-13-marche-regional-profile-phase-b-design.md
@@ -76,7 +76,7 @@ git commit -m "Align the Phase B spec with the population years and the alt text
 - Modify: `src/marche_stats/powerbi_export.py`
 - Test: `tests/test_powerbi_export.py`
 
-- [ ] **Step 1: Write the failing test.** Append to `tests/test_powerbi_export.py`, and add `import re` and `from pathlib import Path` to its imports:
+- [x] **Step 1: Write the failing test.** Append to `tests/test_powerbi_export.py`, and add `import re` and `from pathlib import Path` to its imports:
 
 ```python
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -96,9 +96,9 @@ def test_province_shapes_fit_the_box():
     assert labels.loc["ITI31", "label_y"] < labels.loc["ITI34", "label_y"]
 ```
 
-- [ ] **Step 2: Run it.** `pytest tests/test_powerbi_export.py::test_province_shapes_fit_the_box -v`. Expected: FAIL with `AttributeError: module 'marche_stats.powerbi_export' has no attribute 'province_shapes_table'`.
+- [x] **Step 2: Run it.** `pytest tests/test_powerbi_export.py::test_province_shapes_fit_the_box -v`. Expected: FAIL with `AttributeError: module 'marche_stats.powerbi_export' has no attribute 'province_shapes_table'`.
 
-- [ ] **Step 3: Implement.** In `src/marche_stats/powerbi_export.py`, change the module docstring's first line to `"""Tables for the Power BI report: forecast, accuracy, reconciliation, seasonality, map."""`, add `import json` and `import math` to the imports, and add after `reconciliation_table`:
+- [x] **Step 3: Implement.** In `src/marche_stats/powerbi_export.py`, change the module docstring's first line to `"""Tables for the Power BI report: forecast, accuracy, reconciliation, seasonality, map."""`, add `import json` and `import math` to the imports, and add after `reconciliation_table`:
 
 ```python
 MAP_BOX = 400
@@ -155,9 +155,9 @@ def province_shapes_table(geojson_path: Path, box: int = MAP_BOX) -> pd.DataFram
     return pd.DataFrame(rows, columns=["geo", "path", "label_x", "label_y"])
 ```
 
-- [ ] **Step 4: Run it.** `pytest tests/test_powerbi_export.py::test_province_shapes_fit_the_box -v`. Expected: PASS.
+- [x] **Step 4: Run it.** `pytest tests/test_powerbi_export.py::test_province_shapes_fit_the_box -v`. Expected: PASS.
 
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
 
 ```bash
 ruff check src tests && ruff format src tests
