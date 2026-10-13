@@ -5,7 +5,7 @@
     "x": 872,
     "y": 328,
     "z": 24000,
-    "height": 32,
+    "height": 48,
     "width": 176,
     "tabOrder": 24000
   },
@@ -54,6 +54,13 @@
                   "Value": "10.5D"
                 }
               }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI'"
+                }
+              }
             }
           }
         }
@@ -78,8 +85,13 @@
           "properties": {
             "altText": {
               "expr": {
-                "Literal": {
-                  "Value": "'GDP per inhabitant: gap to the benchmark'"
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "KPI gap GDP per inhabitant"
                 }
               }
             }

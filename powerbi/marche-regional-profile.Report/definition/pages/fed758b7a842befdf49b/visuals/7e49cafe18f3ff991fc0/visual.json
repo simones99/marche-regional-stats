@@ -5,7 +5,7 @@
     "x": 1072,
     "y": 184,
     "z": 20000,
-    "height": 32,
+    "height": 48,
     "width": 176,
     "tabOrder": 20000
   },
@@ -54,6 +54,13 @@
                   "Value": "10.5D"
                 }
               }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Segoe UI'"
+                }
+              }
             }
           }
         }
@@ -78,8 +85,13 @@
           "properties": {
             "altText": {
               "expr": {
-                "Literal": {
-                  "Value": "'Deaths per 1,000: gap to the benchmark'"
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "KPI gap Crude death rate"
                 }
               }
             }

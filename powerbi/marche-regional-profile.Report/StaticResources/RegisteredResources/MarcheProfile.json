@@ -62,7 +62,7 @@
     "multiRowCard": {"*": {"dataLabels": [{"fontSize": 12}], "categoryLabels": [{"fontSize": 10.5}]}},
     "tableEx": {"*": {"columnHeaders": [{"fontSize": 10.5, "fontColor": {"solid": {"color": "#4F5A53"}}}], "values": [{"fontSize": 10.5, "fontColorPrimary": {"solid": {"color": "#15201A"}}, "fontColorSecondary": {"solid": {"color": "#15201A"}}, "backColorSecondary": {"solid": {"color": "#ECEEEA"}}}]}},
     "pivotTable": {"*": {"columnHeaders": [{"fontSize": 10.5, "fontColor": {"solid": {"color": "#4F5A53"}}}], "values": [{"fontSize": 10.5, "fontColorPrimary": {"solid": {"color": "#15201A"}}, "fontColorSecondary": {"solid": {"color": "#15201A"}}, "backColorSecondary": {"solid": {"color": "#ECEEEA"}}}]}},
-    "slicer": {"*": {"items": [{"fontSize": 10.5, "fontColor": {"solid": {"color": "#15201A"}}}], "header": [{"fontSize": 10.5}]}},
+    "slicer": {"*": {"items": [{"fontSize": 10.5, "fontColor": {"solid": {"color": "#15201A"}}}], "header": [{"fontSize": 10.5}], "title": [{"show": false}]}},
     "textbox": {"*": {"background": [{"show": false}], "title": [{"show": false}]}},
     "shape": {"*": {"background": [{"show": false}], "title": [{"show": false}]}},
     "image": {"*": {"background": [{"show": false}], "title": [{"show": false}]}},

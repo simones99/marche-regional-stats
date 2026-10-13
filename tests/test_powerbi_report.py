@@ -131,13 +131,47 @@ def test_visuals_sit_on_the_grid_inside_the_page():
             assert pos["y"] + pos["height"] <= page["height"], where
 
 
-def test_data_visuals_have_alt_text():
+def test_pages_have_the_layout_size():
+    sizes = {p.name: (p.width, p.height) for p in report_layout.pages()}
+    for page, _ in layout_pages():
+        assert (page["width"], page["height"]) == sizes[page["displayName"]]
+        if page.get("visibility") != "HiddenInViewMode":
+            assert (page["width"], page["height"]) == (1280, 720), page["displayName"]
+
+
+def test_visuals_have_alt_text():
+    """Every visual but shapes and textboxes: a literal, or an expression bound to a measure."""
     for page, visuals in layout_pages():
         for v in visuals:
-            if "query" not in v["visual"]:
+            if v["visual"]["visualType"] in ("shape", "textbox"):
                 continue
             general = v["visual"].get("visualContainerObjects", {}).get("general", [{}])
-            assert "altText" in general[0].get("properties", {}), (
+            alt = general[0].get("properties", {}).get("altText", {}).get("expr", {})
+            assert "Literal" in alt or "Measure" in alt, f"{page['displayName']}: {v['name']}"
+
+
+def _box(v):
+    pos = v["position"]
+    return pos["x"], pos["y"], pos["x"] + pos["width"], pos["y"] + pos["height"]
+
+
+def test_visuals_do_not_overlap():
+    for page, visuals in layout_pages():
+        boxes = [(v["name"], _box(v)) for v in visuals if v["visual"]["visualType"] != "shape"]
+        for i, (name, (x0, y0, x1, y1)) in enumerate(boxes):
+            for other, (a0, b0, a1, b1) in boxes[i + 1 :]:
+                overlap = x0 < a1 and a0 < x1 and y0 < b1 and b0 < y1
+                assert not overlap, f"{page['displayName']}: {name} and {other}"
+
+
+def test_cards_on_the_dark_rail_have_no_background():
+    off = {"show": {"expr": {"Literal": {"Value": "false"}}}}
+    for page, visuals in layout_pages():
+        for v in visuals:
+            if v["visual"]["visualType"] != "card" or _box(v)[2] > 192:
+                continue
+            background = v["visual"].get("visualContainerObjects", {}).get("background")
+            assert background and background[0]["properties"] == off, (
                 f"{page['displayName']}: {v['name']}"
             )
 
@@ -147,3 +181,10 @@ def test_pages_use_the_palette_and_the_font_minimum():
         for v in visuals:
             assert colours(v) <= PALETTE, f"{page['displayName']}: {v['name']}"
             assert all(size >= MIN_POINTS for size in font_sizes(v)), v["name"]
+
+
+def test_spike_page_is_hidden_and_outside_the_layout():
+    spike = report_layout.spike()
+    assert spike.hidden and spike.key == "spike"
+    assert spike.key not in {p.key for p in report_layout.pages()}
+    assert all(v.alt for v in spike.visuals)

@@ -10,6 +10,7 @@ from __future__ import annotations
 import hashlib
 import json
 import shutil
+import time
 from collections.abc import Collection
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -18,6 +19,8 @@ SCHEMAS = "https://developer.microsoft.com/json-schemas/fabric/item/report/defin
 VISUAL_SCHEMA = f"{SCHEMAS}/visualContainer/2.13.0/schema.json"
 PAGE_SCHEMA = f"{SCHEMAS}/page/2.1.0/schema.json"
 HIDDEN = "HiddenInViewMode"
+DECORATIVE = {"shape", "textbox"}  # every other visual needs alt text
+RENAME_ATTEMPTS, RENAME_DELAY = 5, 0.1  # seconds, doubled after each failed attempt
 
 
 @dataclass(frozen=True)
@@ -49,10 +52,11 @@ class Visual:
     h: int
     roles: dict[str, list[Field]] = field(default_factory=dict)
     title: str | None = None
-    alt: str | None = None
+    alt: str | Field | None = None  # a Field binds the alt text to a text measure
     objects: dict | None = None
     filters: list[dict] = field(default_factory=list)
     sort: tuple[Field, str] | None = None
+    container: dict | None = None  # visualContainerObjects besides the title and alt text
 
 
 @dataclass(frozen=True)
@@ -142,11 +146,12 @@ def visual_json(page_key: str, v: Visual, order: int) -> dict:
             }
     if v.objects:
         visual["objects"] = v.objects
-    container = {}
+    container = dict(v.container or {})
     if v.title is not None:
         container["title"] = [{"properties": {"show": literal(True), "text": literal(v.title)}}]
     if v.alt is not None:
-        container["general"] = [{"properties": {"altText": literal(v.alt)}}]
+        alt = {"expr": field_expr(v.alt)} if isinstance(v.alt, Field) else literal(v.alt)
+        container["general"] = [{"properties": {"altText": alt}}]
     if container:
         visual["visualContainerObjects"] = container
     visual["drillFilterOtherVisuals"] = True
@@ -195,6 +200,20 @@ def _page_files(page: Page) -> dict[Path, str]:
     return files
 
 
+def _rename(source: Path, target: Path) -> None:
+    """Rename, retrying while Windows reports a file briefly locked (antivirus, indexer)."""
+    delay = RENAME_DELAY
+    for attempt in range(1, RENAME_ATTEMPTS + 1):
+        try:
+            source.rename(target)
+            return
+        except PermissionError:
+            if attempt == RENAME_ATTEMPTS:
+                raise
+            time.sleep(delay)
+            delay *= 2
+
+
 def _write_page(folder: Path, files: dict[Path, str]) -> None:
     """Stage the page, swap it in, and keep the old folder until the swap succeeds."""
     staging = folder.with_name(folder.name + ".tmp")
@@ -210,12 +229,12 @@ def _write_page(folder: Path, files: dict[Path, str]) -> None:
             with target.open("w", encoding="utf-8", newline="\n") as handle:
                 handle.write(text)
         if folder.exists():
-            folder.rename(backup)  # PermissionError if a file is locked: nothing is lost
+            _rename(folder, backup)  # PermissionError if a file stays locked: nothing is lost
         try:
-            staging.rename(folder)
+            _rename(staging, folder)
         except BaseException:
             if backup.exists():
-                backup.rename(folder)
+                _rename(backup, folder)
             raise
     except BaseException:
         shutil.rmtree(staging, ignore_errors=True)
@@ -250,6 +269,17 @@ def _validate(pages: list[Page]) -> None:
         duplicates = {k for k in keys if keys.count(k) > 1}
         if duplicates:
             raise ValueError(f"{page.name}: duplicate visual keys {sorted(duplicates)}")
+        for v in page.visuals:
+            if v.alt is None and v.type not in DECORATIVE:
+                raise ValueError(f"{page.name}: {v.key} has no alt text")
+
+
+def _is_hidden(pages_dir: Path, name: str) -> bool:
+    try:
+        body = json.loads((pages_dir / name / "page.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    return isinstance(body, dict) and body.get("visibility") == HIDDEN
 
 
 def scaffold(pages: list[Page], definition: Path, force: Collection[str] = ()) -> list[str]:
@@ -261,7 +291,9 @@ def scaffold(pages: list[Page], definition: Path, force: Collection[str] = ()) -
 
     pages.json keeps Desktop's page order and active page: layout pages it does not list
     are inserted after their nearest earlier layout page, and it is rewritten only if that
-    changes something. Pages the layout does not know (the Phase A model check page) stay.
+    changes something. An active page that is missing or hidden becomes the first visible
+    layout page, so the report never opens on a hidden page. Pages the layout does not
+    know (the Phase A model check page) stay.
     """
     _validate(pages)
     unknown = set(force) - {p.key for p in pages}
@@ -281,8 +313,8 @@ def scaffold(pages: list[Page], definition: Path, force: Collection[str] = ()) -
     ours = [object_id(p.key) for p in pages]
     order = _merged_order(meta["pageOrder"], ours)
     active = meta.get("activePageName")
-    if active not in order:
-        active = ours[0]
+    if active not in order or _is_hidden(pages_dir, active):
+        active = next((object_id(p.key) for p in pages if not p.hidden), ours[0])
     if order != meta["pageOrder"] or active != meta.get("activePageName"):
         meta["pageOrder"], meta["activePageName"] = order, active
         meta_path.write_text(_dump(meta), encoding="utf-8", newline="\n")

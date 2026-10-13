@@ -4,7 +4,7 @@ import sys
 
 import pytest
 
-from marche_stats import pbir
+from marche_stats import cli, pbir
 from marche_stats.pbir import C, M, Page, Visual
 
 
@@ -54,6 +54,22 @@ def test_visual_json_binds_fields_title_and_alt_text():
     assert container["general"][0]["properties"]["altText"] == pbir.literal(
         "Bar chart of the share aged 65+ by area"
     )
+
+
+def test_alt_text_bound_to_a_measure_and_container_objects():
+    off = {"background": [{"properties": {"show": pbir.literal(False)}}]}
+    visual = Visual("name", "card", 0, 0, 8, 8, alt=M("Focus region name"), container=off)
+    container = pbir.visual_json("page", visual, order=0)["visual"]["visualContainerObjects"]
+    assert container["general"][0]["properties"]["altText"] == {
+        "expr": pbir.field_expr(M("Focus region name"))
+    }
+    assert container["background"] == off["background"]
+
+
+def test_visuals_other_than_shapes_and_textboxes_need_alt_text(tmp_path):
+    page = Page("one", "One", [Visual("kpi", "card", 0, 0, 8, 8, roles={"Values": [M("X")]})])
+    with pytest.raises(ValueError, match="One: kpi has no alt text"):
+        pbir.scaffold([page], _definition(tmp_path))
 
 
 def test_in_filter_lists_values():
@@ -184,7 +200,8 @@ def test_duplicate_visual_keys_are_rejected(tmp_path):
 
 
 @pytest.mark.skipif(sys.platform != "win32", reason="Windows file locking")
-def test_locked_page_is_left_intact_when_forced(tmp_path):
+def test_locked_page_is_left_intact_when_forced(tmp_path, monkeypatch):
+    monkeypatch.setattr(pbir.time, "sleep", lambda seconds: None)
     definition = _definition(tmp_path)
     page = Page("one", "One", [Visual("a", "shape", 0, 0, 8, 8)])
     pbir.scaffold([page], definition)
@@ -200,3 +217,73 @@ def test_force_keys_must_be_page_keys(tmp_path):
     page = Page("one", "One", [])
     with pytest.raises(ValueError, match="unknown page keys.*One"):
         pbir.scaffold([page], _definition(tmp_path), force={"One"})
+
+
+def test_hidden_active_page_moves_to_the_first_visible_layout_page(tmp_path):
+    definition = _definition(tmp_path)
+    old = definition / "pages" / "old"
+    old.mkdir()
+    (old / "page.json").write_text(json.dumps({"visibility": "HiddenInViewMode"}), "utf-8")
+    pbir.scaffold([Page("tip", "Tip", [], hidden=True), Page("one", "One", [])], definition)
+    assert _meta(definition)["activePageName"] == pbir.object_id("one")
+
+
+def _flaky_rename(monkeypatch, failures):
+    """Path.rename that raises PermissionError for the first `failures` calls."""
+    real, calls, sleeps = pbir.Path.rename, [], []
+
+    def rename(self, target):
+        calls.append(self)
+        if len(calls) <= failures:
+            raise PermissionError(13, "locked", str(self))
+        return real(self, target)
+
+    monkeypatch.setattr(pbir.Path, "rename", rename)
+    monkeypatch.setattr(pbir.time, "sleep", sleeps.append)
+    return sleeps
+
+
+def test_rename_is_retried_while_a_file_is_briefly_locked(tmp_path, monkeypatch):
+    definition = _definition(tmp_path)
+    sleeps = _flaky_rename(monkeypatch, failures=2)
+    assert pbir.scaffold([Page("one", "One", [])], definition) == ["One"]
+    assert sleeps == [0.1, 0.2]
+    assert (definition / "pages" / pbir.object_id("one") / "page.json").exists()
+
+
+def test_rename_gives_up_after_five_attempts(tmp_path, monkeypatch):
+    definition = _definition(tmp_path)
+    sleeps = _flaky_rename(monkeypatch, failures=99)
+    with pytest.raises(PermissionError):
+        pbir.scaffold([Page("one", "One", [])], definition)
+    assert sleeps == [0.1, 0.2, 0.4, 0.8]
+    assert [p.name for p in (definition / "pages").iterdir()] == ["pages.json"]
+
+
+def test_cli_scaffold_report_rejects_an_unknown_page(tmp_path):
+    with pytest.raises(SystemExit):
+        cli.main(["scaffold-report", "--powerbi", str(tmp_path), "--force", "nowhere"])
+
+
+def test_cli_scaffold_report_warns_when_desktop_is_open(tmp_path, monkeypatch, capsys):
+    calls = []
+    monkeypatch.setattr(cli, "_desktop_running", lambda: True)
+    monkeypatch.setattr(
+        pbir, "scaffold", lambda pages, definition, force: calls.append(force) or ["Overview"]
+    )
+    assert cli.main(["scaffold-report", "--powerbi", str(tmp_path), "--force", "overview"]) == 0
+    out, err = capsys.readouterr()
+    assert out == "wrote Overview\n"
+    assert "Power BI Desktop is open" in err
+    assert calls == [["overview"]]
+
+
+def test_cli_scaffold_report_explains_a_locked_file(tmp_path, monkeypatch, capsys):
+    def locked(pages, definition, force):
+        raise PermissionError(13, "Access is denied", "pages/x/page.json")
+
+    monkeypatch.setattr(cli, "_desktop_running", lambda: False)
+    monkeypatch.setattr(pbir, "scaffold", locked)
+    assert cli.main(["scaffold-report", "--powerbi", str(tmp_path)]) == 1
+    _, err = capsys.readouterr()
+    assert err.startswith("cannot replace pages/x/page.json: a file is locked")

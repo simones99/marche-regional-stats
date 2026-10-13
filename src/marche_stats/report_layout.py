@@ -7,7 +7,7 @@ done in Power BI Desktop, and Desktop's saved files are then the source of truth
 
 from __future__ import annotations
 
-from marche_stats.pbir import C, Field, M, Page, Visual, in_filter, literal, solid
+from marche_stats.pbir import C, Field, M, Page, Visual, field_expr, in_filter, literal, solid
 
 ACCENT, TEXT, MUTED = "#00753A", "#15201A", "#4F5A53"
 BASE, SURFACE, RULE = "#F5F6F3", "#ECEEEA", "#C9CEC9"
@@ -75,10 +75,23 @@ def card(
     size: float = 12,
     color: str = TEXT,
     title: str | None = None,
-    alt: str | None = None,
+    alt: str | Field | None = None,
     filters: tuple[dict, ...] = (),
+    font: str | None = None,
+    background: bool = True,
 ) -> Visual:
-    """Classic card showing one measure (a number, or a text measure for the story)."""
+    """Classic card showing one measure (a number, or a text measure for the story).
+
+    alt is required (pbir raises without it): a literal, or M(<text measure>) to have the
+    shown text read aloud. font None keeps the theme's Segoe UI Semibold. background False
+    drops the theme's light background, for cards on the dark navigation rail.
+    """
+    labels = {"color": solid(color), "fontSize": literal(size)}
+    if font:
+        labels["fontFamily"] = literal(font)
+    container = None
+    if not background:
+        container = {"background": [{"properties": {"show": literal(False)}}]}
     return Visual(
         key,
         "card",
@@ -88,12 +101,13 @@ def card(
         h,
         roles={"Values": [M(measure)]},
         title=title,
-        alt=alt or measure,
+        alt=alt,
         objects={
-            "labels": [{"properties": {"color": solid(color), "fontSize": literal(size)}}],
+            "labels": [{"properties": labels}],
             "categoryLabels": [{"properties": {"show": literal(False)}}],
         },
         filters=list(filters),
+        container=container,
     )
 
 
@@ -133,20 +147,7 @@ def measure_image(key: str, x: int, y: int, w: int, h: int, measure: str, alt: s
         h,
         alt=alt,
         objects={
-            "general": [
-                {
-                    "properties": {
-                        "imageUrl": {
-                            "expr": {
-                                "Measure": {
-                                    "Expression": {"SourceRef": {"Entity": "_Measures"}},
-                                    "Property": measure,
-                                }
-                            }
-                        }
-                    }
-                }
-            ],
+            "general": [{"properties": {"imageUrl": {"expr": field_expr(M(measure))}}}],
             "imageScaling": [{"properties": {"imageScalingType": literal("Fit")}}],
         },
     )
@@ -163,7 +164,16 @@ def slicer(
     mode: str = "Basic",
     header: bool = False,
     filters: tuple[dict, ...] = (),
+    horizontal: bool = False,
 ) -> Visual:
+    """Single-select slicer; horizontal lays a Basic slicer out as a row of buttons."""
+    objects = {
+        "data": [{"properties": {"mode": literal(mode)}}],
+        "selection": [{"properties": {"singleSelect": literal(True)}}],
+        "header": [{"properties": {"show": literal(header)}}],
+    }
+    if horizontal:
+        objects["general"] = [{"properties": {"orientation": literal(1)}}]
     return Visual(
         key,
         "slicer",
@@ -173,11 +183,7 @@ def slicer(
         h,
         roles={"Values": [column]},
         alt=alt,
-        objects={
-            "data": [{"properties": {"mode": literal(mode)}}],
-            "selection": [{"properties": {"singleSelect": literal(True)}}],
-            "header": [{"properties": {"show": literal(header)}}],
-        },
+        objects=objects,
         filters=list(filters),
     )
 
@@ -253,6 +259,20 @@ def table(
     )
 
 
+def navigator(key: str, x: int, y: int, w: int, h: int) -> Visual:
+    """Page navigator: one button per visible page, stacked vertically."""
+    return Visual(
+        key,
+        NAVIGATOR_TYPE,
+        x,
+        y,
+        w,
+        h,
+        alt="Report pages",
+        objects={"layout": [{"properties": {"orientation": literal(1)}}]},
+    )
+
+
 def chrome(prefix: str, page_name: str) -> list[Visual]:
     """Navigation, the three zones and the story header (eyebrow, headline, paragraph)."""
     return [
@@ -269,13 +289,32 @@ def chrome(prefix: str, page_name: str) -> list[Visual]:
             "Focus region name",
             size=18,
             color=BASE,
-            alt="Focus region",
+            alt=M("Focus region name"),
+            background=False,
         ),
-        Visual("navigator", NAVIGATOR_TYPE, 16, 112, 160, 320),
-        card("nav-data", 24, 656, 144, 32, "Data up to", size=10.5, color=RULE, alt="Latest data"),
+        navigator("navigator", 16, 112, 160, 320),
+        card(
+            "nav-data",
+            24,
+            656,
+            144,
+            32,
+            "Data up to",
+            size=10.5,
+            color=RULE,
+            alt=M("Data up to"),
+            background=False,
+        ),
         textbox("eyebrow", STORY_X, 32, STORY_W, 24, page_name.upper()),
         card(
-            "headline", STORY_X, 72, STORY_W, 96, f"{prefix} headline lead", size=30, alt="Headline"
+            "headline",
+            STORY_X,
+            72,
+            STORY_W,
+            96,
+            f"{prefix} headline lead",
+            size=30,
+            alt=M(f"{prefix} headline lead"),
         ),
         card(
             "headline-accent",
@@ -286,14 +325,23 @@ def chrome(prefix: str, page_name: str) -> list[Visual]:
             f"{prefix} headline accent",
             size=30,
             color=ACCENT,
-            alt="Headline, key phrase",
+            alt=M(f"{prefix} headline accent"),
         ),
-        card("paragraph", STORY_X, 232, STORY_W, 96, f"{prefix} paragraph", alt="Summary"),
+        card(
+            "paragraph",
+            STORY_X,
+            232,
+            STORY_W,
+            96,
+            f"{prefix} paragraph",
+            alt=M(f"{prefix} paragraph"),
+            font="Segoe UI",
+        ),
     ]
 
 
 def source(text: str) -> Visual:
-    return textbox("source", STORY_X, 664, STORY_W, 24, text)
+    return textbox("source", STORY_X, 656, STORY_W, 40, text)
 
 
 KPIS = (
@@ -331,6 +379,7 @@ def overview() -> Page:
             40,
             C("Benchmark", "Benchmark"),
             "Benchmark for the KPI gaps: country, EU or peer average",
+            horizontal=True,
         )
     )
     for i, (key, title, value, gap) in enumerate(KPIS):
@@ -355,11 +404,12 @@ def overview() -> Page:
                 x,
                 y + 88,
                 THIRD_W,
-                32,
+                48,
                 gap,
                 size=10.5,
-                alt=f"{title}: gap to the benchmark",
+                alt=M(gap),
                 filters=(FOCUS,),
+                font="Segoe UI",
             )
         )
     v.append(
@@ -393,6 +443,81 @@ def overview() -> Page:
         )
     )
     return Page("overview", "Overview", v)
+
+
+def spike() -> Page:
+    """Hidden page for the Task 15 Desktop spike: one visual of each kind Overview lacks.
+
+    Not in pages(): it is scaffolded once by hand, checked in Desktop, then deleted.
+    """
+    xs, ys, w, h = (16, 440, 864), (16, 256, 496), 400, 224
+    slots = [(x, y, w, h) for y in ys for x in xs]
+    pyramid = [M("Population (men, negative)"), M("Population (women)")]
+    visuals = [
+        measure_image("map", *slots[0], "Map SVG", "Spike: map of the provinces"),
+        slicer(
+            "year", *slots[1], C("Calendar", "Year"), "Spike: year", mode="Dropdown", header=True
+        ),
+        chart(
+            "pyramid",
+            "barChart",
+            *slots[2],
+            "Spike: pyramid",
+            C("AgeGroup", "Name"),
+            pyramid,
+            "Spike: population pyramid",
+            filters=(FOCUS, in_filter(C("AgeGroup", "IsBand"), [True])),
+        ),
+        Visual(
+            "dots",
+            "scatterChart",
+            *slots[3],
+            roles={
+                "Category": [C("Benchmark point", "Point")],
+                "Series": [C("Benchmark point", "Role")],
+                "X": [M("Dot position")],
+                "Y": [M("Dot row")],
+            },
+            title="Spike: dot plot",
+            alt="Spike: dot plot",
+        ),
+        chart(
+            "season",
+            "clusteredColumnChart",
+            *slots[4],
+            "Spike: seasonal effect",
+            C("Seasonality", "MonthName"),
+            [M("Seasonal effect")],
+            "Spike: seasonal effect",
+        ),
+        Visual(
+            "values",
+            "multiRowCard",
+            *slots[5],
+            roles={"Values": [M("Population"), M("Share aged 65+")]},
+            alt="Spike: multi-row card",
+            filters=[FOCUS],
+        ),
+        ranked_bars("ranked", *slots[6], "Spike: aged 65+", "Share aged 65+", "Spike: ranked"),
+        table(
+            "table",
+            *slots[7],
+            "Spike: table",
+            [C("Geo", "Name"), M("Share aged 65+")],
+            "Spike: table",
+            filters=(PROVINCES,),
+        ),
+        Visual(
+            "matrix",
+            "pivotTable",
+            *slots[8],
+            roles={"Rows": [C("Geo", "Name")], "Values": [M("Share aged 65+")]},
+            title="Spike: matrix",
+            alt="Spike: matrix",
+            filters=[AREAS],
+        ),
+    ]
+    return Page("spike", "Spike", visuals, hidden=True)
 
 
 def pages() -> list[Page]:

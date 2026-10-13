@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import argparse
+import subprocess
+import sys
 from pathlib import Path
 
 from marche_stats import (
@@ -17,6 +19,26 @@ from marche_stats import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
+LOCKED = (
+    "cannot replace {}: a file is locked — close Power BI Desktop"
+    " (antivirus/OneDrive can also hold files briefly) and run again"
+)
+
+
+def _desktop_running() -> bool:
+    """True if Power BI Desktop is open (Windows only)."""
+    if sys.platform != "win32":
+        return False
+    try:
+        listing = subprocess.run(
+            ["tasklist", "/FI", "IMAGENAME eq PBIDesktop.exe", "/NH"],
+            capture_output=True,
+            text=True,
+            check=False,
+        ).stdout
+    except OSError:
+        return False
+    return "pbidesktop.exe" in listing.lower()
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -58,6 +80,7 @@ def main(argv: list[str] | None = None) -> int:
         "--force",
         action="append",
         default=[],
+        choices=[p.key for p in report_layout.pages()],
         metavar="PAGE",
         help="scaffold-report: rewrite this page (repeatable)",
     )
@@ -72,8 +95,18 @@ def main(argv: list[str] | None = None) -> int:
             print(path)
         return 0
     if args.step == "scaffold-report":
+        if _desktop_running():
+            print(
+                "warning: Power BI Desktop is open: close it without saving,"
+                " or its next save may overwrite these pages",
+                file=sys.stderr,
+            )
         definition = args.powerbi / "marche-regional-profile.Report" / "definition"
-        written = pbir.scaffold(report_layout.pages(), definition, force=args.force)
+        try:
+            written = pbir.scaffold(report_layout.pages(), definition, force=args.force)
+        except PermissionError as error:
+            print(LOCKED.format(error.filename or definition), file=sys.stderr)
+            return 1
         print("\n".join(f"wrote {name}" for name in written) or "no new pages")
         return 0
     if args.step == "check-sources":
