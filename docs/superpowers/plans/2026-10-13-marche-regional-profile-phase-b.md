@@ -1707,9 +1707,9 @@ Only the user can run this task. The executor stops here and hands over these st
 git push -u origin powerbi-phase-b
 ```
 
-- [ ] **Step 2: Point `RepoRawBase` at the branch, in Desktop only.** Open `powerbi/marche-regional-profile.pbip`. *Transform data → Manage parameters → RepoRawBase* = `https://raw.githubusercontent.com/simones99/marche-regional-stats/powerbi-phase-b`.
+- [x] **Step 2: Point `RepoRawBase` at the branch, in Desktop only.** Open `powerbi/marche-regional-profile.pbip`. *Transform data → Manage parameters → RepoRawBase* = `https://raw.githubusercontent.com/simones99/marche-regional-stats/powerbi-phase-b`.
 
-- [ ] **Step 3: Refresh.** Expected: every table loads, including `ProvinceShape` (5 rows), `Seasonality` (12 rows), `Benchmark` (3 rows: Italy, EU, Peers), `Benchmark point` (48 rows), `Data source` (8 rows). If Desktop rejects a measure, it names it: fix the DAX in Desktop, note the change, and the executor copies it back into this plan's task after Step 6.
+- [x] **Step 3: Refresh.** Expected: every table loads, including `ProvinceShape` (5 rows), `Seasonality` (12 rows), `Benchmark` (3 rows: Italy, EU, Peers), `Benchmark point` (48 rows), `Data source` (8 rows). If Desktop rejects a measure, it names it: fix the DAX in Desktop, note the change, and the executor copies it back into this plan's task after Step 6.
 
 - [ ] **Step 4: Check the text measures against the values of 13 October 2026.** On the hidden *Model check* page (or a scratch card, deleted afterwards), show each measure in a card:
 
@@ -1736,9 +1736,9 @@ git push -u origin powerbi-phase-b
 
 A different number is a finding: compare it with `docs/results.md` and the Phase A check page before changing a measure.
 
-- [ ] **Step 5: Delete the scratch cards, save, close Desktop.**
+- [x] **Step 5: Delete the scratch cards, save, close Desktop.**
 
-- [ ] **Step 6: Reset `RepoRawBase` and commit (executor).** In `…/definition/expressions.tmdl`, the `RepoRawBase` line must read exactly:
+- [x] **Step 6: Reset `RepoRawBase` and commit (executor).** In `…/definition/expressions.tmdl`, the `RepoRawBase` line must read exactly:
 
 ```
 expression RepoRawBase = "https://raw.githubusercontent.com/simones99/marche-regional-stats/main" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
