@@ -93,7 +93,7 @@ Every page has the navigation, an eyebrow with the page name, a headline whose l
 ### 1 · Overview
 
 - Story: headline "An older, smaller region with **fewer firms**"; paragraph with the population trend since 2013, the share aged 65+ and the change in active companies since March 2009; photo (Tempio del Valadier).
-- Dashboard: "Compare with" buttons (country, EU, peers; the country button shows the country's name) (the `Compare to` calculation group); six KPI cards in a 3 × 2 grid (population and 5-year change, share aged 65+, crude death rate, unemployment rate, GDP per inhabitant, active companies); two line charts with markers: population on 1 January from the first year of `demo_r_pjangrp3` (2014) to the latest, active companies in December 2009–2024.
+- Dashboard: "Compare with" buttons (country, EU, peers; the country button shows the country's name), driven by the `Compare to` calculation group; six KPI cards in a 3 × 2 grid (population and 5-year change, share aged 65+, crude death rate, unemployment rate, GDP per inhabitant, active companies); two line charts with markers: population on 1 January from the first year of `demo_r_pjangrp3` (2014) to the latest, active companies in December 2009–2024.
 
 ### 2 · Population & Health
 
