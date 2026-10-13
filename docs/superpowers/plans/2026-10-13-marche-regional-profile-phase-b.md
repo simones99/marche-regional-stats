@@ -2088,6 +2088,7 @@ def test_object_id_is_stable_hex():
     assert name == pbir.object_id("overview", "kpi")
     assert re.fullmatch(r"[0-9a-f]{20}", name)
     assert name != pbir.object_id("overview", "kpi-2")
+    assert pbir.object_id("a", "b/c") != pbir.object_id("a/b", "c")
 
 
 def test_literal_forms():
@@ -2112,7 +2113,12 @@ def test_visual_json_binds_fields_title_and_alt_text():
     body = pbir.visual_json("page", visual, order=3)
     assert body["name"] == pbir.object_id("page", "bars")
     assert body["position"] == {
-        "x": 672, "y": 32, "z": 3000, "height": 280, "width": 576, "tabOrder": 3000
+        "x": 672,
+        "y": 32,
+        "z": 3000,
+        "height": 280,
+        "width": 576,
+        "tabOrder": 3000,
     }
     query = body["visual"]["query"]
     assert query["queryState"]["Category"]["projections"][0]["queryRef"] == "Geo.Name"
@@ -2159,7 +2165,7 @@ def test_scaffold_writes_new_pages_first_and_keeps_the_others(tmp_path):
     meta = json.loads((definition / "pages" / "pages.json").read_text(encoding="utf-8"))
     page_id = pbir.object_id("one")
     assert meta["pageOrder"] == [page_id, "old"]
-    assert meta["activePageName"] == page_id
+    assert meta["activePageName"] == "old"
     visual = definition / "pages" / page_id / "visuals" / pbir.object_id("one", "a") / "visual.json"
     assert visual.exists()
 
@@ -2172,14 +2178,82 @@ def test_scaffold_never_overwrites_a_page_without_force(tmp_path):
     page_file.write_text("refined in Desktop", encoding="utf-8")
     assert pbir.scaffold([page], definition) == []
     assert page_file.read_text(encoding="utf-8") == "refined in Desktop"
-    assert pbir.scaffold([page], definition, force=True) == ["One"]
+    assert pbir.scaffold([page], definition, force={"one"}) == ["One"]
     assert json.loads(page_file.read_text(encoding="utf-8"))["displayName"] == "One"
 
 
-def test_duplicate_visual_keys_are_rejected(tmp_path):
-    page = Page(
-        "one", "One", [Visual("a", "shape", 0, 0, 8, 8), Visual("a", "shape", 8, 0, 8, 8)]
+def test_force_rewrites_only_the_named_pages(tmp_path):
+    definition = _definition(tmp_path)
+    pages = [Page("one", "One", []), Page("two", "Two", [])]
+    pbir.scaffold(pages, definition)
+    files = {k: definition / "pages" / pbir.object_id(k) / "page.json" for k in ("one", "two")}
+    for path in files.values():
+        path.write_text("refined in Desktop", encoding="utf-8")
+    assert pbir.scaffold(pages, definition, force={"one"}) == ["One"]
+    assert json.loads(files["one"].read_text(encoding="utf-8"))["displayName"] == "One"
+    assert files["two"].read_text(encoding="utf-8") == "refined in Desktop"
+
+
+def test_failed_page_leaves_no_folder_behind(tmp_path):
+    definition = _definition(tmp_path)
+    bad = Visual("a", "shape", 0, 0, 8, 8, objects={"o": {1, 2}})
+    with pytest.raises(TypeError):
+        pbir.scaffold([Page("one", "One", [bad])], definition)
+    assert [p.name for p in (definition / "pages").iterdir()] == ["pages.json"]
+
+
+def _meta(definition):
+    return json.loads((definition / "pages" / "pages.json").read_text(encoding="utf-8"))
+
+
+def test_rerun_leaves_pages_json_untouched(tmp_path):
+    definition = _definition(tmp_path)
+    pages = [Page("one", "One", []), Page("two", "Two", [])]
+    pbir.scaffold(pages, definition)
+    path = definition / "pages" / "pages.json"
+    before = path.read_bytes()
+    assert pbir.scaffold(pages, definition) == []
+    assert path.read_bytes() == before
+    assert len(_meta(definition)["pageOrder"]) == len(set(_meta(definition)["pageOrder"]))
+
+
+def test_desktop_order_and_active_page_survive_a_rerun(tmp_path):
+    definition = _definition(tmp_path)
+    one, two, three = (Page(k, k.title(), []) for k in ("one", "two", "three"))
+    pbir.scaffold([one, two], definition)
+    ids = {k: pbir.object_id(k) for k in ("one", "two", "three")}
+    path = definition / "pages" / "pages.json"
+    path.write_text(
+        json.dumps(
+            {"pageOrder": ["old", ids["two"], "extra", ids["one"]], "activePageName": ids["two"]}
+        ),
+        encoding="utf-8",
     )
+    assert pbir.scaffold([one, two, three], definition) == ["Three"]
+    meta = _meta(definition)
+    assert meta["pageOrder"] == ["old", ids["two"], ids["three"], "extra", ids["one"]]
+    assert meta["activePageName"] == ids["two"]
+
+
+def test_active_page_is_repaired_when_missing(tmp_path):
+    definition = _definition(tmp_path)
+    (definition / "pages" / "pages.json").write_text(
+        json.dumps({"pageOrder": ["old"], "activePageName": "gone"}), encoding="utf-8"
+    )
+    pbir.scaffold([Page("one", "One", [])], definition)
+    assert _meta(definition)["activePageName"] == pbir.object_id("one")
+
+
+def test_duplicate_page_keys_and_empty_layout_are_rejected(tmp_path):
+    definition = _definition(tmp_path)
+    with pytest.raises(ValueError, match="duplicate page keys.*one"):
+        pbir.scaffold([Page("one", "One", []), Page("one", "Uno", [])], definition)
+    with pytest.raises(ValueError, match="no pages"):
+        pbir.scaffold([], definition)
+
+
+def test_duplicate_visual_keys_are_rejected(tmp_path):
+    page = Page("one", "One", [Visual("a", "shape", 0, 0, 8, 8), Visual("a", "shape", 8, 0, 8, 8)])
     with pytest.raises(ValueError, match="duplicate"):
         pbir.scaffold([page], _definition(tmp_path))
 ```
@@ -2201,6 +2275,7 @@ from __future__ import annotations
 import hashlib
 import json
 import shutil
+from collections.abc import Collection
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -2257,7 +2332,7 @@ class Page:
 
 def object_id(*parts: str) -> str:
     """Stable 20-character hex name, the form Desktop gives pages and visuals."""
-    return hashlib.sha1("/".join(parts).encode("utf-8")).hexdigest()[:20]
+    return hashlib.sha1("\x1f".join(parts).encode("utf-8")).hexdigest()[:20]
 
 
 def _literal_text(value: str | float | bool) -> str:
@@ -2372,46 +2447,96 @@ def page_json(p: Page) -> dict:
     return body
 
 
-def _write(path: Path, body: dict) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("w", encoding="utf-8", newline="\n") as handle:
-        handle.write(json.dumps(body, indent=2, ensure_ascii=False) + "\n")
+def _dump(body: dict) -> str:
+    return json.dumps(body, indent=2, ensure_ascii=False) + "\n"
 
 
-def scaffold(pages: list[Page], definition: Path, force: bool = False) -> list[str]:
-    """Write the pages that do not exist yet (all of them with force); return their names.
+def _page_files(page: Page) -> dict[Path, str]:
+    """Every file of a page, serialised, keyed by its path relative to the page folder."""
+    files = {Path("page.json"): _dump(page_json(page))}
+    for order, v in enumerate(page.visuals):
+        path = Path("visuals") / object_id(page.key, v.key) / "visual.json"
+        files[path] = _dump(visual_json(page.key, v, order))
+    return files
 
-    The layout's pages come first in pages.json, in layout order; pages the layout does not
-    know (the Phase A model check page) keep their place after them.
-    """
+
+def _write_page(folder: Path, files: dict[Path, str]) -> None:
+    """Write the page into a temporary sibling folder, then rename it into place."""
+    staging = folder.with_name(folder.name + ".tmp")
+    shutil.rmtree(staging, ignore_errors=True)
+    try:
+        for relative, text in files.items():
+            target = staging / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with target.open("w", encoding="utf-8", newline="\n") as handle:
+                handle.write(text)
+        shutil.rmtree(folder, ignore_errors=True)
+        staging.rename(folder)
+    except BaseException:
+        shutil.rmtree(staging, ignore_errors=True)
+        raise
+
+
+def _merged_order(order: list[str], ours: list[str]) -> list[str]:
+    """Keep the existing order; add each missing layout page after its nearest predecessor."""
+    merged = list(order)
+    for index, name in enumerate(ours):
+        if name in merged:
+            continue
+        position = 0
+        for earlier in reversed(ours[:index]):
+            if earlier in merged:
+                position = merged.index(earlier) + 1
+                break
+        merged.insert(position, name)
+    return merged
+
+
+def _validate(pages: list[Page]) -> None:
+    if not pages:
+        raise ValueError("no pages in the layout")
+    keys = [p.key for p in pages]
+    duplicates = {k for k in keys if keys.count(k) > 1}
+    if duplicates:
+        raise ValueError(f"duplicate page keys {sorted(duplicates)}")
     for page in pages:
         keys = [v.key for v in page.visuals]
         duplicates = {k for k in keys if keys.count(k) > 1}
         if duplicates:
             raise ValueError(f"{page.name}: duplicate visual keys {sorted(duplicates)}")
 
+
+def scaffold(pages: list[Page], definition: Path, force: Collection[str] = ()) -> list[str]:
+    """Write the pages whose folder does not exist yet; return their names.
+
+    Pages whose key is in force are deleted and rewritten; other existing pages are left
+    alone. A page deleted in Desktop is therefore created again on the next run, and
+    renaming a page's layout key writes a new page and leaves the old folder behind.
+
+    pages.json keeps Desktop's page order and active page: layout pages it does not list
+    are inserted after their nearest earlier layout page, and it is rewritten only if that
+    changes something. Pages the layout does not know (the Phase A model check page) stay.
+    """
+    _validate(pages)
     written = []
     pages_dir = definition / "pages"
     for page in pages:
         folder = pages_dir / object_id(page.key)
-        if folder.exists():
-            if not force:
-                continue
-            shutil.rmtree(folder)
-        _write(folder / "page.json", page_json(page))
-        for order, v in enumerate(page.visuals):
-            _write(
-                folder / "visuals" / object_id(page.key, v.key) / "visual.json",
-                visual_json(page.key, v, order),
-            )
+        if folder.exists() and page.key not in force:
+            continue
+        _write_page(folder, _page_files(page))
         written.append(page.name)
 
     meta_path = pages_dir / "pages.json"
     meta = json.loads(meta_path.read_text(encoding="utf-8"))
     ours = [object_id(p.key) for p in pages]
-    meta["pageOrder"] = ours + [name for name in meta["pageOrder"] if name not in ours]
-    meta["activePageName"] = ours[0]
-    _write(meta_path, meta)
+    order = _merged_order(meta["pageOrder"], ours)
+    active = meta.get("activePageName")
+    if active not in order:
+        active = ours[0]
+    if order != meta["pageOrder"] or active != meta.get("activePageName"):
+        meta["pageOrder"], meta["activePageName"] = order, active
+        meta_path.write_text(_dump(meta), encoding="utf-8", newline="\n")
     return written
 ```
 
@@ -2799,7 +2924,11 @@ Run `ruff format src` afterwards: it re-wraps the long lines; the content stays 
 
 ```python
     parser.add_argument(
-        "--force", action="store_true", help="scaffold-report: overwrite existing pages"
+        "--force",
+        action="append",
+        default=[],
+        metavar="PAGE",
+        help="scaffold-report: rewrite this page (repeatable)",
     )
 ```
 
