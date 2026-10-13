@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from marche_stats import companies, eurostat, powerbi_export, report, sources
+from marche_stats import companies, eurostat, pngs, powerbi_export, report, sources
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -13,7 +13,8 @@ ROOT = Path(__file__).resolve().parents[2]
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="marche-stats", description=__doc__)
     parser.add_argument(
-        "step", choices=["download", "report", "run", "export-powerbi", "check-sources"]
+        "step",
+        choices=["download", "report", "run", "export-powerbi", "export-pngs", "check-sources"],
     )
     parser.add_argument(
         "--companies",
@@ -29,12 +30,22 @@ def main(argv: list[str] | None = None) -> int:
     )
     parser.add_argument("--docs", type=Path, default=ROOT / "docs", help="output folder")
     parser.add_argument("--powerbi", type=Path, default=ROOT / "powerbi", help="Power BI folder")
+    parser.add_argument(
+        "--pdf",
+        type=Path,
+        default=ROOT / "powerbi" / "exports" / "marche-regional-profile.pdf",
+        help="PDF exported from Power BI Desktop (export-pngs)",
+    )
     parser.add_argument("--holdout", type=int, default=24, help="test months for SARIMA")
     args = parser.parse_args(argv)
     geojson = args.eurostat_dir / "marche_nuts3.geojson"
 
     if args.step == "export-powerbi":
         powerbi_export.build(args.companies, args.powerbi / "data", geojson, holdout=args.holdout)
+        return 0
+    if args.step == "export-pngs":
+        for path in pngs.export(args.pdf, args.pdf.parent / "png"):
+            print(path)
         return 0
     if args.step == "check-sources":
         results = sources.check(args.powerbi / sources.MODEL_DEFINITION)
