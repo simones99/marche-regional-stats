@@ -81,7 +81,7 @@ Line charts show the value at the end of each line, with the area name. Bar char
 3. A marker on every point. When five or more lines share a chart, a marker every third year.
 4. Values are written on bars and at line ends, so no legend lookup is needed.
 5. The map prints each province's value, and a table next to it repeats the data.
-6. Every visual has a title that says what and when, and alt text with the key values.
+6. Every visual has a title that says what and when, and alt text that names the chart and what it compares. The values themselves are written on the chart (rule 4).
 7. Tab order follows reading order: navigation, story, controls, visuals. Buttons are 40 px tall.
 8. No red against green. Gaps carry a sign and a word ("+1.9 pp vs Italy").
 9. A tooltip is never the only place a number appears.
@@ -93,7 +93,7 @@ Every page has the navigation, an eyebrow with the page name, a headline whose l
 ### 1 · Overview
 
 - Story: headline "An older, smaller region with **fewer firms**"; paragraph with the population trend since 2013, the share aged 65+ and the change in active companies since March 2009; photo (Tempio del Valadier).
-- Dashboard: "Compare the Marche with" buttons Italy / EU / Peers (the `Compare to` calculation group); six KPI cards in a 3 × 2 grid (population and 5-year change, share aged 65+, crude death rate, unemployment rate, GDP per inhabitant, active companies); two line charts with markers: population on 1 January 2009–2025, active companies in December 2009–2024.
+- Dashboard: "Compare with" buttons (country, EU, peers; the country button shows the country's name) (the `Compare to` calculation group); six KPI cards in a 3 × 2 grid (population and 5-year change, share aged 65+, crude death rate, unemployment rate, GDP per inhabitant, active companies); two line charts with markers: population on 1 January from the first year of `demo_r_pjangrp3` (2014) to the latest, active companies in December 2009–2024.
 
 ### 2 · Population & Health
 
