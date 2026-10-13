@@ -3939,15 +3939,17 @@ If a test fails on a value set in Desktop (a colour outside the palette, a font 
 
 Carried over from Phase A, Task 18. Record the outcome either way.
 
-- [ ] **Step 1: Try Tabular Editor 2 on the TMDL folder.** Download `TabularEditor.Portable.zip` 2.27.2 from `https://github.com/TabularEditor/TabularEditor/releases/tag/2.27.2` and extract it to a new empty folder outside the repository, for example `$env:TEMP\te2`, then (PowerShell):
+- [x] **Step 1: Try Tabular Editor 2 on the TMDL folder.** Download `TabularEditor.Portable.zip` 2.27.2 from `https://github.com/TabularEditor/TabularEditor/releases/tag/2.27.2` and extract it to a new empty folder outside the repository, for example `$env:TEMP\te2`, then (PowerShell):
 
 ```powershell
 & "$env:TEMP\te2\TabularEditor.exe" "powerbi\marche-regional-profile.SemanticModel\definition" -A "https://raw.githubusercontent.com/microsoft/Analysis-Services/master/BestPracticeRules/BPARules.json"
 ```
 
-- [ ] **Step 2: Decide.**
+- [x] **Step 2: Decide.**
   - **If it loads the model and lists rule results:** add a job `bpa` on `windows-latest` to `.github/workflows/ci.yml` that downloads the same zip and runs the same command with `-V` (fail on errors). Commit with "Run the Best Practice Analyzer on the semantic model in CI".
   - **If it cannot load a TMDL folder:** add one sentence under "Model" in `powerbi/README.md`: "Tabular Editor 2.27.2 cannot load the TMDL folder, so the Best Practice Analyzer does not run in CI." Commit with "Note why the Best Practice Analyzer is not in CI".
+
+**Outcome (13 October 2026).** Tabular Editor 2.27.2 loads the TMDL folder and runs the 71 rules. The first run had 61 errors: 60 `PROVIDE_FORMAT_STRING_FOR_MEASURES`, all on measures that return text (Tabular Editor cannot infer a measure's data type offline), and 1 `DAX_MEASURES_UNQUALIFIED` on the `Province indicator` field parameter, whose `NAMEOF ( '_Measures'[…] )` references must stay qualified. Commit 8da8a77 marks those 59 text measures and the field parameter with `annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":[…]}` and gives the one numeric measure, `Dot value`, a format string (its message says "unqualify a measure reference", but the reference was kept qualified and ignored instead). The `bpa` job in `ci.yml` (e368bad) runs the analyzer with `-G`: errors fail the job as GitHub annotations, the 186 warnings do not.
 
 ---
 
