@@ -1,3 +1,6 @@
+import re
+from pathlib import Path
+
 import pandas as pd
 import pytest
 from conftest import synthetic_wide
@@ -123,3 +126,20 @@ def test_cli_export_powerbi_writes_three_files(companies_csv, tmp_path):
     assert (coverage[~sarima] == "").all()
     assert (coverage[sarima] != "").all()
     assert reconciliation_raw["active_companies"].str.match(r"^\d+$").all()
+
+
+FIXTURES = Path(__file__).parent / "fixtures"
+
+
+def test_province_shapes_fit_the_box():
+    table = powerbi_export.province_shapes_table(FIXTURES / "marche_nuts3.geojson")
+    assert list(table.columns) == ["geo", "path", "label_x", "label_y"]
+    assert list(table["geo"]) == ["ITI31", "ITI32", "ITI33", "ITI34", "ITI35"]
+    for row in table.itertuples():
+        assert re.fullmatch(r"(M[\d ,]+Z)+", row.path), row.geo
+        numbers = [int(n) for n in re.findall(r"\d+", row.path)]
+        assert max(numbers) <= 400, row.geo
+        assert 0 <= row.label_x <= 400 and 0 <= row.label_y <= 400, row.geo
+    labels = table.set_index("geo")
+    # North up: Pesaro e Urbino lies north of Ascoli Piceno.
+    assert labels.loc["ITI31", "label_y"] < labels.loc["ITI34", "label_y"]
