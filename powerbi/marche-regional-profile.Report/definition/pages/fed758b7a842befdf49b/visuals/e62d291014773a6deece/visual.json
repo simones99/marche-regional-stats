@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Benchmark.Benchmark",
-              "nativeQueryRef": "Benchmark"
+              "nativeQueryRef": "Benchmark",
+              "active": true
             }
           ]
         }

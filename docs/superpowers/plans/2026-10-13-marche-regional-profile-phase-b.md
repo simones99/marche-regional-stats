@@ -3497,6 +3497,8 @@ The PBIR forms of the textbox, shape, image, page navigator, card and slicer com
 
 Expected: `['Spike']`, a new folder `…Report/definition/pages/73cc33b96ddcddc98995/` and that name first in `pageOrder` of `pages.json`. Do not commit it: Step 3 deletes it. Until then `test_pages_follow_the_layout_order` fails, because Spike comes before Overview.
 
+  Deviation (13 October 2026, end of day): the user asked to commit everything before stopping, so the Spike page, `pages.json` and the Overview files Desktop had saved were committed together in a work-in-progress commit, with `test_pages_follow_the_layout_order` still failing. In Step 3, compare against `c23f63e` (the last commit before it), not against the working tree: `git diff c23f63e -- powerbi/marche-regional-profile.Report` for Overview, and a fresh `report_layout.spike()` scaffold in a temporary folder for Spike. Then delete Spike as written and commit.
+
 - [ ] **Step 1 (user): Open the report.** Open `powerbi/marche-regional-profile.pbip`. Expected on Overview, against the canvas artboard "D · Story + dashboard":
   - the dark navigation bar with "Regional profile", the region name, the page navigator listing the visible pages (only Overview at this point; Model check is hidden) and "Data up to Mar 2025";
   - the light story column with OVERVIEW, the two-part headline, the paragraph, the Valadier photo and the source line;
