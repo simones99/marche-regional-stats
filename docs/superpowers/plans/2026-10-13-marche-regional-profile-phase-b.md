@@ -2071,7 +2071,7 @@ git commit -m "Add the Valadier, Urbino and Due Sorelle photos to the report res
 - Create: `src/marche_stats/pbir.py`
 - Test: `tests/test_pbir.py`
 
-- [ ] **Step 1: Write the failing tests.** Create `tests/test_pbir.py`:
+- [x] **Step 1: Write the failing tests.** Create `tests/test_pbir.py`:
 
 ```python
 import json
@@ -2278,9 +2278,9 @@ def test_force_keys_must_be_page_keys(tmp_path):
         pbir.scaffold([page], _definition(tmp_path), force={"One"})
 ```
 
-- [ ] **Step 2: Run them.** `pytest tests/test_pbir.py -v`. Expected: FAIL with `ImportError`.
+- [x] **Step 2: Run them.** `pytest tests/test_pbir.py -v`. Expected: FAIL with `ImportError`.
 
-- [ ] **Step 3: Implement** `src/marche_stats/pbir.py`:
+- [x] **Step 3: Implement** `src/marche_stats/pbir.py`:
 
 ```python
 """Write Power BI report pages in the PBIR format from a compact layout.
@@ -2574,9 +2574,9 @@ def scaffold(pages: list[Page], definition: Path, force: Collection[str] = ()) -
     return written
 ```
 
-- [ ] **Step 4: Run them.** `pytest tests/test_pbir.py -v`. Expected: PASS.
+- [x] **Step 4: Run them.** `pytest tests/test_pbir.py -v`. Expected: PASS.
 
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
 
 ```bash
 ruff check src tests && ruff format src tests
