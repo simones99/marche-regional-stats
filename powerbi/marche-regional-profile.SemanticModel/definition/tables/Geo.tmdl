@@ -1,0 +1,89 @@
+/// Areas of the report: EU, country, focus region, peer regions and provinces, keyed on NUTS codes.
+table Geo
+	lineageTag: cd915abf-c1a8-450c-ab20-ed6760b4b524
+
+	column Code
+		dataType: string
+		isKey
+		lineageTag: 44a096fd-577d-4476-9144-1e176256d6fa
+		summarizeBy: none
+		sourceColumn: Code
+
+	column Name
+		dataType: string
+		lineageTag: 662f4ff3-e46b-494d-a9e7-20194f065ea8
+		summarizeBy: none
+		sourceColumn: Name
+		sortByColumn: SortOrder
+
+	column Level
+		dataType: string
+		lineageTag: 19fcca34-d477-48c0-982d-2f7b84366274
+		summarizeBy: none
+		sourceColumn: Level
+
+	column ParentCode
+		dataType: string
+		isHidden
+		lineageTag: 6c8a9158-a464-4bc1-8453-41a743d26cf1
+		summarizeBy: none
+		sourceColumn: ParentCode
+
+	column Role
+		dataType: string
+		lineageTag: d6943e56-e208-4828-ba98-e43a96827d93
+		summarizeBy: none
+		sourceColumn: Role
+
+	column SortOrder
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 1a0eeb20-b00f-4b9f-9be2-c410a249f196
+		summarizeBy: none
+		sourceColumn: SortOrder
+
+	partition Geo = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(
+				        Web.Contents("https://gisco-services.ec.europa.eu/distribution/v2/nuts/csv/NUTS_AT_2024.csv"),
+				        [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]
+				    ),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Peers = Text.Split(PeerRegions, ","),
+				    Provinces = Text.Split(ProvinceRegions, ","),
+				    Wanted = List.Combine({{FocusRegion}, Peers, Provinces}),
+				    Selected = Table.SelectRows(Promoted, each List.Contains(Wanted, [NUTS_ID])),
+				    Renamed = Table.RenameColumns(
+				        Table.SelectColumns(Selected, {"NUTS_ID", "NAME_LATN"}),
+				        {{"NUTS_ID", "Code"}, {"NAME_LATN", "Name"}}
+				    ),
+				    Typed = Table.TransformColumnTypes(Renamed, {{"Code", type text}, {"Name", type text}}),
+				    WithLevel = Table.AddColumn(Typed, "Level", each "NUTS" & Text.From(Text.Length([Code]) - 2), type text),
+				    WithParent = Table.AddColumn(WithLevel, "ParentCode", each if Text.Length([Code]) = 5 then Text.Start([Code], 4) else Country, type text),
+				    WithRole = Table.AddColumn(WithParent, "Role", each if [Code] = FocusRegion then "Focus" else if List.Contains(Peers, [Code]) then "Peer" else "Province", type text),
+				    Benchmarks = #table(
+				        type table [Code = text, Name = text, Level = text, ParentCode = nullable text, Role = text],
+				        {
+				            {"EU27_2020", "European Union (27)", "EU", null, "EU"},
+				            {Country, if Country = "IT" then "Italy" else Country, "Country", "EU27_2020", "Country"}
+				        }
+				    ),
+				    Combined = Table.Combine({WithRole, Benchmarks}),
+				    Missing = List.Difference(Wanted, Combined[Code]),
+				    Checked =
+				        if List.IsEmpty(Missing) then Combined
+				        else error Error.Record("NUTS codes not found in GISCO", Text.Combine(Missing, ", ")),
+				    RoleRank = Table.AddColumn(Checked, "RoleRank", each List.PositionOf({"Focus", "Peer", "Country", "EU", "Province"}, [Role]), Int64.Type),
+				    Sorted = Table.Sort(RoleRank, {{"RoleRank", Order.Ascending}, {"Name", Order.Ascending}}),
+				    Indexed = Table.AddIndexColumn(Sorted, "SortOrder", 1, 1, Int64.Type),
+				    Result = Table.RemoveColumns(Indexed, {"RoleRank"})
+				in
+				    Result
+
+	annotation PBI_ResultType = Table
+
+	annotation PBI_NavigationStepName = Navigazione
+

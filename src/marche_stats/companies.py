@@ -189,3 +189,16 @@ def regional_series(long: pd.DataFrame) -> pd.Series:
     totals = _totals_constant_boundaries(long)
     series = totals.groupby("date")["active_companies"].sum().sort_index()
     return series.asfreq("ME")
+
+
+def modelling_series(wide: pd.DataFrame) -> pd.Series:
+    """Regional series on constant boundaries, stopped before the first stale month.
+
+    SARIMA needs consecutive months, so a month identical to the previous one in every
+    cell (not updated) ends the series even when later months exist.
+    """
+    series = regional_series(to_long(wide))
+    stale = stale_months(wide)
+    if stale:
+        series = series[series.index < min(stale)]
+    return series

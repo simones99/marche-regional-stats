@@ -1,0 +1,80 @@
+relationship Population_Geo
+	fromColumn: Population.GeoCode
+	toColumn: Geo.Code
+
+relationship Population_Calendar
+	fromColumn: Population.Date
+	toColumn: Calendar.Date
+
+relationship Population_Sex
+	fromColumn: Population.SexCode
+	toColumn: Sex.Code
+
+relationship Population_AgeGroup
+	fromColumn: Population.AgeCode
+	toColumn: AgeGroup.Code
+
+relationship Deaths_Geo
+	fromColumn: Deaths.GeoCode
+	toColumn: Geo.Code
+
+relationship Deaths_Calendar
+	fromColumn: Deaths.Date
+	toColumn: Calendar.Date
+
+relationship Deaths_Sex
+	fromColumn: Deaths.SexCode
+	toColumn: Sex.Code
+
+relationship Deaths_AgeGroup
+	fromColumn: Deaths.AgeCode
+	toColumn: AgeGroup.Code
+
+relationship GDP_Geo
+	fromColumn: GDP.GeoCode
+	toColumn: Geo.Code
+
+relationship GDP_Calendar
+	fromColumn: GDP.Date
+	toColumn: Calendar.Date
+
+relationship Unemployment_Geo
+	fromColumn: Unemployment.GeoCode
+	toColumn: Geo.Code
+
+relationship Unemployment_Calendar
+	fromColumn: Unemployment.Date
+	toColumn: Calendar.Date
+
+relationship Enrolment_Geo
+	fromColumn: Enrolment.GeoCode
+	toColumn: Geo.Code
+
+relationship Enrolment_Calendar
+	fromColumn: Enrolment.Date
+	toColumn: Calendar.Date
+
+relationship Enrolment_Sex
+	fromColumn: Enrolment.SexCode
+	toColumn: Sex.Code
+
+relationship Enrolment_ISCED
+	fromColumn: Enrolment.IscedCode
+	toColumn: ISCED.Code
+
+relationship Companies_Geo
+	fromColumn: Companies.GeoCode
+	toColumn: Geo.Code
+
+relationship Companies_Calendar
+	fromColumn: Companies.Date
+	toColumn: Calendar.Date
+
+relationship Companies_Sector
+	fromColumn: Companies.SectorCode
+	toColumn: Sector.Code
+
+relationship Forecast_Calendar
+	fromColumn: Forecast.Date
+	toColumn: Calendar.Date
+

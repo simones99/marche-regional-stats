@@ -1,0 +1,59 @@
+/// Unemployment rate, age 15-74, all education levels (Eurostat lfst_r_lfu3rt), as a fraction.
+table Unemployment
+	lineageTag: 8c4f49f5-c6b6-4581-a262-13e6fa1d99ae
+
+	column GeoCode
+		dataType: string
+		isHidden
+		lineageTag: 33db2fbd-e720-48da-9e64-29c54d36d176
+		summarizeBy: none
+		sourceColumn: GeoCode
+
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: 98290ef7-878d-4062-8334-83283e78d752
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Rate
+		dataType: double
+		isHidden
+		formatString: 0.0%
+		lineageTag: 6794e177-4c74-491e-a650-6411906b2a4b
+		summarizeBy: none
+		sourceColumn: Rate
+
+	column Flag
+		dataType: string
+		isHidden
+		lineageTag: 4b3f4df3-a664-4fb0-8da9-8b8d04ef1203
+		summarizeBy: none
+		sourceColumn: Flag
+
+	partition Unemployment = m
+		mode: import
+		source =
+				let
+				    Source = fnEurostat(
+				        "lfst_r_lfu3rt",
+				        "c[isced11]=TOTAL&c[sex]=T&c[age]=Y15-74&c[unit]=PC",
+				        {"EU", "Country", "NUTS2"}
+				    ),
+				    Selected = Table.SelectColumns(Source, {"geo", "TIME_PERIOD", "OBS_VALUE", "OBS_FLAG"}),
+				    NonEmpty = Table.SelectRows(Selected, each [OBS_VALUE] <> ""),
+				    WithDate = Table.AddColumn(NonEmpty, "Date", each #date(Number.FromText([TIME_PERIOD]), 1, 1), type date),
+				    WithRate = Table.AddColumn(WithDate, "Rate", each Number.FromText([OBS_VALUE], "en-US") / 100, type number),
+				    Renamed = Table.RenameColumns(
+				        Table.RemoveColumns(WithRate, {"TIME_PERIOD", "OBS_VALUE"}),
+				        {{"geo", "GeoCode"}, {"OBS_FLAG", "Flag"}}
+				    ),
+				    Typed = Table.TransformColumnTypes(Renamed, {{"GeoCode", type text}, {"Flag", type text}})
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

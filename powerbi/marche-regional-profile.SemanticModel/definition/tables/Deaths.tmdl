@@ -1,0 +1,90 @@
+/// Deaths in the year by sex and five-year age group (Eurostat demo_r_magec3). Age bands of a (geo, sex, year) are kept only when they add up to TOTAL (within 0.1%), otherwise only TOTAL is kept, so incomplete band sets cannot skew shares.
+table Deaths
+	lineageTag: 4727eeb5-e21c-404d-a7ec-dfafb24b9148
+
+	column GeoCode
+		dataType: string
+		isHidden
+		lineageTag: 78008d49-1851-4853-ac61-d6dce0869e00
+		summarizeBy: none
+		sourceColumn: GeoCode
+
+	column SexCode
+		dataType: string
+		isHidden
+		lineageTag: 0d617c4c-7155-4fe9-8f11-fbbb14459630
+		summarizeBy: none
+		sourceColumn: SexCode
+
+	column AgeCode
+		dataType: string
+		isHidden
+		lineageTag: fd60df54-4f63-40e6-b0bb-4292e6fb04f9
+		summarizeBy: none
+		sourceColumn: AgeCode
+
+	column Date
+		dataType: dateTime
+		isHidden
+		formatString: yyyy-mm-dd
+		lineageTag: b0699f0a-1006-4a3f-938b-aa7e23c1a0dd
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Count
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: f767245e-c10b-41da-aa9e-3a1b13b9f16f
+		summarizeBy: sum
+		sourceColumn: Count
+
+	column Flag
+		dataType: string
+		isHidden
+		lineageTag: 0028a39a-228b-43af-931d-d85eda8fa329
+		summarizeBy: none
+		sourceColumn: Flag
+
+	partition Deaths = m
+		mode: import
+		source =
+				let
+				    Source = fnEurostat(
+				        "demo_r_magec3",
+				        "c[unit]=NR&c[sex]=T,M,F&c[age]=TOTAL,Y_LT5,Y5-9,Y10-14,Y15-19,Y20-24,Y25-29,Y30-34,Y35-39,Y40-44,Y45-49,Y50-54,Y55-59,Y60-64,Y65-69,Y70-74,Y75-79,Y80-84,Y85-89,Y_GE90,UNK",
+				        {"EU", "Country", "NUTS2", "NUTS3"}
+				    ),
+				    Selected = Table.SelectColumns(Source, {"geo", "sex", "age", "TIME_PERIOD", "OBS_VALUE", "OBS_FLAG"}),
+				    NonEmpty = Table.SelectRows(Selected, each [OBS_VALUE] <> ""),
+				    WithDate = Table.AddColumn(NonEmpty, "Date", each #date(Number.FromText([TIME_PERIOD]), 1, 1), type date),
+				    Renamed = Table.RenameColumns(
+				        Table.RemoveColumns(WithDate, {"TIME_PERIOD"}),
+				        {{"geo", "GeoCode"}, {"sex", "SexCode"}, {"age", "AgeCode"}, {"OBS_VALUE", "Count"}, {"OBS_FLAG", "Flag"}}
+				    ),
+				    Typed = Table.TransformColumnTypes(
+				        Renamed,
+				        {{"GeoCode", type text}, {"SexCode", type text}, {"AgeCode", type text}, {"Count", Int64.Type}, {"Flag", type text}},
+				        "en-US"
+				    ),
+				    Checked = Table.Combine(
+				        Table.Group(
+				            Typed, {"GeoCode", "SexCode", "Date"},
+				            {{"Rows", (t) =>
+				                let
+				                    Total = List.Sum(Table.SelectRows(t, each [AgeCode] = "TOTAL")[Count]),
+				                    Bands = List.Sum(Table.SelectRows(t, each [AgeCode] <> "TOTAL")[Count])
+				                in
+				                    if Bands = null or (Total <> null and Number.Abs(Bands - Total) <= 0.001 * Total)
+				                    then t
+				                    else Table.SelectRows(t, each [AgeCode] = "TOTAL"),
+				              Value.Type(Typed)}}
+				        )[Rows]
+				    )
+				in
+				    Checked
+
+	annotation PBI_ResultType = Table
+

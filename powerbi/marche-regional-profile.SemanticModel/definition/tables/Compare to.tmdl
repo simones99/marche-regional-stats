@@ -1,0 +1,79 @@
+/// Benchmark comparisons for any indicator measure: the value, the country, the EU, the
+/// unweighted mean of the peer regions, the differences from them and the rank among peers.
+/// Every item evaluates the measure under the Value item, so the result does not depend on
+/// how the engine applies items to measures referenced inside the selected measure.
+table 'Compare to'
+	lineageTag: a3edc2d8-aa26-4849-a47c-9dcad1e7abaf
+
+	calculationGroup
+		precedence: 10
+
+		calculationItem Value = SELECTEDMEASURE ()
+
+		calculationItem Country =
+				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
+				RETURN IF ( ISTEXT ( v ), v, CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Role] = "Country", 'Compare to'[Comparison] = "Value" ) )
+
+		calculationItem 'vs Country' =
+				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
+				VAR c = CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Role] = "Country", 'Compare to'[Comparison] = "Value" )
+				RETURN IF ( ISTEXT ( v ), v, IF ( NOT ISBLANK ( v ) && NOT ISBLANK ( c ), v - c ) )
+
+			formatStringDefinition = SELECTEDMEASUREFORMATSTRING ()
+
+		calculationItem EU =
+				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
+				RETURN IF ( ISTEXT ( v ), v, CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Role] = "EU", 'Compare to'[Comparison] = "Value" ) )
+
+		calculationItem 'vs EU' =
+				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
+				VAR e = CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Role] = "EU", 'Compare to'[Comparison] = "Value" )
+				RETURN IF ( ISTEXT ( v ), v, IF ( NOT ISBLANK ( v ) && NOT ISBLANK ( e ), v - e ) )
+
+			formatStringDefinition = SELECTEDMEASUREFORMATSTRING ()
+
+		calculationItem 'Peers avg' =
+				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
+				VAR Peers = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Peer" )
+				RETURN IF ( ISTEXT ( v ), v, AVERAGEX ( Peers, VAR c = Geo[Code] RETURN CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Code] = c, 'Compare to'[Comparison] = "Value" ) ) )
+
+		calculationItem 'vs Peers avg' =
+				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
+				VAR Peers = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Peer" )
+				VAR p = AVERAGEX ( Peers, VAR c = Geo[Code] RETURN CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Code] = c, 'Compare to'[Comparison] = "Value" ) )
+				RETURN IF ( ISTEXT ( v ), v, IF ( NOT ISBLANK ( v ) && NOT ISBLANK ( p ), v - p ) )
+
+			formatStringDefinition = SELECTEDMEASUREFORMATSTRING ()
+
+		calculationItem 'Rank among peers' =
+				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
+				VAR Areas = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] IN { "Focus", "Peer" } )
+				VAR Comparable =
+				    ISSELECTEDMEASURE (
+				        [Population change 5y %], [Share aged 0-14], [Share aged 65+], [Share aged 80+],
+				        [Crude death rate per 1,000], [GDP per inhabitant (EUR)], [GDP per inhabitant (PPS, EU = 100)],
+				        [Unemployment rate], [Tertiary students per 1,000 residents]
+				    )
+				RETURN
+				    IF (
+				        Comparable && SELECTEDVALUE ( Geo[Role] ) IN { "Focus", "Peer" } && NOT ISBLANK ( v ),
+				        RANKX ( Areas, VAR c = Geo[Code] RETURN CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Code] = c, 'Compare to'[Comparison] = "Value" ), v, DESC, DENSE )
+				    )
+
+			formatStringDefinition = "0"
+
+	column Comparison
+		dataType: string
+		lineageTag: 74aa4160-7449-4326-aae2-4c219a699588
+		summarizeBy: none
+		sourceColumn: Name
+		sortByColumn: Ordinal
+
+	column Ordinal
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 897cceea-b014-4fdc-b314-712491e169ad
+		summarizeBy: sum
+		sourceColumn: Ordinal
+

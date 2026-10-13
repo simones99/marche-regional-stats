@@ -1,0 +1,422 @@
+/// All measures of the report, in display folders by page.
+table _Measures
+	lineageTag: 4fdd45ab-d5e9-4870-84be-d730dd57fa49
+
+	/// Latest date with population data for every area of the comparison set.
+	measure '_Ref date Population' =
+			VAR Areas = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] IN { "Focus", "Peer", "Country", "EU" } )
+			VAR Provinces = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Province" )
+			VAR AreaDate = MINX ( Areas, VAR c = Geo[Code] RETURN CALCULATE ( MAX ( Population[Date] ), REMOVEFILTERS ( Geo ), Geo[Code] = c ) )
+			VAR ProvinceDate = MINX ( Provinces, VAR c = Geo[Code] RETURN CALCULATE ( MAX ( Population[Date] ), REMOVEFILTERS ( Geo ), Geo[Code] = c ) )
+			RETURN IF ( SELECTEDVALUE ( Geo[Level] ) = "NUTS3", ProvinceDate, AreaDate )
+		formatString: yyyy-mm-dd
+		isHidden
+		displayFolder: _Helpers
+		lineageTag: aaaa1910-2c18-476d-b8cc-f1ccd2f674c9
+
+	/// Latest date with deaths data for every area of the comparison set.
+	measure '_Ref date Deaths' =
+			VAR Areas = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] IN { "Focus", "Peer", "Country", "EU" } )
+			VAR Provinces = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Province" )
+			VAR AreaDate = MINX ( Areas, VAR c = Geo[Code] RETURN CALCULATE ( MAX ( Deaths[Date] ), REMOVEFILTERS ( Geo ), Geo[Code] = c ) )
+			VAR ProvinceDate = MINX ( Provinces, VAR c = Geo[Code] RETURN CALCULATE ( MAX ( Deaths[Date] ), REMOVEFILTERS ( Geo ), Geo[Code] = c ) )
+			RETURN IF ( SELECTEDVALUE ( Geo[Level] ) = "NUTS3", ProvinceDate, AreaDate )
+		formatString: yyyy-mm-dd
+		isHidden
+		displayFolder: _Helpers
+		lineageTag: c4eb632c-3ec3-4241-bf98-146462502d90
+
+	/// Latest date with GDP data for every area of the comparison set.
+	measure '_Ref date GDP' =
+			VAR Areas = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] IN { "Focus", "Peer", "Country", "EU" } )
+			VAR Provinces = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Province" )
+			VAR AreaDate = MINX ( Areas, VAR c = Geo[Code] RETURN CALCULATE ( MAX ( GDP[Date] ), REMOVEFILTERS ( Geo ), Geo[Code] = c ) )
+			VAR ProvinceDate = MINX ( Provinces, VAR c = Geo[Code] RETURN CALCULATE ( MAX ( GDP[Date] ), REMOVEFILTERS ( Geo ), Geo[Code] = c ) )
+			RETURN IF ( SELECTEDVALUE ( Geo[Level] ) = "NUTS3", ProvinceDate, AreaDate )
+		formatString: yyyy-mm-dd
+		isHidden
+		displayFolder: _Helpers
+		lineageTag: c24a7475-0530-41c1-9461-e53559ec5862
+
+	/// Latest date with unemployment data for every area of the comparison set.
+	measure '_Ref date Unemployment' =
+			VAR Areas = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] IN { "Focus", "Peer", "Country", "EU" } )
+			RETURN MINX ( Areas, VAR c = Geo[Code] RETURN CALCULATE ( MAX ( Unemployment[Date] ), REMOVEFILTERS ( Geo ), Geo[Code] = c ) )
+		formatString: yyyy-mm-dd
+		isHidden
+		displayFolder: _Helpers
+		lineageTag: cb59f7d3-ce90-4241-a91d-b0c3c0739756
+
+	/// Latest date with enrolment data for every area of the comparison set.
+	measure '_Ref date Enrolment' =
+			VAR Areas = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] IN { "Focus", "Peer", "Country", "EU" } )
+			RETURN MINX ( Areas, VAR c = Geo[Code] RETURN CALCULATE ( MAX ( Enrolment[Date] ), REMOVEFILTERS ( Geo ), Geo[Code] = c ) )
+		formatString: yyyy-mm-dd
+		isHidden
+		displayFolder: _Helpers
+		lineageTag: 24136414-2c4b-45e4-84a3-27b0befc0fc4
+
+	/// Population on 1 January of the reference year. Total sex and age unless the visual
+	/// filters Sex or AgeGroup.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
+	measure Population =
+			VAR d = [_Ref date Population]
+			RETURN
+			    IF (
+			        HASONEVALUE ( Geo[Level] ),
+			        SWITCH (
+			            TRUE (),
+			            ISFILTERED ( Sex ) && ISFILTERED ( AgeGroup ), CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d ),
+			            ISFILTERED ( Sex ), CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, AgeGroup[Code] = "TOTAL" ),
+			            ISFILTERED ( AgeGroup ), CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, Sex[Code] = "T" ),
+			            CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, Sex[Code] = "T", AgeGroup[Code] = "TOTAL" )
+			        )
+			    )
+		formatString: #,0
+		displayFolder: Population & Health
+		lineageTag: 971eaee4-76eb-4eb5-ab53-0c65f1a56eed
+
+	/// Change in population over the five years to the reference year.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
+	measure 'Population change 5y %' =
+			VAR d = [_Ref date Population]
+			VAR PopLatest = [Population]
+			VAR PopBefore = CALCULATE ( [Population], REMOVEFILTERS ( Calendar ), Calendar[Date] = DATE ( YEAR ( d ) - 5, 1, 1 ) )
+			RETURN IF ( HASONEVALUE ( Geo[Level] ), IF ( NOT ISBLANK ( PopBefore ), DIVIDE ( PopLatest - PopBefore, PopBefore ) ) )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Population & Health
+		lineageTag: de96f074-0ba8-4177-beb2-0c254fa7d11c
+
+	/// Share of residents aged 0-14 on 1 January. Numerator and total use one date: the latest
+	/// with age bands for every area of the comparison set.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
+	measure 'Share aged 0-14' =
+			VAR d = CALCULATE ( [_Ref date Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "0-14" )
+			RETURN
+			    IF (
+			        HASONEVALUE ( Geo[Level] ),
+			        DIVIDE (
+			            CALCULATE ( [Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "0-14", Calendar[Date] = d ),
+			            CALCULATE ( [Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL", Calendar[Date] = d )
+			        )
+			    )
+		formatString: 0.0%
+		displayFolder: Population & Health
+		lineageTag: 147887d7-fb42-4c70-a99c-636ffc174be0
+
+	/// Share of residents aged 65 or over on 1 January. Numerator and total use one date: the latest
+	/// with age bands for every area of the comparison set.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
+	measure 'Share aged 65+' =
+			VAR d = CALCULATE ( [_Ref date Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "65+" )
+			RETURN
+			    IF (
+			        HASONEVALUE ( Geo[Level] ),
+			        DIVIDE (
+			            CALCULATE ( [Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "65+", Calendar[Date] = d ),
+			            CALCULATE ( [Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL", Calendar[Date] = d )
+			        )
+			    )
+		formatString: 0.0%
+		displayFolder: Population & Health
+		lineageTag: 82f50abd-ff5f-4e66-9149-44fa7db3825d
+
+	/// Share of residents aged 80 or over on 1 January. Numerator and total use one date: the latest
+	/// with age bands for every area of the comparison set.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
+	measure 'Share aged 80+' =
+			VAR d = CALCULATE ( [_Ref date Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[Is80Plus] = TRUE () )
+			RETURN
+			    IF (
+			        HASONEVALUE ( Geo[Level] ),
+			        DIVIDE (
+			            CALCULATE ( [Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[Is80Plus] = TRUE (), Calendar[Date] = d ),
+			            CALCULATE ( [Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL", Calendar[Date] = d )
+			        )
+			    )
+		formatString: 0.0%
+		displayFolder: Population & Health
+		lineageTag: 3cb47133-8dd9-4bf9-b034-aa96d6aeea69
+
+	/// Deaths in the reference year. Total sex and age unless the visual filters Sex or AgeGroup.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
+	measure Deaths =
+			VAR d = [_Ref date Deaths]
+			RETURN
+			    IF (
+			        HASONEVALUE ( Geo[Level] ),
+			        SWITCH (
+			            TRUE (),
+			            ISFILTERED ( Sex ) && ISFILTERED ( AgeGroup ), CALCULATE ( SUM ( Deaths[Count] ), Deaths[Date] = d ),
+			            ISFILTERED ( Sex ), CALCULATE ( SUM ( Deaths[Count] ), Deaths[Date] = d, AgeGroup[Code] = "TOTAL" ),
+			            ISFILTERED ( AgeGroup ), CALCULATE ( SUM ( Deaths[Count] ), Deaths[Date] = d, Sex[Code] = "T" ),
+			            CALCULATE ( SUM ( Deaths[Count] ), Deaths[Date] = d, Sex[Code] = "T", AgeGroup[Code] = "TOTAL" )
+			        )
+			    )
+		formatString: #,0
+		displayFolder: Population & Health
+		lineageTag: b7b40a34-fe84-4914-8499-095f0ad96423
+
+	/// Deaths in the year per 1,000 residents on 1 January of the same year.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
+	measure 'Crude death rate per 1,000' =
+			VAR d = [_Ref date Deaths]
+			VAR DeathsTotal = CALCULATE ( SUM ( Deaths[Count] ), Deaths[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "T", REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL" )
+			VAR Residents = CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "T", REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL" )
+			RETURN IF ( HASONEVALUE ( Geo[Level] ), DIVIDE ( 1000 * DeathsTotal, Residents ) )
+		formatString: 0.0
+		displayFolder: Population & Health
+		lineageTag: 3bba6632-7b32-4e4f-ace6-2ef129fecd5a
+
+	/// GDP per inhabitant in euro, as published by Eurostat (EUR_HAB). Blank unless one area is
+	/// in context, because values per inhabitant cannot be added over areas.
+	measure 'GDP per inhabitant (EUR)' =
+			VAR d = [_Ref date GDP]
+			RETURN IF ( HASONEVALUE ( Geo[Code] ), CALCULATE ( SUM ( GDP[Value] ), GDP[Date] = d, GDP[UnitCode] = "EUR_HAB" ) )
+		formatString: #,0
+		displayFolder: Economy & Labour
+		lineageTag: 7d7c1c6d-c602-414f-9eb7-30d7977f2f17
+
+	/// GDP per inhabitant in purchasing power standard, EU = 100 (PPS_HAB_EU27_2020). Blank
+	/// unless one area is in context, because index values cannot be added over areas.
+	measure 'GDP per inhabitant (PPS, EU = 100)' =
+			VAR d = [_Ref date GDP]
+			RETURN IF ( HASONEVALUE ( Geo[Code] ), CALCULATE ( SUM ( GDP[Value] ), GDP[Date] = d, GDP[UnitCode] = "PPS_HAB_EU27_2020" ) )
+		formatString: 0
+		displayFolder: Economy & Labour
+		lineageTag: 28e1d984-a592-4874-abad-57f6c50ffd4d
+
+	/// Unemployment rate, age 15-74. Blank unless one area is in context, because rates cannot
+	/// be added over areas.
+	measure 'Unemployment rate' =
+			VAR d = [_Ref date Unemployment]
+			RETURN IF ( HASONEVALUE ( Geo[Code] ), CALCULATE ( SUM ( Unemployment[Rate] ), Unemployment[Date] = d ) )
+		formatString: 0.0%
+		displayFolder: Economy & Labour
+		lineageTag: 498f68ec-e525-45f0-9c63-813c1a0e1fe1
+
+	/// Pupils and students enrolled. All levels and both sexes unless the visual filters ISCED or Sex.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
+	measure 'Students enrolled' =
+			VAR d = [_Ref date Enrolment]
+			RETURN
+			    IF (
+			        HASONEVALUE ( Geo[Level] ),
+			        SWITCH (
+			            TRUE (),
+			            ISFILTERED ( Sex ) && ISFILTERED ( ISCED ), CALCULATE ( SUM ( Enrolment[Students] ), Enrolment[Date] = d, KEEPFILTERS ( ISCED[IsTotal] = FALSE () ) ),
+			            ISFILTERED ( Sex ), CALCULATE ( SUM ( Enrolment[Students] ), Enrolment[Date] = d, ISCED[Code] = "ED02-8" ),
+			            ISFILTERED ( ISCED ), CALCULATE ( SUM ( Enrolment[Students] ), Enrolment[Date] = d, Sex[Code] = "T", KEEPFILTERS ( ISCED[IsTotal] = FALSE () ) ),
+			            CALCULATE ( SUM ( Enrolment[Students] ), Enrolment[Date] = d, Sex[Code] = "T", ISCED[Code] = "ED02-8" )
+			        )
+			    )
+		formatString: #,0
+		displayFolder: Education
+		lineageTag: 611a6209-4e44-4461-8193-990cd5887ea1
+
+	/// Students in ISCED 5-8 per 1,000 residents on 1 January of the same year.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
+	measure 'Tertiary students per 1,000 residents' =
+			VAR d = CALCULATE ( [_Ref date Enrolment], REMOVEFILTERS ( ISCED ), ISCED[Group] = "ISCED 5-8" )
+			VAR Tertiary = CALCULATE ( SUM ( Enrolment[Students] ), Enrolment[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "T", REMOVEFILTERS ( ISCED ), ISCED[Group] = "ISCED 5-8" )
+			VAR Residents = CALCULATE ( SUM ( Population[Residents] ), Population[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "T", REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL" )
+			RETURN IF ( HASONEVALUE ( Geo[Level] ), DIVIDE ( 1000 * Tertiary, Residents ) )
+		formatString: 0.0
+		displayFolder: Education
+		lineageTag: 0cebffa4-e6a7-45c3-bc5e-dcbe6c181baf
+
+	/// Active companies at the last month-end in context. For the focus region, the sum of its provinces.
+	measure 'Active companies' =
+			VAR Areas = VALUES ( Geo[Code] )
+			VAR WithProvinces = UNION ( Areas, CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), TREATAS ( Areas, Geo[ParentCode] ) ) )
+			VAR LastDate = CALCULATE ( MAX ( Companies[Date] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ) )
+			RETURN CALCULATE ( SUM ( Companies[Companies] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ), Companies[Date] = LastDate )
+		formatString: #,0
+		displayFolder: Business
+		lineageTag: a6d5e70f-0a28-43de-8a7a-726b06f690a6
+
+	/// Change in active companies from the first to the last full-year December.
+	measure 'Active companies change %' =
+			VAR Areas = VALUES ( Geo[Code] )
+			VAR WithProvinces = UNION ( Areas, CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), TREATAS ( Areas, Geo[ParentCode] ) ) )
+			VAR LastDec = CALCULATE ( MAX ( Companies[Date] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ), Calendar[MonthNumber] = 12 )
+			VAR FirstDec = CALCULATE ( MIN ( Companies[Date] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ), REMOVEFILTERS ( Calendar ), Calendar[MonthNumber] = 12 )
+			VAR AtLast = CALCULATE ( SUM ( Companies[Companies] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ), REMOVEFILTERS ( Calendar ), Companies[Date] = LastDec )
+			VAR AtFirst = CALCULATE ( SUM ( Companies[Companies] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ), REMOVEFILTERS ( Calendar ), Companies[Date] = FirstDec )
+			RETURN DIVIDE ( AtLast - AtFirst, AtFirst )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Business
+		lineageTag: 79d5a631-2d8d-450e-9c85-48e079b02100
+
+	/// Active companies at 31 December per 1,000 residents on 1 January of the following year.
+	/// Blank when the context mixes geographic levels (EU, country, region, province).
+	measure 'Companies per 1,000 residents' =
+			VAR Areas = VALUES ( Geo[Code] )
+			VAR WithProvinces = UNION ( Areas, CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), TREATAS ( Areas, Geo[ParentCode] ) ) )
+			VAR LastDec = CALCULATE ( MAX ( Companies[Date] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ), Calendar[MonthNumber] = 12 )
+			VAR CompaniesAtDec = CALCULATE ( SUM ( Companies[Companies] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ), REMOVEFILTERS ( Calendar ), Companies[Date] = LastDec )
+			VAR Residents = CALCULATE ( SUM ( Population[Residents] ), REMOVEFILTERS ( Calendar ), Population[Date] = DATE ( YEAR ( LastDec ) + 1, 1, 1 ), REMOVEFILTERS ( Sex ), Sex[Code] = "T", REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL" )
+			RETURN IF ( HASONEVALUE ( Geo[Level] ), DIVIDE ( 1000 * CompaniesAtDec, Residents ) )
+		formatString: 0.0
+		displayFolder: Business
+		lineageTag: bd065f54-bfcf-443a-b048-d1f3962ce29d
+
+	/// Eurostat flags of the population, both sexes and all ages, at the reference date, for tooltips
+	/// (p provisional, e estimated, b break in series). Blank when there are none.
+	measure 'Population flag' =
+			VAR d = [_Ref date Population]
+			RETURN
+			    CALCULATE (
+			        CONCATENATEX ( FILTER ( VALUES ( Population[Flag] ), NOT ISBLANK ( Population[Flag] ) && Population[Flag] <> "" ), Population[Flag], ", ", Population[Flag], ASC ),
+			        Population[Date] = d,
+			        REMOVEFILTERS ( Sex ), Sex[Code] = "T",
+			        REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL"
+			    )
+		displayFolder: Flags
+		lineageTag: db37355f-635e-4382-b2c6-fa9769bc2ff1
+
+	/// Eurostat flags of the deaths, both sexes and all ages, at the reference date, for tooltips
+	/// (p provisional, e estimated, b break in series). Blank when there are none.
+	measure 'Deaths flag' =
+			VAR d = [_Ref date Deaths]
+			RETURN
+			    CALCULATE (
+			        CONCATENATEX ( FILTER ( VALUES ( Deaths[Flag] ), NOT ISBLANK ( Deaths[Flag] ) && Deaths[Flag] <> "" ), Deaths[Flag], ", ", Deaths[Flag], ASC ),
+			        Deaths[Date] = d,
+			        REMOVEFILTERS ( Sex ), Sex[Code] = "T",
+			        REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL"
+			    )
+		displayFolder: Flags
+		lineageTag: 8ab43930-e8e7-4552-a447-6660600aac0a
+
+	/// Eurostat flags of GDP per inhabitant (the unit in context, otherwise EUR_HAB) at the reference date, for tooltips
+	/// (p provisional, e estimated, b break in series). Blank when there are none.
+	measure 'GDP flag' =
+			VAR d = [_Ref date GDP]
+			VAR u = IF ( ISFILTERED ( GDP[UnitCode] ), SELECTEDVALUE ( GDP[UnitCode], "EUR_HAB" ), "EUR_HAB" )
+			RETURN
+			    CALCULATE (
+			        CONCATENATEX ( FILTER ( VALUES ( GDP[Flag] ), NOT ISBLANK ( GDP[Flag] ) && GDP[Flag] <> "" ), GDP[Flag], ", ", GDP[Flag], ASC ),
+			        GDP[Date] = d,
+			        GDP[UnitCode] = u
+			    )
+		displayFolder: Flags
+		lineageTag: e0b761b2-f3d1-4e48-83df-00b788116f71
+
+	/// Eurostat flags of the unemployment rate at the reference date, for tooltips
+	/// (p provisional, e estimated, b break in series). Blank when there are none.
+	measure 'Unemployment flag' =
+			VAR d = [_Ref date Unemployment]
+			RETURN
+			    CALCULATE (
+			        CONCATENATEX ( FILTER ( VALUES ( Unemployment[Flag] ), NOT ISBLANK ( Unemployment[Flag] ) && Unemployment[Flag] <> "" ), Unemployment[Flag], ", ", Unemployment[Flag], ASC ),
+			        Unemployment[Date] = d
+			    )
+		displayFolder: Flags
+		lineageTag: 53a3a262-f3ec-4a02-85e0-14ca11e03b92
+
+	/// Eurostat flags of the students enrolled, both sexes and all levels, at the reference date, for tooltips
+	/// (p provisional, e estimated, b break in series). Blank when there are none.
+	measure 'Enrolment flag' =
+			VAR d = [_Ref date Enrolment]
+			RETURN
+			    CALCULATE (
+			        CONCATENATEX ( FILTER ( VALUES ( Enrolment[Flag] ), NOT ISBLANK ( Enrolment[Flag] ) && Enrolment[Flag] <> "" ), Enrolment[Flag], ", ", Enrolment[Flag], ASC ),
+			        Enrolment[Date] = d,
+			        REMOVEFILTERS ( Sex ), Sex[Code] = "T",
+			        ISCED[Code] = "ED02-8"
+			    )
+		displayFolder: Flags
+		lineageTag: e3be87fe-ddf2-45ad-bd7b-ffd880e5828e
+
+	/// Regional active companies in the series the SARIMA model is fitted on.
+	measure 'Modelled companies' = SUM ( Forecast[Actual] )
+		formatString: #,0
+		displayFolder: Forecast
+		lineageTag: 48b03015-20a6-437a-9576-c9fdf5d9639e
+
+	/// SARIMA forecast of the holdout months, made from the end of the training period.
+	measure 'SARIMA holdout forecast' = SUM ( Forecast[HoldoutSarima] )
+		formatString: #,0
+		displayFolder: Forecast
+		lineageTag: 5a688232-236a-4d88-a683-ed99a6c14285
+
+	/// SARIMA forecast of the next 12 months, refitted on the full series.
+	measure 'SARIMA forecast' = SUM ( Forecast[Forecast] )
+		formatString: #,0
+		displayFolder: Forecast
+		lineageTag: 86dd87d0-24eb-4d7c-b0d2-ddbd7d9abbac
+
+	/// Lower bound of the 95 % prediction interval.
+	measure 'Forecast lower 95' = SUM ( Forecast[Lower95] )
+		formatString: #,0
+		displayFolder: Forecast
+		lineageTag: b4b0e0f6-982d-4903-815f-e89e4bffc3f4
+
+	/// Upper bound of the 95 % prediction interval.
+	measure 'Forecast upper 95' = SUM ( Forecast[Upper95] )
+		formatString: #,0
+		displayFolder: Forecast
+		lineageTag: 79048158-ec2c-4138-8d05-9944ebe0fe98
+
+	/// Mean absolute percentage error of SARIMA on the holdout months.
+	measure 'MAPE SARIMA' = CALCULATE ( SUM ( ForecastAccuracy[MAPE] ), ForecastAccuracy[Method] = "SARIMA" ) / 100
+		formatString: 0.00%
+		displayFolder: Forecast
+		lineageTag: 1a6f5909-c878-4d25-8d6c-38e095c5291d
+
+	/// Mean absolute percentage error of the naive forecast (last value) on the holdout months.
+	measure 'MAPE naive' = CALCULATE ( SUM ( ForecastAccuracy[MAPE] ), ForecastAccuracy[Method] = "Naive (last value)" ) / 100
+		formatString: 0.00%
+		displayFolder: Forecast
+		lineageTag: 701f1248-31e1-45de-8f71-46e7c84386d4
+
+	/// Mean absolute percentage error of the seasonal naive forecast on the holdout months.
+	measure 'MAPE seasonal naive' = CALCULATE ( SUM ( ForecastAccuracy[MAPE] ), ForecastAccuracy[Method] = "Seasonal naive" ) / 100
+		formatString: 0.00%
+		displayFolder: Forecast
+		lineageTag: d3e520ef-bbeb-4985-bde3-8746e3f7c3df
+
+	/// Value of the checkpoint computed by the Python pipeline. Blank over several checkpoints.
+	measure 'Reconciliation expected' = IF ( HASONEVALUE ( Reconciliation[Checkpoint] ), SUM ( Reconciliation[Expected] ) )
+		formatString: #,0
+		displayFolder: Checks
+		lineageTag: b7c589ca-9cab-4c4e-bc5d-24d4287cab92
+
+	/// The same checkpoint computed from the Companies table.
+	measure 'Reconciliation in model' =
+			VAR g = SELECTEDVALUE ( Reconciliation[GeoCode] )
+			VAR d = SELECTEDVALUE ( Reconciliation[Date] )
+			VAR WithProvinces = UNION ( { g }, CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[ParentCode] = g ) )
+			RETURN CALCULATE ( SUM ( Companies[Companies] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ), REMOVEFILTERS ( Calendar ), Companies[Date] = d )
+		formatString: #,0
+		displayFolder: Checks
+		lineageTag: 735be2b3-b78a-4081-962c-1341b25f877c
+
+	/// ✓ when Power BI matches the Python pipeline, otherwise ✗ and the difference. Over several
+	/// checkpoints (the total row), ✓ all or ✗ and the number of checkpoints that fail.
+	measure 'Reconciliation status' =
+			IF (
+			    HASONEVALUE ( Reconciliation[Checkpoint] ),
+			    VAR Expected = [Reconciliation expected]
+			    VAR Diff = [Reconciliation in model] - Expected
+			    RETURN IF ( NOT ISBLANK ( Expected ), IF ( Diff = 0, "✓", "✗ " & FORMAT ( Diff, "+#,0;-#,0" ) ) ),
+			    VAR Failed = COUNTROWS ( FILTER ( VALUES ( Reconciliation[Checkpoint] ), [Reconciliation in model] <> [Reconciliation expected] ) )
+			    RETURN IF ( COUNTROWS ( VALUES ( Reconciliation[Checkpoint] ) ) > 0, IF ( Failed = 0, "✓ all", "✗ " & Failed & " failed" ) )
+			)
+		displayFolder: Checks
+		lineageTag: 2e156d26-2e99-482c-9c40-abb8dd9510ff
+
+	column Placeholder
+		dataType: string
+		isHidden
+		lineageTag: 975abf88-4d9a-4096-a39a-8878a25e0fc5
+		summarizeBy: none
+		sourceColumn: Placeholder
+
+	partition _Measures = m
+		mode: import
+		source = #table(type table [Placeholder = text], {})
+
+	annotation PBI_ResultType = Table
+

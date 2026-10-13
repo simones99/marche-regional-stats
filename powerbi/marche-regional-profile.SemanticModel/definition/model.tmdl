@@ -1,0 +1,42 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+queryGroup Parameters
+
+	annotation PBI_QueryGroupOrder = 0
+
+queryGroup Functions
+
+	annotation PBI_QueryGroupOrder = 1
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_ProTooling = ["DevMode"]
+
+annotation PBI_QueryOrder = ["Geo","Calendar","Sex","AgeGroup","ISCED","Sector","_Measures","Population","Deaths","GDP","Unemployment","Enrolment","Companies","Forecast","ForecastAccuracy","Reconciliation","FocusRegion","PeerRegions","ProvinceRegions","Country","StartYear","RepoRawBase","CompaniesSourceUrl","fnEurostat"]
+
+ref table Geo
+ref table Calendar
+ref table Sex
+ref table AgeGroup
+ref table ISCED
+ref table Sector
+ref table _Measures
+ref table Population
+ref table Deaths
+ref table GDP
+ref table Unemployment
+ref table Enrolment
+ref table Companies
+ref table Forecast
+ref table ForecastAccuracy
+ref table Reconciliation
+ref table 'Compare to'
+ref table 'Province indicator'
+

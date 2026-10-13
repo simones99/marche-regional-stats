@@ -1,0 +1,50 @@
+/// ATECO 2007 sections (NACE Rev. 2) in the Chamber of Commerce file. X = not classified.
+table Sector
+	lineageTag: c44ea3a5-b8e1-48f6-9d6f-c5bb39b70fba
+
+	column Code
+		dataType: string
+		isKey
+		lineageTag: 22e7c839-3a9d-4f08-bc9a-cf813a29d9db
+		summarizeBy: none
+		sourceColumn: Code
+
+	column Name
+		dataType: string
+		lineageTag: d21cecd7-fa09-456e-8d02-5e548b2fbc61
+		summarizeBy: none
+		sourceColumn: Name
+		sortByColumn: Code
+
+	partition Sector = m
+		mode: import
+		source =
+				#table(
+				    type table [Code = text, Name = text],
+				    {
+				        {"A", "Agriculture, forestry and fishing"},
+				        {"B", "Mining and quarrying"},
+				        {"C", "Manufacturing"},
+				        {"D", "Electricity, gas, steam and air conditioning supply"},
+				        {"E", "Water supply, sewerage and waste management"},
+				        {"F", "Construction"},
+				        {"G", "Wholesale and retail trade, repair of motor vehicles"},
+				        {"H", "Transportation and storage"},
+				        {"I", "Accommodation and food service activities"},
+				        {"J", "Information and communication"},
+				        {"K", "Financial and insurance activities"},
+				        {"L", "Real estate activities"},
+				        {"M", "Professional, scientific and technical activities"},
+				        {"N", "Administrative and support service activities"},
+				        {"O", "Public administration and defence, compulsory social security"},
+				        {"P", "Education"},
+				        {"Q", "Human health and social work activities"},
+				        {"R", "Arts, entertainment and recreation"},
+				        {"S", "Other service activities"},
+				        {"T", "Activities of households as employers"},
+				        {"X", "Not classified"}
+				    }
+				)
+
+	annotation PBI_ResultType = Table
+

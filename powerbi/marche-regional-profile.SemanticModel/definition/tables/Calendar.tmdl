@@ -1,0 +1,79 @@
+/// Daily calendar from 1 January of StartYear to the end of the current year. Annual
+/// Eurostat facts join on 1 January, monthly facts on the month-end date.
+table Calendar
+	lineageTag: b2d63dbd-4104-46c7-8f90-f50006d224d7
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: yyyy-mm-dd
+		lineageTag: ddd3f057-2dc5-4576-a871-e9c4ea46b567
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: c9653748-a1ff-455d-be5a-354394fe43b1
+		summarizeBy: none
+		sourceColumn: Year
+
+	column Quarter
+		dataType: string
+		lineageTag: 2c28e987-43b1-42cf-ae60-4abec5400643
+		summarizeBy: none
+		sourceColumn: Quarter
+
+	column MonthNumber
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 1a4d5ec8-eb9a-48fe-8ddc-2da64d992156
+		summarizeBy: none
+		sourceColumn: MonthNumber
+
+	column MonthName
+		dataType: string
+		lineageTag: 2a5c1e8e-0b5c-46f4-a907-7025cb99379b
+		summarizeBy: none
+		sourceColumn: MonthName
+		sortByColumn: MonthNumber
+
+	column YearMonth
+		dataType: int64
+		formatString: 0
+		lineageTag: 3f7c4b0c-8630-4778-99e5-2ddb25c2b540
+		summarizeBy: none
+		sourceColumn: YearMonth
+
+	column MonthEnd
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 8aca771d-8698-4d79-89d4-595778d53f51
+		summarizeBy: none
+		sourceColumn: MonthEnd
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition Calendar = m
+		mode: import
+		source =
+				let
+				    Start = #date(StartYear, 1, 1),
+				    End = #date(Date.Year(DateTime.LocalNow()), 12, 31),
+				    Dates = List.Dates(Start, Duration.Days(End - Start) + 1, #duration(1, 0, 0, 0)),
+				    Base = Table.FromList(Dates, Splitter.SplitByNothing(), type table [Date = date]),
+				    WithYear = Table.AddColumn(Base, "Year", each Date.Year([Date]), Int64.Type),
+				    WithQuarter = Table.AddColumn(WithYear, "Quarter", each "Q" & Text.From(Date.QuarterOfYear([Date])), type text),
+				    WithMonth = Table.AddColumn(WithQuarter, "MonthNumber", each Date.Month([Date]), Int64.Type),
+				    WithMonthName = Table.AddColumn(WithMonth, "MonthName", each Date.ToText([Date], [Format = "MMM", Culture = "en-US"]), type text),
+				    WithYearMonth = Table.AddColumn(WithMonthName, "YearMonth", each Date.Year([Date]) * 100 + Date.Month([Date]), Int64.Type),
+				    WithMonthEnd = Table.AddColumn(WithYearMonth, "MonthEnd", each Date.EndOfMonth([Date]), type date)
+				in
+				    WithMonthEnd
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,53 @@
+/// Totals computed by the tested Python pipeline that the Power Query cleaning must match
+/// (powerbi/data/reconciliation.csv).
+table Reconciliation
+	lineageTag: 239ecb6b-4b0d-4b0b-ae15-8caaac0ec970
+
+	column Checkpoint
+		dataType: string
+		lineageTag: 071e53bc-646e-47c2-ac1f-416340c08e05
+		summarizeBy: none
+		sourceColumn: Checkpoint
+
+	column GeoCode
+		dataType: string
+		isHidden
+		lineageTag: 00e4299a-bc71-4fdb-840f-4a0717dd6ed1
+		summarizeBy: none
+		sourceColumn: GeoCode
+
+	column Date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		lineageTag: 14035efa-7385-4bb7-943c-27e2260a81c3
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Expected
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 21153397-d35f-4998-805f-8e8b50719ed0
+		summarizeBy: sum
+		sourceColumn: Expected
+
+	partition Reconciliation = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(Web.Contents(RepoRawBase & "/powerbi/data/reconciliation.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Blanks = Table.ReplaceValue(Promoted, "", null, Replacer.ReplaceValue, Table.ColumnNames(Promoted)),
+				    Renamed = Table.RenameColumns(Blanks, {
+				        {"checkpoint", "Checkpoint"}, {"geo", "GeoCode"}, {"date", "Date"}, {"active_companies", "Expected"}
+				    }),
+				    Typed = Table.TransformColumnTypes(Renamed, {
+				        {"Checkpoint", type text}, {"GeoCode", type text}, {"Date", type date}, {"Expected", Int64.Type}
+				    }, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

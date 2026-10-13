@@ -1,0 +1,117 @@
+/// NUTS 2 region profiled by the report (ITI3 = Marche).
+expression FocusRegion = "ITI3" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: b0ea17a7-d4ea-4d12-8023-8c1b2e73a011
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Text
+
+/// NUTS 2 regions compared with the focus region: Toscana, Umbria, Emilia-Romagna, Lazio, Abruzzo.
+expression PeerRegions = "ITI1,ITI2,ITH5,ITI4,ITF1" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: aea6e035-a5bd-4c82-9368-666b3ad2b1b7
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Text
+
+/// NUTS 3 provinces of the focus region. marche-stats check-sources verifies them against GISCO.
+expression ProvinceRegions = "ITI31,ITI32,ITI33,ITI34,ITI35" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 0c6ce53c-3783-4181-a647-7f8f6ced004a
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Text
+
+/// Country used as national benchmark.
+expression Country = "IT" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 51f856d6-c40b-464e-8dfc-b06a1831ad59
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Text
+
+/// First year requested from Eurostat and first year of the Calendar table.
+expression StartYear = 2009 meta [IsParameterQuery=true, Type="Number", IsParameterQueryRequired=true]
+	lineageTag: aa6195d5-8313-4d99-99fc-ff98dde9ae04
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Number
+
+/// Base URL of the files that marche-stats export-powerbi writes to powerbi/data/.
+expression RepoRawBase = "https://raw.githubusercontent.com/simones99/marche-regional-stats/main" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 2098804d-999e-4eb1-b6aa-f6f9e8e10aec
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Text
+
+	annotation PBI_NavigationStepName = Navigazione
+
+/// Chamber of Commerce archive of active companies (ATECO 2007, closed series).
+expression CompaniesSourceUrl = "https://opendata.marche.camcom.it/data/Stock-Imprese-Attive-Marche-2009-2025.csv" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: 06ecc16a-a387-4c6d-9f86-3676fef61ddc
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Text
+
+/// Downloads one Eurostat dataset (SDMX 3.0, CSV with codes) for the geo levels given:
+/// "EU", "Country", "NUTS2" (focus and peers), "NUTS3" (provinces). Filters are
+/// "name=values" pairs joined by "&". A failed request stops the refresh with the
+/// dataset name and Eurostat's own message.
+expression fnEurostat =
+		(dataset as text, filters as text, levels as list) as table =>
+		let
+		    UnknownLevels = List.Difference(levels, {"EU", "Country", "NUTS2", "NUTS3"}),
+		    GeoCodes =
+		        if List.IsEmpty(levels) or not List.IsEmpty(UnknownLevels)
+		        then error Error.Record("fnEurostat: unknown or no levels", dataset & ": " & Text.Combine(UnknownLevels, ", "))
+		        else List.Combine({
+		            if List.Contains(levels, "EU") then {"EU27_2020"} else {},
+		            if List.Contains(levels, "Country") then {Country} else {},
+		            if List.Contains(levels, "NUTS2") then {FocusRegion} & Text.Split(PeerRegions, ",") else {},
+		            if List.Contains(levels, "NUTS3") then Text.Split(ProvinceRegions, ",") else {}
+		        }),
+		    FilterPairs = List.Select(Text.Split(filters, "&"), each _ <> ""),
+		    FilterQuery = Record.FromList(
+		        List.Transform(FilterPairs, each Text.AfterDelimiter(_, "=")),
+		        List.Transform(FilterPairs, each Text.BeforeDelimiter(_, "="))
+		    ),
+		    Query = Record.Combine({
+		        [#"c[geo]" = Text.Combine(GeoCodes, ",")],
+		        FilterQuery,
+		        [
+		            #"c[TIME_PERIOD]" = "ge:" & Text.From(StartYear),
+		            format = "csvdata",
+		            formatVersion = "1.0",
+		            labels = "id",
+		            compress = "false"
+		        ]
+		    }),
+		    Response = Web.Contents(
+		        "https://ec.europa.eu/eurostat/api/dissemination/sdmx/3.0/data/dataflow/ESTAT/",
+		        [RelativePath = dataset & "/1.0", Query = Query, ManualStatusHandling = {400, 404, 413, 500}]
+		    ),
+		    Status = Value.Metadata(Response)[Response.Status],
+		    Body = Text.FromBinary(Response, TextEncoding.Utf8),
+		    Message =
+		        if Text.Contains(Body, "<faultstring>")
+		        then Text.Replace(Text.Replace(Text.Replace(Text.Replace(Text.Replace(
+		            Text.BeforeDelimiter(Text.AfterDelimiter(Body, "<faultstring>"), "</faultstring>"),
+		            "&apos;", "'"), "&quot;", """"), "&gt;", ">"), "&lt;", "<"), "&amp;", "&")
+		        else Text.Start(Body, 300),
+		    Checked =
+		        if Status = 200 then Body
+		        else error Error.Record(
+		            "Eurostat request failed",
+		            "HTTP " & Text.From(Status) & " for " & dataset & ": " & Message
+		            & " (" & dataset & "/1.0?" & Uri.BuildQueryString(Query) & ")",
+		            [Dataset = dataset, Query = Query]
+		        ),
+		    Parsed = Csv.Document(Checked, [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+		    Promoted = Table.PromoteHeaders(Parsed, [PromoteAllScalars = true]),
+		    Rows =
+		        if Table.IsEmpty(Promoted)
+		        then error Error.Record("Eurostat returned no rows", dataset)
+		        else Promoted
+		in
+		    Rows
+	lineageTag: db83fae1-fc45-4513-995e-9591449a4832
+	queryGroup: Functions
+
+	annotation PBI_ResultType = Function
+

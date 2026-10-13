@@ -6,7 +6,7 @@ Regional statistics for the Marche region (Italy) and its five provinces. The pr
 - **Provincial indicators on NUTS 3 maps.** Companies per resident, population ageing and mortality, from Eurostat.
 - **Forecasting.** A SARIMA model of active companies, compared out of sample with naive baselines.
 
-It also contains two **Power BI reports** on the region's demography, education, GDP and unemployment, built on the Eurostat API.
+It also contains a **Power BI report** on the region's demography, education, GDP, unemployment and active companies, built on the Eurostat API and the outputs of this pipeline.
 
 ![Indicators by province](docs/figures/nuts3_maps.png)
 
@@ -33,7 +33,7 @@ The source file has several traps, and each one is handled explicitly. See the [
 ```
 src/marche_stats/   source checks, Eurostat download, time series, figures, report
 docs/               results, methodology note, figures
-powerbi/            two Power BI reports and their data sources
+powerbi/            Power BI project, its exported data and sources
 notebooks/          the first exploratory notebook (kept for reference)
 tests/              pytest suite on synthetic data in the same layout as the source
 ```
@@ -46,10 +46,13 @@ pip install -r requirements-dev.txt -e .
 
 marche-stats download   # business register file, Eurostat population and deaths (NUTS 3), GISCO boundaries
 marche-stats report     # checks, indicators, SARIMA, figures -> docs/results.md
+marche-stats export-powerbi   # forecast, accuracy and reconciliation CSVs -> powerbi/data/
+marche-stats check-sources    # request every source the Power BI model uses
+marche-stats run        # download + report + export-powerbi
 pytest -q
 ```
 
-`marche-stats download` also fetches the active companies file from the Chamber of Commerce open data portal into `data/raw/` (see Data sources). Data files are not committed. The tests run on synthetic data in the same layout.
+`marche-stats download` also fetches the active companies file from the Chamber of Commerce open data portal into `data/raw/` (see Data sources). The input data in `data/` stays local; the CSVs exported to `powerbi/data/` are committed, because Power BI reads them from GitHub. The tests run on synthetic data in the same layout.
 
 ## Data sources
 
