@@ -445,7 +445,7 @@ git commit -m "Render one PNG per report page from the exported PDF"
 
 `…` stands for `powerbi/marche-regional-profile.SemanticModel`.
 
-- [ ] **Step 1: Write the failing test.** Append to `tests/test_powerbi_model.py`:
+- [x] **Step 1: Write the failing test.** Append to `tests/test_powerbi_model.py`:
 
 ```python
 def test_phase_b_tables_and_columns():
@@ -463,9 +463,9 @@ def test_phase_b_tables_and_columns():
     assert "ShortName" in tables["Sector"]["columns"]
 ```
 
-- [ ] **Step 2: Run it.** `pytest tests/test_powerbi_model.py::test_phase_b_tables_and_columns -v`. Expected: FAIL on `ProvinceShape`.
+- [x] **Step 2: Run it.** `pytest tests/test_powerbi_model.py::test_phase_b_tables_and_columns -v`. Expected: FAIL on `ProvinceShape`.
 
-- [ ] **Step 3: Create `tables/ProvinceShape.tmdl`.**
+- [x] **Step 3: Create `tables/ProvinceShape.tmdl`.**
 
 ```
 /// SVG outline and label point of each province, projected by marche-stats export-powerbi
@@ -513,7 +513,7 @@ table ProvinceShape
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 4: Create `tables/Seasonality.tmdl`.**
+- [x] **Step 4: Create `tables/Seasonality.tmdl`.**
 
 ```
 /// Average STL seasonal effect on active companies by calendar month
@@ -554,7 +554,7 @@ table Seasonality
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 5: Create `tables/Benchmark.tmdl`.** The Overview buttons pick a benchmark without applying the `Compare to` calculation group to the whole page.
+- [x] **Step 5: Create `tables/Benchmark.tmdl`.** The Overview buttons pick a benchmark without applying the `Compare to` calculation group to the whole page.
 
 ```
 /// Benchmark chosen with the Overview buttons: the country, the EU or the peer average.
@@ -597,7 +597,7 @@ table Benchmark
 				    )
 ```
 
-- [ ] **Step 6: Create `tables/Benchmark point.tmdl`.** One row per area and indicator, for the Benchmark dot plot.
+- [x] **Step 6: Create `tables/Benchmark point.tmdl`.** One row per area and indicator, for the Benchmark dot plot.
 
 ```
 /// One point per area of the comparison set and per indicator, for the Benchmark dot plot.
@@ -645,7 +645,7 @@ table 'Benchmark point'
 				RETURN ADDCOLUMNS ( CROSSJOIN ( Areas, Indicators ), "Point", [Area] & " · " & [Indicator] )
 ```
 
-- [ ] **Step 7: Create `tables/Data source.tmdl`.**
+- [x] **Step 7: Create `tables/Data source.tmdl`.**
 
 ```
 /// Sources listed in the About page's freshness table, in display order.
@@ -678,7 +678,7 @@ table 'Data source'
 	annotation PBI_ResultType = Table
 ```
 
-- [ ] **Step 8: Add `ShortName` to `ISCED.tmdl`.** Add the column after `Name`:
+- [x] **Step 8: Add `ShortName` to `ISCED.tmdl`.** Add the column after `Name`:
 
 ```
 	column ShortName
@@ -708,7 +708,7 @@ and replace the partition's `#table(...)` with:
 				)
 ```
 
-- [ ] **Step 9: Add `ShortName` to `Sector.tmdl`.** Add after `Name`:
+- [x] **Step 9: Add `ShortName` to `Sector.tmdl`.** Add after `Name`:
 
 ```
 	column ShortName
@@ -749,7 +749,7 @@ and replace the `#table(...)`:
 				)
 ```
 
-- [ ] **Step 10: Reference the tables in `model.tmdl`.** Append:
+- [x] **Step 10: Reference the tables in `model.tmdl`.** Append:
 
 ```
 ref table ProvinceShape
@@ -761,9 +761,9 @@ ref table 'Data source'
 
 and in the `PBI_QueryOrder` annotation add `"ProvinceShape","Seasonality","Data source"` after `"Reconciliation"`.
 
-- [ ] **Step 11: Run the tests.** `pytest tests/test_powerbi_model.py -v`. Expected: all pass.
+- [x] **Step 11: Run the tests.** `pytest tests/test_powerbi_model.py -v`. Expected: all pass.
 
-- [ ] **Step 12: Commit.**
+- [x] **Step 12: Commit.**
 
 ```bash
 git add powerbi/marche-regional-profile.SemanticModel tests/test_powerbi_model.py
