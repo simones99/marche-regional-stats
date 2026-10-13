@@ -143,3 +143,27 @@ def test_province_shapes_fit_the_box():
     labels = table.set_index("geo")
     # North up: Pesaro e Urbino lies north of Ascoli Piceno.
     assert labels.loc["ITI31", "label_y"] < labels.loc["ITI34", "label_y"]
+
+
+def test_seasonality_table_has_twelve_months(fitted):
+    _, series, _, _ = fitted
+    table = powerbi_export.seasonality_table(series)
+    assert list(table.columns) == ["month", "month_name", "effect"]
+    assert list(table["month"]) == list(range(1, 13))
+    assert list(table["month_name"]) == [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+    ]
+    # The synthetic register dips in January and February (conftest.py).
+    assert table.loc[0, "effect"] < 0
+    assert abs(table["effect"].sum()) < 0.02 * series.mean()

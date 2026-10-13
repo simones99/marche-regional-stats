@@ -123,6 +123,19 @@ def province_shapes_table(geojson_path: Path, box: int = MAP_BOX) -> pd.DataFram
     return pd.DataFrame(rows, columns=["geo", "path", "label_x", "label_y"])
 
 
+def seasonality_table(series: pd.Series) -> pd.DataFrame:
+    """Average STL seasonal effect by calendar month, as in docs/results.md (section 3)."""
+    seasonal = timeseries.decompose(series)["seasonal"]
+    profile = seasonal.groupby(seasonal.index.month).mean().round(0)
+    return pd.DataFrame(
+        {
+            "month": profile.index.astype(int),
+            "month_name": [pd.Timestamp(2000, m, 1).strftime("%b") for m in profile.index],
+            "effect": profile.to_numpy(),
+        }
+    )
+
+
 def build(companies_csv: Path, out_dir: Path, holdout: int = 24) -> dict[str, Path]:
     """Fit the model and write forecast.csv, forecast_accuracy.csv and reconciliation.csv."""
     wide = companies.read_wide(companies_csv)
