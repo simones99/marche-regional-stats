@@ -7,6 +7,8 @@ from conftest import synthetic_wide
 
 from marche_stats import cli, companies, powerbi_export, timeseries
 
+FIXTURES = Path(__file__).parent / "fixtures"
+
 
 @pytest.fixture(scope="module")
 def fitted():
@@ -138,9 +140,6 @@ def test_cli_export_powerbi_writes_five_files(companies_csv, tmp_path):
     assert (coverage[~sarima] == "").all()
     assert (coverage[sarima] != "").all()
     assert reconciliation_raw["active_companies"].str.match(r"^\d+$").all()
-
-
-FIXTURES = Path(__file__).parent / "fixtures"
 
 
 def test_province_shapes_fit_the_box():
