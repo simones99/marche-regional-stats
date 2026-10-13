@@ -393,16 +393,17 @@ table _Measures
 		displayFolder: Checks
 		lineageTag: 735be2b3-b78a-4081-962c-1341b25f877c
 
-	/// ✓ when Power BI matches the Python pipeline, otherwise ✗ and the difference. Over several
-	/// checkpoints (the total row), ✓ all or ✗ and the number of checkpoints that fail.
+	/// "✓ Match" when Power BI matches the Python pipeline, otherwise "✗ Differs by" and the
+	/// difference. Over several checkpoints: "✓ all N match" or "✗ K of N differ".
 	measure 'Reconciliation status' =
 			IF (
 			    HASONEVALUE ( Reconciliation[Checkpoint] ),
 			    VAR Expected = [Reconciliation expected]
 			    VAR Diff = [Reconciliation in model] - Expected
-			    RETURN IF ( NOT ISBLANK ( Expected ), IF ( Diff = 0, "✓", "✗ " & FORMAT ( Diff, "+#,0;-#,0" ) ) ),
+			    RETURN IF ( NOT ISBLANK ( Expected ), IF ( Diff = 0, "✓ Match", "✗ Differs by " & FORMAT ( Diff, "+#,0;-#,0" ) ) ),
+			    VAR Points = COUNTROWS ( VALUES ( Reconciliation[Checkpoint] ) )
 			    VAR Failed = COUNTROWS ( FILTER ( VALUES ( Reconciliation[Checkpoint] ), [Reconciliation in model] <> [Reconciliation expected] ) )
-			    RETURN IF ( COUNTROWS ( VALUES ( Reconciliation[Checkpoint] ) ) > 0, IF ( Failed = 0, "✓ all", "✗ " & Failed & " failed" ) )
+			    RETURN IF ( Points > 0, IF ( Failed = 0, "✓ all " & Points & " match", "✗ " & Failed & " of " & Points & " differ" ) )
 			)
 		displayFolder: Checks
 		lineageTag: 2e156d26-2e99-482c-9c40-abb8dd9510ff
@@ -810,6 +811,312 @@ table _Measures
 			    "Years: population change " & yp - 5 & "–" & yp & " · aged 65+ " & yo & " · deaths " & yd & " · GDP " & yg
 			        & " · unemployment " & yu & " · tertiary " & ye & ". Rank 1 = highest value among the "
 			        & [Focus region name] & " and its peers."
+		displayFolder: Report text
+
+	/// Number of areas ranked on Benchmark: the focus region and its peers.
+	measure '_Peer count' = COUNTROWS ( CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] IN { "Focus", "Peer" } ) )
+		isHidden
+		displayFolder: _Helpers
+
+	/// Rank of the focus region among its peers (1 = highest) for the five-year population change.
+	measure '_Rank population change' = CALCULATE ( [Population change 5y %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among peers" )
+		isHidden
+		displayFolder: _Helpers
+
+	/// Rank of the focus region among its peers (1 = highest) for the share aged 65+.
+	measure '_Rank aged 65+' = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among peers" )
+		isHidden
+		displayFolder: _Helpers
+
+	/// Rank of the focus region among its peers (1 = highest) for the crude death rate.
+	measure '_Rank death rate' = CALCULATE ( [Crude death rate per 1,000], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among peers" )
+		isHidden
+		displayFolder: _Helpers
+
+	/// Rank of the focus region among its peers (1 = highest) for GDP per inhabitant.
+	measure '_Rank GDP' = CALCULATE ( [GDP per inhabitant (EUR)], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among peers" )
+		isHidden
+		displayFolder: _Helpers
+
+	/// Rank of the focus region among its peers (1 = highest) for the unemployment rate.
+	measure '_Rank unemployment' = CALCULATE ( [Unemployment rate], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among peers" )
+		isHidden
+		displayFolder: _Helpers
+
+	/// Rank of the focus region among its peers (1 = highest) for tertiary students per 1,000 residents.
+	measure '_Rank tertiary' = CALCULATE ( [Tertiary students per 1,000 residents], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among peers" )
+		isHidden
+		displayFolder: _Helpers
+
+	/// TRUE when the Overview claim holds: population falling over five years, a larger share
+	/// aged 65+ than the country, fewer active companies than in the first December.
+	measure '_Overview claim' =
+			VAR Pop = CALCULATE ( [Population change 5y %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR Old = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR OldCountry = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Country", REMOVEFILTERS ( Calendar ) )
+			VAR Firms = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
+			RETURN Pop < 0 && Old > OldCountry && Firms < 0
+		isHidden
+		displayFolder: _Helpers
+
+	/// TRUE when trade, agriculture and manufacturing (ATECO G, A, C) all lost active companies
+	/// and at least one of professional, real-estate and financial services (M, L, K) grew.
+	measure '_Business claim' =
+			VAR T = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Sector[Code] ), "@c", [Active companies change %] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Sector ) )
+			RETURN MAXX ( FILTER ( T, Sector[Code] IN { "G", "A", "C" } ), [@c] ) < 0 && MAXX ( FILTER ( T, Sector[Code] IN { "M", "L", "K" } ), [@c] ) > 0
+		isHidden
+		displayFolder: _Helpers
+
+	/// Overview headline, first part. Claim in _Overview claim; neutral title otherwise.
+	measure 'Overview headline lead' = IF ( [_Overview claim], "An older, smaller region with", "The " & [Focus region name] & " at a" )
+		displayFolder: Report text
+
+	/// Overview headline, accent part.
+	measure 'Overview headline accent' = IF ( [_Overview claim], "fewer firms", "glance" )
+		displayFolder: Report text
+
+	/// Overview paragraph: population from the first to the latest year, share aged 65+,
+	/// change in active companies.
+	measure 'Overview paragraph' =
+			VAR FirstDate = CALCULATE ( MIN ( Population[Date] ), REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
+			VAR PopFirst = CALCULATE ( SUM ( Population[Residents] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), Population[Date] = FirstDate, REMOVEFILTERS ( Sex ), Sex[Code] = "T", REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL" )
+			VAR PopLast = CALCULATE ( [Population], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR LastYear = YEAR ( CALCULATE ( [_Ref date Population], REMOVEFILTERS ( Calendar ) ) )
+			VAR Old = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR Firms = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
+			VAR FirstDec = YEAR ( CALCULATE ( MIN ( Companies[Date] ), REMOVEFILTERS (), Calendar[MonthNumber] = 12 ) )
+			RETURN
+			    "Residents " & IF ( PopLast < PopFirst, "fell", "rose" ) & " from " & FORMAT ( PopFirst / 1000000, "0.00" ) & " million in " & YEAR ( FirstDate )
+			        & " to " & FORMAT ( PopLast / 1000000, "0.00" ) & " million in " & LastYear & ". "
+			        & FORMAT ( Old * 100, "0.0" ) & " % are aged 65 or over. Active companies are "
+			        & FORMAT ( ABS ( Firms ) * 100, "0.0" ) & " % " & IF ( Firms < 0, "fewer", "more" ) & " than in December " & FirstDec & "."
+		displayFolder: Report text
+
+	/// Population & Health headline, first part: "One resident in N is".
+	measure 'Population headline lead' =
+			VAR s = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR n = ROUND ( DIVIDE ( 1, s ), 0 )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( s ),
+			        "One resident in " & SWITCH ( n, 2, "two", 3, "three", 4, "four", 5, "five", 6, "six", 7, "seven", 8, "eight", 9, "nine", FORMAT ( n, "0" ) ) & " is"
+			    )
+		displayFolder: Report text
+
+	/// Population & Health headline, accent part.
+	measure 'Population headline accent' = "65 or over"
+		displayFolder: Report text
+
+	/// Population & Health paragraph: share aged 65+ against the country and the EU, women per
+	/// man among the over-85s.
+	measure 'Population paragraph' =
+			VAR d = CALCULATE ( [_Ref date Population], REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "65+" )
+			VAR s = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR sc = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Country", REMOVEFILTERS ( Calendar ) )
+			VAR se = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "EU", REMOVEFILTERS ( Calendar ) )
+			VAR Women = CALCULATE ( SUM ( Population[Residents] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), Population[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "F", REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] IN { "Y85-89", "Y_GE90" } )
+			VAR Men = CALCULATE ( SUM ( Population[Residents] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), Population[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "M", REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] IN { "Y85-89", "Y_GE90" } )
+			RETURN
+			    FORMAT ( s * 100, "0.0" ) & " % on 1 January " & YEAR ( d ) & ", against " & FORMAT ( sc * 100, "0.0" ) & " % in " & [Country name]
+			        & " and " & FORMAT ( se * 100, "0.0" ) & " % in the EU. Among the over-85s there are "
+			        & FORMAT ( DIVIDE ( Women, Men ), "0.0" ) & " women for every man."
+		displayFolder: Report text
+
+	/// Gap in GDP per inhabitant between the focus region and the country, latest common year.
+	measure '_Economy GDP gap' = CALCULATE ( [GDP per inhabitant (EUR)], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "vs Country" )
+		isHidden
+		displayFolder: _Helpers
+
+	/// Economy & Labour headline, first part.
+	measure 'Economy headline lead' = "GDP per inhabitant is"
+		displayFolder: Report text
+
+	/// Economy & Labour headline, accent part: the gap to the country, rounded to €100.
+	measure 'Economy headline accent' =
+			VAR Gap = [_Economy GDP gap]
+			RETURN IF ( NOT ISBLANK ( Gap ), "€" & FORMAT ( ROUND ( ABS ( Gap ), -2 ), "#,0" ) & IF ( Gap < 0, " below ", " above " ) & [Country name] )
+		displayFolder: Report text
+
+	/// Economy & Labour paragraph: GDP per inhabitant and its PPS index; unemployment from its
+	/// peak to the latest year, against the country.
+	measure 'Economy paragraph' =
+			VAR g = CALCULATE ( [GDP per inhabitant (EUR)], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR pps = CALCULATE ( [GDP per inhabitant (PPS, EU = 100)], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR gy = YEAR ( CALCULATE ( [_Ref date GDP], REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ) ) )
+			VAR Years = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Calendar[Year] ), "@u", [Unemployment rate] ), REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
+			VAR Peak = TOPN ( 1, FILTER ( Years, NOT ISBLANK ( [@u] ) ), [@u], DESC )
+			VAR PeakRate = MAXX ( Peak, [@u] )
+			VAR PeakYear = MAXX ( Peak, Calendar[Year] )
+			VAR u = CALCULATE ( [Unemployment rate], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR uy = YEAR ( CALCULATE ( [_Ref date Unemployment], REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ) ) )
+			VAR uc = CALCULATE ( [Unemployment rate], REMOVEFILTERS ( Geo ), Geo[Role] = "Country", REMOVEFILTERS ( Calendar ) )
+			RETURN
+			    "€" & FORMAT ( g, "#,0" ) & " in " & gy & ", " & FORMAT ( pps, "0" ) & " % of the EU average in purchasing power. Unemployment "
+			        & IF ( PeakYear < uy && PeakRate > u, "fell from " & FORMAT ( PeakRate * 100, "0.0" ) & " % in " & PeakYear & " to ", "is " )
+			        & FORMAT ( u * 100, "0.0" ) & " % in " & uy & ", against " & FORMAT ( uc * 100, "0.0" ) & " % in " & [Country name] & "."
+		displayFolder: Report text
+
+	/// Education headline, first part, from the focus region's rank among its peers for
+	/// tertiary students per 1,000 residents.
+	measure 'Education headline lead' =
+			VAR r = [_Rank tertiary]
+			VAR n = [_Peer count]
+			RETURN SWITCH ( TRUE (), ISBLANK ( r ), "University students", r = n, "Fewer university students than", r = 1, "More university students than", "University students per resident:" )
+		displayFolder: Report text
+
+	/// Education headline, accent part.
+	measure 'Education headline accent' =
+			VAR r = [_Rank tertiary]
+			VAR n = [_Peer count]
+			RETURN SWITCH ( TRUE (), ISBLANK ( r ), "per 1,000 residents", r = n || r = 1, "every peer region", "rank " & r & " of " & n )
+		displayFolder: Report text
+
+	/// Education paragraph: tertiary students per 1,000 residents against the country and the
+	/// EU; share of women among tertiary students.
+	measure 'Education paragraph' =
+			VAR d = CALCULATE ( [_Ref date Enrolment], REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), REMOVEFILTERS ( ISCED ), ISCED[Group] = "ISCED 5-8" )
+			VAR t = CALCULATE ( [Tertiary students per 1,000 residents], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR tc = CALCULATE ( [Tertiary students per 1,000 residents], REMOVEFILTERS ( Geo ), Geo[Role] = "Country", REMOVEFILTERS ( Calendar ) )
+			VAR te = CALCULATE ( [Tertiary students per 1,000 residents], REMOVEFILTERS ( Geo ), Geo[Role] = "EU", REMOVEFILTERS ( Calendar ) )
+			VAR Women = CALCULATE ( SUM ( Enrolment[Students] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), Enrolment[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "F", REMOVEFILTERS ( ISCED ), ISCED[Group] = "ISCED 5-8" )
+			VAR Everyone = CALCULATE ( SUM ( Enrolment[Students] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), Enrolment[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "T", REMOVEFILTERS ( ISCED ), ISCED[Group] = "ISCED 5-8" )
+			RETURN
+			    FORMAT ( t, "0.0" ) & " tertiary students per 1,000 residents in " & YEAR ( d ) & ", against " & FORMAT ( tc, "0.0" ) & " in " & [Country name]
+			        & " and " & FORMAT ( te, "0.0" ) & " in the EU. Women are " & FORMAT ( DIVIDE ( Women, Everyone ) * 100, "0" ) & " % of them."
+		displayFolder: Report text
+
+	/// Provinces headline, first part: the indicator on the map.
+	measure 'Provinces headline lead' = SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" ) & " is highest in"
+		displayFolder: Report text
+
+	/// Provinces headline, accent part: the province with the highest value.
+	measure 'Provinces headline accent' =
+			VAR Rows = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Geo[Name] ), "@v", [Province indicator value] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Province" )
+			RETURN MAXX ( TOPN ( 1, FILTER ( Rows, NOT ISBLANK ( [@v] ) ), [@v], DESC ), Geo[Name] )
+		displayFolder: Report text
+
+	/// Provinces paragraph: highest and lowest province and the regional value.
+	measure 'Provinces paragraph' =
+			VAR Rows = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Geo[Name] ), "@v", [Province indicator value], "@label", [Province indicator label] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Province" )
+			VAR Valid = FILTER ( Rows, NOT ISBLANK ( [@v] ) )
+			VAR Top = TOPN ( 1, Valid, [@v], DESC )
+			VAR Bottom = TOPN ( 1, Valid, [@v], ASC )
+			VAR Region = CALCULATE ( [Province indicator label], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
+			RETURN
+			    MAXX ( Top, Geo[Name] ) & " " & MAXX ( Top, [@label] ) & ", against " & MAXX ( Bottom, [@label] ) & " in " & MAXX ( Bottom, Geo[Name] )
+			        & ". The regional figure is " & Region & "."
+		displayFolder: Report text
+
+	/// Business headline, first part. Claim in _Business claim.
+	measure 'Business headline lead' = IF ( [_Business claim], "Shops, farms and factories shrink;", "Active companies by sector:" )
+		displayFolder: Report text
+
+	/// Business headline, accent part.
+	measure 'Business headline accent' =
+			VAR Total = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Sector ) )
+			RETURN IF ( [_Business claim], "services grow", IF ( Total < 0, "−", "+" ) & FORMAT ( ABS ( Total ) * 100, "0.0" ) & " % in total" )
+		displayFolder: Report text
+
+	/// Business paragraph: total change and the best and worst of the ten largest sections.
+	measure 'Business paragraph' =
+			VAR T =
+			    CALCULATETABLE (
+			        ADDCOLUMNS ( FILTER ( VALUES ( Sector[Code] ), Sector[Code] <> "X" ), "@name", CALCULATE ( SELECTEDVALUE ( Sector[ShortName] ) ), "@size", [Active companies], "@c", [Active companies change %] ),
+			        REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Sector )
+			    )
+			VAR Largest = TOPN ( 10, T, [@size], DESC )
+			VAR Best = TOPN ( 1, Largest, [@c], DESC )
+			VAR Worst = TOPN ( 1, Largest, [@c], ASC )
+			VAR b = MAXX ( Best, [@c] )
+			VAR w = MAXX ( Worst, [@c] )
+			VAR Total = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Sector ) )
+			VAR FirstYear = YEAR ( CALCULATE ( MIN ( Companies[Date] ), REMOVEFILTERS (), Calendar[MonthNumber] = 12 ) )
+			VAR LastYear = YEAR ( CALCULATE ( MAX ( Companies[Date] ), REMOVEFILTERS (), Calendar[MonthNumber] = 12 ) )
+			RETURN
+			    FORMAT ( ABS ( Total ) * 100, "0.0" ) & " % " & IF ( Total < 0, "fewer", "more" ) & " active companies in December " & LastYear & " than in December " & FirstYear & ". "
+			        & MAXX ( Best, [@name] ) & " did best (" & IF ( b < 0, "−", "+" ) & FORMAT ( ABS ( b ) * 100, "0.0" ) & " %); "
+			        & MAXX ( Worst, [@name] ) & " did worst (" & IF ( w < 0, "−", "+" ) & FORMAT ( ABS ( w ) * 100, "0.0" ) & " %)."
+		displayFolder: Report text
+
+	/// Benchmark headline, first part.
+	measure 'Benchmark headline lead' =
+			VAR n = [_Peer count]
+			VAR R = { [_Rank population change], [_Rank aged 65+], [_Rank death rate], [_Rank GDP], [_Rank unemployment], [_Rank tertiary] }
+			VAR Mid = COUNTROWS ( FILTER ( R, [Value] > 1 && [Value] < n ) )
+			VAR Extremes = COUNTROWS ( FILTER ( R, [Value] = 1 || [Value] = n ) )
+			RETURN IF ( Extremes > 0 && Mid >= 3, "Mid-table, but", "Among its peers," )
+		displayFolder: Report text
+
+	/// Benchmark headline, accent part: the indicators where the focus region is lowest, else
+	/// highest, among its peers.
+	measure 'Benchmark headline accent' =
+			VAR n = [_Peer count]
+			VAR R =
+			    {
+			        ( "population change", [_Rank population change] ),
+			        ( "the share aged 65+", [_Rank aged 65+] ),
+			        ( "the death rate", [_Rank death rate] ),
+			        ( "GDP per inhabitant", [_Rank GDP] ),
+			        ( "unemployment", [_Rank unemployment] ),
+			        ( "university students", [_Rank tertiary] )
+			    }
+			VAR Lowest = FILTER ( R, [Value2] = n )
+			VAR Highest = FILTER ( R, [Value2] = 1 )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        NOT ISEMPTY ( Lowest ), "lowest for " & CONCATENATEX ( Lowest, [Value1], " and " ),
+			        NOT ISEMPTY ( Highest ), "highest for " & CONCATENATEX ( Highest, [Value1], " and " ),
+			        "mid-table on every indicator"
+			    )
+		displayFolder: Report text
+
+	/// Benchmark paragraph: the focus region's rank for each indicator.
+	measure 'Benchmark paragraph' =
+			"Ranks among the " & [Focus region name] & " and its " & [_Peer count] - 1 & " peers, 1 = highest: population change " & [_Rank population change]
+			    & ", aged 65+ " & [_Rank aged 65+] & ", deaths per 1,000 " & [_Rank death rate] & ", GDP per inhabitant " & [_Rank GDP]
+			    & ", unemployment " & [_Rank unemployment] & ", tertiary students " & [_Rank tertiary] & "."
+		displayFolder: Report text
+
+	/// About headline, first part.
+	measure 'About headline lead' = "How this report is"
+		displayFolder: Report text
+
+	/// About headline, accent part.
+	measure 'About headline accent' = "built and checked"
+		displayFolder: Report text
+
+	/// About paragraph, with the reconciliation result.
+	measure 'About paragraph' =
+			"Public data from Eurostat, GISCO and the Chamber of Commerce of the " & [Focus region name]
+			    & ", refreshed in Power BI Desktop. A Python pipeline adds the SARIMA forecast and the totals the report must match: "
+			    & CALCULATE ( [Reconciliation status], REMOVEFILTERS ( Reconciliation ) ) & "."
+		displayFolder: Report text
+
+	/// Province detail headline, first part: the province from the drill-through.
+	measure 'Province detail headline lead' =
+			VAR p = SELECTEDVALUE ( Geo[Name] )
+			RETURN IF ( SELECTEDVALUE ( Geo[Role] ) = "Province", p & " against", "Right-click a province on" )
+		displayFolder: Report text
+
+	/// Province detail headline, accent part.
+	measure 'Province detail headline accent' = IF ( SELECTEDVALUE ( Geo[Role] ) = "Province", "the " & [Focus region name], "the Provinces page" )
+		displayFolder: Report text
+
+	/// Province detail paragraph: population and its five-year change, companies per 1,000
+	/// residents and their change since the first December.
+	measure 'Province detail paragraph' =
+			VAR Pop = [Population]
+			VAR Change = [Population change 5y %]
+			VAR Firms = [Active companies change %]
+			VAR FirstYear = YEAR ( CALCULATE ( MIN ( Companies[Date] ), REMOVEFILTERS (), Calendar[MonthNumber] = 12 ) )
+			RETURN
+			    IF (
+			        SELECTEDVALUE ( Geo[Role] ) = "Province",
+			        "Population on 1 January " & YEAR ( [_Ref date Population] ) & ": " & FORMAT ( Pop, "#,0" ) & " (" & IF ( Change < 0, "−", "+" ) & FORMAT ( ABS ( Change ) * 100, "0.0" )
+			            & " % in 5 years). Active companies: " & FORMAT ( [Companies per 1,000 residents], "0.0" ) & " per 1,000 residents, "
+			            & IF ( Firms < 0, "−", "+" ) & FORMAT ( ABS ( Firms ) * 100, "0.0" ) & " % since December " & FirstYear & "."
+			    )
 		displayFolder: Report text
 
 	column Placeholder

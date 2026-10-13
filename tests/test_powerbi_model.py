@@ -239,3 +239,23 @@ def test_kpi_province_map_and_dot_measures():
         "Rank row label",
         "Benchmark years",
     } <= model_tables()["_Measures"]["measures"]
+
+
+REPORT_TEXT_PREFIXES = (
+    "Overview",
+    "Population",
+    "Economy",
+    "Education",
+    "Provinces",
+    "Business",
+    "Benchmark",
+    "About",
+    "Province detail",
+)
+
+
+def test_report_text_measures():
+    measures = model_tables()["_Measures"]["measures"]
+    for prefix in REPORT_TEXT_PREFIXES:
+        for part in ("headline lead", "headline accent", "paragraph"):
+            assert f"{prefix} {part}" in measures
