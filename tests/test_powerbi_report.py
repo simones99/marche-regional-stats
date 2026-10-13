@@ -7,7 +7,7 @@ import json
 import re
 from pathlib import Path
 
-from marche_stats import report_layout
+from marche_stats import pbir, report_layout
 
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "powerbi" / "marche-regional-profile.Report"
@@ -174,6 +174,23 @@ def test_cards_on_the_dark_rail_have_no_background():
             assert background and background[0]["properties"] == off, (
                 f"{page['displayName']}: {v['name']}"
             )
+
+
+def test_kpi_gap_lines_wrap_in_the_new_card():
+    # The classic card cannot wrap: at 10.5 pt the gap lines do not fit 176 px on one line.
+    on = {"expr": {"Literal": {"Value": "true"}}}
+    off = {"expr": {"Literal": {"Value": "false"}}}
+    gaps = [v for v in report_layout.overview().visuals if v.key.endswith("-gap")]
+    assert len(gaps) == len(report_layout.KPIS)
+    for page, visuals in layout_pages():
+        if page["displayName"] != "Overview":
+            continue
+        written = {v["name"]: v for v in visuals}
+        for gap in gaps:
+            v = written[pbir.object_id("overview", gap.key)]["visual"]
+            assert v["visualType"] == "cardVisual", gap.key
+            assert v["objects"]["value"][0]["properties"]["textWrap"] == on, gap.key
+            assert v["objects"]["label"][0]["properties"]["show"] == off, gap.key
 
 
 def test_pages_use_the_palette_and_the_font_minimum():

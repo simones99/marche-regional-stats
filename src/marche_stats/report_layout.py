@@ -111,6 +111,44 @@ def card(
     )
 
 
+def text_card(
+    key: str,
+    x: int,
+    y: int,
+    w: int,
+    h: int,
+    measure: str,
+    alt: str | Field,
+    filters: tuple[dict, ...] = (),
+) -> Visual:
+    """New card (cardVisual) showing a text measure in Segoe UI 10.5 pt that wraps.
+
+    The classic card keeps its text on one line and cuts it; the new card wraps it. Object
+    and property names follow the cardVisual section of the report theme schema.
+    """
+    value = {
+        "fontSize": literal(10.5),
+        "fontColor": solid(TEXT),
+        "fontFamily": literal("Segoe UI"),
+        "textWrap": literal(True),
+    }
+    return Visual(
+        key,
+        "cardVisual",
+        x,
+        y,
+        w,
+        h,
+        roles={"Data": [M(measure)]},
+        alt=alt,
+        objects={
+            "value": [{"properties": value}],
+            "label": [{"properties": {"show": literal(False)}}],
+        },
+        filters=list(filters),
+    )
+
+
 def image(key: str, x: int, y: int, w: int, h: int, resource: str, alt: str) -> Visual:
     url = {
         "expr": {
@@ -398,20 +436,7 @@ def overview() -> Page:
                 filters=(FOCUS,),
             )
         )
-        v.append(
-            card(
-                f"kpi-{key}-gap",
-                x,
-                y + 88,
-                THIRD_W,
-                48,
-                gap,
-                size=10.5,
-                alt=M(gap),
-                filters=(FOCUS,),
-                font="Segoe UI",
-            )
-        )
+        v.append(text_card(f"kpi-{key}-gap", x, y + 88, THIRD_W, 48, gap, M(gap), (FOCUS,)))
     v.append(
         chart(
             "population",
