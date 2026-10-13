@@ -67,13 +67,17 @@ def test_report_uses_the_registered_theme():
     report = read(DEFINITION / "report.json")
     assert report["themeCollection"]["customTheme"]["name"] == THEME.name
     assert report["themeCollection"]["customTheme"]["type"] == "RegisteredResources"
+    packages = [p for p in report["resourcePackages"] if p["type"] == "RegisteredResources"]
+    assert {"name": THEME.name, "path": THEME.name, "type": "CustomTheme"} in [
+        item for package in packages for item in package["items"]
+    ]
 
 
 def test_registered_resources_exist_and_photos_are_small():
     report = read(DEFINITION / "report.json")
-    for package in report["resourcePackages"]:
-        if package["type"] != "RegisteredResources":
-            continue
+    packages = [p for p in report["resourcePackages"] if p["type"] == "RegisteredResources"]
+    assert packages
+    for package in packages:
         for item in package["items"]:
             path = RESOURCES / item["path"]
             assert path.exists(), item["path"]

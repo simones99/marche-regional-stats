@@ -1834,13 +1834,17 @@ def test_report_uses_the_registered_theme():
     report = read(DEFINITION / "report.json")
     assert report["themeCollection"]["customTheme"]["name"] == THEME.name
     assert report["themeCollection"]["customTheme"]["type"] == "RegisteredResources"
+    packages = [p for p in report["resourcePackages"] if p["type"] == "RegisteredResources"]
+    assert {"name": THEME.name, "path": THEME.name, "type": "CustomTheme"} in [
+        item for package in packages for item in package["items"]
+    ]
 
 
 def test_registered_resources_exist_and_photos_are_small():
     report = read(DEFINITION / "report.json")
-    for package in report["resourcePackages"]:
-        if package["type"] != "RegisteredResources":
-            continue
+    packages = [p for p in report["resourcePackages"] if p["type"] == "RegisteredResources"]
+    assert packages
+    for package in packages:
         for item in package["items"]:
             path = RESOURCES / item["path"]
             assert path.exists(), item["path"]
@@ -1866,11 +1870,22 @@ def test_registered_resources_exist_and_photos_are_small():
   "center": "#7AB696",
   "minimum": "#D0E3D7",
   "null": "#C9CEC9",
+  "foregroundNeutralSecondary": "#4F5A53",
+  "foregroundNeutralTertiary": "#6B746E",
+  "backgroundLight": "#ECEEEA",
+  "backgroundNeutral": "#C9CEC9",
+  "hyperlink": "#00753A",
+  "visitedHyperlink": "#00753A",
   "textClasses": {
     "callout": {"fontSize": 24, "fontFace": "Segoe UI Semibold", "color": "#15201A"},
     "title": {"fontSize": 12, "fontFace": "Segoe UI Semibold", "color": "#15201A"},
     "header": {"fontSize": 12, "fontFace": "Segoe UI Semibold", "color": "#15201A"},
-    "label": {"fontSize": 10.5, "fontFace": "Segoe UI", "color": "#4F5A53"}
+    "label": {"fontSize": 10.5, "fontFace": "Segoe UI", "color": "#4F5A53"},
+    "largeLabel": {"fontSize": 12, "fontFace": "Segoe UI Semibold", "color": "#15201A"},
+    "lightLabel": {"fontSize": 10.5, "fontFace": "Segoe UI", "color": "#4F5A53"},
+    "smallLabel": {"fontSize": 10.5, "fontFace": "Segoe UI", "color": "#4F5A53"},
+    "smallLightLabel": {"fontSize": 10.5, "fontFace": "Segoe UI", "color": "#4F5A53"},
+    "smallDataLabel": {"fontSize": 10.5, "fontFace": "Segoe UI", "color": "#15201A"}
   },
   "visualStyles": {
     "page": {
@@ -1888,13 +1903,14 @@ def test_registered_resources_exist_and_photos_are_small():
         "categoryAxis": [{"fontSize": 10.5, "fontFamily": "Segoe UI", "labelColor": {"solid": {"color": "#4F5A53"}}, "showAxisTitle": false, "gridlineShow": false}],
         "valueAxis": [{"fontSize": 10.5, "fontFamily": "Segoe UI", "labelColor": {"solid": {"color": "#4F5A53"}}, "showAxisTitle": false, "gridlineColor": {"solid": {"color": "#C9CEC9"}}}],
         "legend": [{"show": false, "fontSize": 10.5, "labelColor": {"solid": {"color": "#4F5A53"}}}],
-        "labels": [{"fontSize": 10.5, "color": {"solid": {"color": "#15201A"}}}]
+        "labels": [{"fontSize": 10.5, "color": {"solid": {"color": "#15201A"}}}],
+        "outspacePane": [{"backgroundColor": {"solid": {"color": "#F5F6F3"}}, "borderColor": {"solid": {"color": "#C9CEC9"}}}]
       }
     },
     "lineChart": {"*": {"markers": [{"show": true}], "labels": [{"show": false}]}},
-    "barChart": {"*": {"labels": [{"show": true}]}},
-    "clusteredBarChart": {"*": {"labels": [{"show": true}]}},
-    "clusteredColumnChart": {"*": {"labels": [{"show": true}]}},
+    "barChart": {"*": {"labels": [{"show": false}]}},
+    "clusteredBarChart": {"*": {"labels": [{"show": true, "labelPosition": "OutsideEnd"}]}},
+    "clusteredColumnChart": {"*": {"labels": [{"show": true, "labelPosition": "OutsideEnd"}]}},
     "card": {
       "*": {
         "categoryLabels": [{"show": false}],
@@ -1903,8 +1919,8 @@ def test_registered_resources_exist_and_photos_are_small():
       }
     },
     "multiRowCard": {"*": {"dataLabels": [{"fontSize": 12}], "categoryLabels": [{"fontSize": 10.5}]}},
-    "tableEx": {"*": {"columnHeaders": [{"fontSize": 10.5, "fontColor": {"solid": {"color": "#4F5A53"}}}], "values": [{"fontSize": 10.5, "fontColorPrimary": {"solid": {"color": "#15201A"}}}]}},
-    "pivotTable": {"*": {"columnHeaders": [{"fontSize": 10.5, "fontColor": {"solid": {"color": "#4F5A53"}}}], "values": [{"fontSize": 10.5, "fontColorPrimary": {"solid": {"color": "#15201A"}}}]}},
+    "tableEx": {"*": {"columnHeaders": [{"fontSize": 10.5, "fontColor": {"solid": {"color": "#4F5A53"}}}], "values": [{"fontSize": 10.5, "fontColorPrimary": {"solid": {"color": "#15201A"}}, "fontColorSecondary": {"solid": {"color": "#15201A"}}, "backColorSecondary": {"solid": {"color": "#ECEEEA"}}}]}},
+    "pivotTable": {"*": {"columnHeaders": [{"fontSize": 10.5, "fontColor": {"solid": {"color": "#4F5A53"}}}], "values": [{"fontSize": 10.5, "fontColorPrimary": {"solid": {"color": "#15201A"}}, "fontColorSecondary": {"solid": {"color": "#15201A"}}, "backColorSecondary": {"solid": {"color": "#ECEEEA"}}}]}},
     "slicer": {"*": {"items": [{"fontSize": 10.5, "fontColor": {"solid": {"color": "#15201A"}}}], "header": [{"fontSize": 10.5}]}},
     "textbox": {"*": {"background": [{"show": false}], "title": [{"show": false}]}},
     "shape": {"*": {"background": [{"show": false}], "title": [{"show": false}]}},
