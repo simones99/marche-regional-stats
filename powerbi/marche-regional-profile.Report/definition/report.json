@@ -68,6 +68,21 @@
           "name": "MarcheProfile.json",
           "path": "MarcheProfile.json",
           "type": "CustomTheme"
+        },
+        {
+          "name": "photo-overview-valadier.jpg",
+          "path": "photo-overview-valadier.jpg",
+          "type": "Image"
+        },
+        {
+          "name": "photo-education-urbino.jpg",
+          "path": "photo-education-urbino.jpg",
+          "type": "Image"
+        },
+        {
+          "name": "photo-about-due-sorelle.jpg",
+          "path": "photo-about-due-sorelle.jpg",
+          "type": "Image"
         }
       ]
     }
