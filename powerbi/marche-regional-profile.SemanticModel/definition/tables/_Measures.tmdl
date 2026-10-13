@@ -411,10 +411,12 @@ table _Measures
 	/// Name of the focus region (FocusRegion parameter), as GISCO spells it.
 	measure 'Focus region name' = CALCULATE ( SELECTEDVALUE ( Geo[Name] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
 		displayFolder: Report text
+		lineageTag: f6ad83aa-6c00-4bbc-8553-2d1a0bb6a03c
 
 	/// Name of the national benchmark (Country parameter).
 	measure 'Country name' = CALCULATE ( SELECTEDVALUE ( Geo[Name] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Country" )
 		displayFolder: Report text
+		lineageTag: 8e7a4586-aa32-4df8-aa34-33a00be4ca75
 
 	/// "Data up to <month year>": the latest date of any fact table, for the navigation bar.
 	measure 'Data up to' =
@@ -429,10 +431,12 @@ table _Measures
 			    )
 			RETURN "Data up to " & FORMAT ( Latest, "mmm yyyy" )
 		displayFolder: Report text
+		lineageTag: 47d12ca8-d4f9-4a04-a238-8a671bb662ba
 
 	/// Name of the area in context, for the tooltip pages.
 	measure 'Area name' = SELECTEDVALUE ( Geo[Name] )
 		displayFolder: Report text
+		lineageTag: 9f131e8d-ff0b-458e-9da9-64e6fd15124b
 
 	/// Eurostat flags of the area in context, in words, for the tooltip pages. Blank when none.
 	measure 'Flags text' =
@@ -456,6 +460,7 @@ table _Measures
 			            )
 			    )
 		displayFolder: Report text
+		lineageTag: 25f56587-4de7-4943-b844-61a7b9ebcabb
 
 	/// Latest period of the source on the row of the About freshness table.
 	measure 'Latest period' =
@@ -471,40 +476,48 @@ table _Measures
 			    8, "to " & FORMAT ( CALCULATE ( MAX ( Forecast[Date] ), REMOVEFILTERS () ), "mmm yyyy" )
 			)
 		displayFolder: Report text
+		lineageTag: 0d43bfb7-722c-4479-8a27-bb2b6558ba3b
 
 	/// Men in each age band as negative numbers, so they draw to the left of the pyramid.
 	/// The format string hides the sign.
 	measure 'Population (men, negative)' = - CALCULATE ( [Population], Sex[Code] = "M" )
 		formatString: #,0;#,0
 		displayFolder: Report visuals
+		lineageTag: 9c9eeb6d-f489-4b50-9ed4-6ff08f15d36f
 
 	/// Women in each age band, the right side of the pyramid.
 	measure 'Population (women)' = CALCULATE ( [Population], Sex[Code] = "F" )
 		formatString: #,0
 		displayFolder: Report visuals
+		lineageTag: 8a9561ea-483f-41cf-aaca-e1c50c98eb27
 
 	/// Women enrolled at each level as negative numbers (left side of the butterfly chart).
 	measure 'Students (women, negative)' = - CALCULATE ( [Students enrolled], Sex[Code] = "F" )
 		formatString: #,0;#,0
 		displayFolder: Report visuals
+		lineageTag: f41bc97d-b16c-4f01-a70b-ed7f0cbc2497
 
 	/// Men enrolled at each level (right side of the butterfly chart).
 	measure 'Students (men)' = CALCULATE ( [Students enrolled], Sex[Code] = "M" )
 		formatString: #,0
 		displayFolder: Report visuals
+		lineageTag: bd55f5d8-21f6-4cdb-953d-c172cbad2ad0
 
 	/// Bar colour of the pyramid: accent for the bands aged 65 and over.
 	measure 'Pyramid colour' = IF ( SELECTEDVALUE ( AgeGroup[BroadGroup] ) = "65+", "#00753A", "#6B746E" )
 		displayFolder: Report visuals
+		lineageTag: bca3ccba-f4ce-4f86-b4d9-0ddf08586019
 
 	/// Bar colour of the butterfly chart: accent for the tertiary levels.
 	measure 'Education level colour' = IF ( SELECTEDVALUE ( ISCED[Group] ) = "ISCED 5-8", "#00753A", "#6B746E" )
 		displayFolder: Report visuals
+		lineageTag: 13725ad6-4f85-48a5-9751-1d29dcd8f3eb
 
 	/// Bar colour by area role: accent for the focus region, text colour for the country and the
 	/// EU (the fallback when a bar outline cannot be set per bar), grey for the peer regions.
 	measure 'Area colour' = SWITCH ( SELECTEDVALUE ( Geo[Role] ), "Focus", "#00753A", "Country", "#15201A", "EU", "#15201A", "#6B746E" )
 		displayFolder: Report visuals
+		lineageTag: 5387015e-c51d-4bf8-9022-626fa1c005b1
 
 	/// Active companies at the month-ends in context; for the focus region, the sum of its provinces.
 	measure 'Active companies at month-end' =
@@ -513,11 +526,13 @@ table _Measures
 			RETURN CALCULATE ( SUM ( Companies[Companies] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ) )
 		formatString: #,0
 		displayFolder: Report visuals
+		lineageTag: d46919fa-1a3c-49f6-81ab-9d357d337886
 
 	/// Active companies on 31 December of each year in context.
 	measure 'Active companies, December' = CALCULATE ( [Active companies at month-end], Calendar[MonthNumber] = 12 )
 		formatString: #,0
 		displayFolder: Report visuals
+		lineageTag: 1f385306-7e9b-4f13-8373-8605637698e2
 
 	/// Active companies in December as an index: the first full-year December = 100.
 	measure 'Active companies index' =
@@ -526,6 +541,7 @@ table _Measures
 			RETURN DIVIDE ( 100 * [Active companies, December], Base )
 		formatString: 0.0
 		displayFolder: Report visuals
+		lineageTag: ae7a4cf7-0ea3-4137-ab8d-5232906aa651
 
 	/// Change since the first full-year December for the ten sections with most active
 	/// companies. Blank for the other sections and for X (not classified).
@@ -534,20 +550,24 @@ table _Measures
 			RETURN IF ( SELECTEDVALUE ( Sector[Code] ) <> "X" && Size <= 10, [Active companies change %] )
 		formatString: +0.0%;-0.0%;0.0%
 		displayFolder: Report visuals
+		lineageTag: 2bbd2c51-300f-4fd1-be1d-9297e2921bcf
 
 	/// Bar colour of the sector chart: accent for the growing sections.
 	measure 'Change colour' = IF ( [Sector change, ten largest] > 0, "#00753A", "#6B746E" )
 		displayFolder: Report visuals
+		lineageTag: 55bba8e4-4663-43c3-b418-7dbe9557ed85
 
 	/// Average seasonal effect of the calendar month, in active companies.
 	measure 'Seasonal effect' = SUM ( Seasonality[Effect] )
 		formatString: +#,0;-#,0;0
 		displayFolder: Report visuals
+		lineageTag: 7a2a9517-aa25-4c2b-a84a-135b76f0f76b
 
 	/// Mean absolute percentage error of the method in context on the holdout months.
 	measure 'Forecast MAPE' = DIVIDE ( SUM ( ForecastAccuracy[MAPE] ), 100 )
 		formatString: 0.00%
 		displayFolder: Report visuals
+		lineageTag: 0dcb31a2-1bd6-48ca-843c-4fb26e1645b0
 
 	/// Modelled companies in the last 24 months of the series, for the forecast chart.
 	measure 'Forecast chart actual' =
@@ -555,6 +575,7 @@ table _Measures
 			RETURN IF ( MAX ( Calendar[Date] ) > EOMONTH ( LastActual, -24 ), [Modelled companies] )
 		formatString: #,0
 		displayFolder: Report visuals
+		lineageTag: 1b3cb478-c5cd-49fd-8294-d231229a5e85
 
 	/// SARIMA forecast, starting from the last actual month so the two lines join.
 	measure 'Forecast chart forecast' =
@@ -562,7 +583,7 @@ table _Measures
 			RETURN IF ( MAX ( Calendar[Date] ) = LastActual, [Modelled companies], [SARIMA forecast] )
 		formatString: #,0
 		displayFolder: Report visuals
-
+		lineageTag: 92e50520-5b1f-4cec-ad45-e7d28bb630b7
 
 	/// Five-year population change of the focus region and of the benchmark chosen on Overview.
 	measure 'KPI gap Population' =
@@ -577,6 +598,7 @@ table _Measures
 			            & IF ( NOT ISBLANK ( Other ), " · " & Label & " " & IF ( Other < 0, "−", "+" ) & FORMAT ( ABS ( Other ) * 100, "0.0" ) & " %" )
 			    )
 		displayFolder: Report text
+		lineageTag: 2ecbd63b-1bfc-4461-aac2-1bfcbc6c23ad
 
 	/// Gap in the share aged 65+ to the benchmark chosen on Overview, in percentage points.
 	measure 'KPI gap Share aged 65+' =
@@ -586,6 +608,7 @@ table _Measures
 			VAR RefYear = YEAR ( CALCULATE ( [_Ref date Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "65+" ) )
 			RETURN IF ( NOT ISBLANK ( Gap ), IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ) * 100, "0.0" ) & " pp vs " & Label & " · " & RefYear )
 		displayFolder: Report text
+		lineageTag: b6e88b89-0d6d-4980-bbcf-0a434b82882a
 
 	/// Gap in the crude death rate to the benchmark chosen on Overview.
 	measure 'KPI gap Crude death rate' =
@@ -594,6 +617,7 @@ table _Measures
 			VAR Gap = CALCULATE ( [Crude death rate per 1,000], 'Compare to'[Comparison] = Item )
 			RETURN IF ( NOT ISBLANK ( Gap ), IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ), "0.0" ) & " vs " & Label & " · " & YEAR ( [_Ref date Deaths] ) )
 		displayFolder: Report text
+		lineageTag: ac4f138b-623f-4980-b46a-e1fcdf077e69
 
 	/// Gap in the unemployment rate to the benchmark chosen on Overview, in percentage points.
 	measure 'KPI gap Unemployment rate' =
@@ -602,6 +626,7 @@ table _Measures
 			VAR Gap = CALCULATE ( [Unemployment rate], 'Compare to'[Comparison] = Item )
 			RETURN IF ( NOT ISBLANK ( Gap ), IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ) * 100, "0.0" ) & " pp vs " & Label & " · " & YEAR ( [_Ref date Unemployment] ) )
 		displayFolder: Report text
+		lineageTag: 527fac47-2383-4db1-b049-3d7c3704a279
 
 	/// Gap in GDP per inhabitant to the benchmark chosen on Overview, in euro.
 	measure 'KPI gap GDP per inhabitant' =
@@ -610,6 +635,7 @@ table _Measures
 			VAR Gap = CALCULATE ( [GDP per inhabitant (EUR)], 'Compare to'[Comparison] = Item )
 			RETURN IF ( NOT ISBLANK ( Gap ), IF ( Gap < 0, "−€", "+€" ) & FORMAT ( ABS ( Gap ), "#,0" ) & " vs " & Label & " · " & YEAR ( [_Ref date GDP] ) )
 		displayFolder: Report text
+		lineageTag: 84c3ef87-0162-48df-ab96-5bdd6f99a403
 
 	/// Change in active companies since the first full-year December (no benchmark: the
 	/// register covers the focus region only).
@@ -618,6 +644,7 @@ table _Measures
 			VAR FirstYear = YEAR ( CALCULATE ( MIN ( Companies[Date] ), REMOVEFILTERS (), Calendar[MonthNumber] = 12 ) )
 			RETURN IF ( NOT ISBLANK ( Change ), IF ( Change < 0, "−", "+" ) & FORMAT ( ABS ( Change ) * 100, "0.0" ) & " % since December " & FirstYear )
 		displayFolder: Report text
+		lineageTag: e2b3865e-ba1f-46d1-81c0-827392df09f8
 
 	/// Value of the indicator chosen in the Province indicator field parameter (default:
 	/// companies per 1,000 residents), with that indicator's format.
@@ -631,6 +658,8 @@ table _Measures
 			    4, [GDP per inhabitant (EUR)]
 			)
 		displayFolder: Report visuals
+		lineageTag: 38aa3eb1-06b8-4d90-9374-ae41559dd67d
+
 		formatStringDefinition = SWITCH ( SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ), 0, "+0.0%;-0.0%;0.0%", 1, "0.0%", 4, "#,0", "0.0" )
 
 	/// Province indicator value as text, as the map and the headlines print it.
@@ -648,6 +677,7 @@ table _Measures
 			        )
 			    )
 		displayFolder: Report text
+		lineageTag: 7982a746-b8ff-494e-953b-6547980bec11
 
 	/// Gap between the province and the focus region for the chosen indicator. GDP compares
 	/// the same year: provincial GDP lags the regional series.
@@ -675,26 +705,32 @@ table _Measures
 			        )
 			    )
 		displayFolder: Report text
+		lineageTag: c2418b88-8f7c-4342-aff5-56db8f4c27dd
 
 	/// Background of the Provinces table column when its indicator is the one on the map.
 	measure 'Highlight population change' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" ) = "Population change 5y %", "#D0E3D7" )
 		displayFolder: Report visuals
+		lineageTag: d16f53ca-d4ff-4bdf-bfd6-1bc2578dbb88
 
 	/// Background of the Provinces table column when its indicator is the one on the map.
 	measure 'Highlight aged 65+' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" ) = "Share aged 65+", "#D0E3D7" )
 		displayFolder: Report visuals
+		lineageTag: 29854286-481e-40b4-b60a-f04bfb8cefbd
 
 	/// Background of the Provinces table column when its indicator is the one on the map.
 	measure 'Highlight death rate' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" ) = "Crude death rate per 1,000", "#D0E3D7" )
 		displayFolder: Report visuals
+		lineageTag: 9184d033-6063-4632-b5d9-d5ee67de0929
 
 	/// Background of the Provinces table column when its indicator is the one on the map.
 	measure 'Highlight companies' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" ) = "Companies per 1,000 residents", "#D0E3D7" )
 		displayFolder: Report visuals
+		lineageTag: 6f74e692-07b9-4389-bc92-1c831c4f8a93
 
 	/// Background of the Provinces table column when its indicator is the one on the map.
 	measure 'Highlight GDP' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" ) = "GDP per inhabitant (EUR)", "#D0E3D7" )
 		displayFolder: Report visuals
+		lineageTag: 84a7ab90-bd04-4c76-8f31-f8ca2ea09f84
 
 	/// SVG map of the provinces for the indicator chosen in Province indicator: four equal
 	/// classes between the lowest and highest province, each province labelled with its name
@@ -769,8 +805,9 @@ table _Measures
 			    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 780 400' font-family='Segoe UI, sans-serif'>"
 			        & Shapes & Labels & Legend & "</svg>"
 			RETURN IF ( NOT ISBLANK ( Lo ), "data:image/svg+xml;utf8," & SUBSTITUTE ( SUBSTITUTE ( Svg, "%", "%25" ), "#", "%23" ) )
-		dataCategory: ImageUrl
 		displayFolder: Report visuals
+		lineageTag: 702ada45-6fe0-4442-95b1-3ce155708247
+		dataCategory: ImageUrl
 
 	/// Value of the indicator on the row of Benchmark point, for the area of that row.
 	measure 'Dot value' =
@@ -783,6 +820,7 @@ table _Measures
 			        Geo[Code] = c
 			    )
 		displayFolder: Report visuals
+		lineageTag: 0412b527-a091-4da8-aca6-fa29b5a31b6c
 
 	/// Position of the area between the lowest (0) and the highest (1) area for the indicator.
 	measure 'Dot position' =
@@ -794,17 +832,20 @@ table _Measures
 			RETURN IF ( NOT ISBLANK ( v ), DIVIDE ( v - Lo, Hi - Lo ) )
 		formatString: 0.00
 		displayFolder: Report visuals
+		lineageTag: bf1e97d6-4034-4d27-b3c4-9794a8b7d712
 
 	/// Row of the dot plot, negative so the first indicator is on top.
 	measure 'Dot row' = - SELECTEDVALUE ( 'Benchmark point'[Row] )
 		formatString: 0
 		displayFolder: Report visuals
+		lineageTag: 90645b5f-aa33-4eeb-9054-4a461594c6aa
 
 	/// Label of the Benchmark rank row, e.g. "Marche rank of 6".
 	measure 'Rank row label' =
 			[Focus region name] & " rank of "
 			    & COUNTROWS ( CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] IN { "Focus", "Peer" } ) )
 		displayFolder: Report text
+		lineageTag: a8992e3d-e095-405f-b0d9-a8bbe57c2057
 
 	/// Years compared on the Benchmark page (the latest year common to the areas) and the rank direction.
 	measure 'Benchmark years' =
@@ -819,41 +860,49 @@ table _Measures
 			        & " · unemployment " & yu & " · tertiary " & ye & ". Rank 1 = highest value among the "
 			        & [Focus region name] & " and its peers."
 		displayFolder: Report text
+		lineageTag: 5f4fe24a-7adf-4631-b1cc-b1f7ea92d14e
 
 	/// Number of areas ranked on Benchmark: the focus region and its peers.
 	measure '_Peer count' = COUNTROWS ( CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] IN { "Focus", "Peer" } ) )
 		isHidden
 		displayFolder: _Helpers
+		lineageTag: fd34ae21-5dd7-41f0-a17c-7fb4a2ef8576
 
 	/// Rank of the focus region among its peers (1 = highest) for the five-year population change.
 	measure '_Rank population change' = CALCULATE ( [Population change 5y %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among peers" )
 		isHidden
 		displayFolder: _Helpers
+		lineageTag: d763f909-0644-4e2b-b77b-3e6ddb41eb58
 
 	/// Rank of the focus region among its peers (1 = highest) for the share aged 65+.
 	measure '_Rank aged 65+' = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among peers" )
 		isHidden
 		displayFolder: _Helpers
+		lineageTag: 3fce5ba2-2a13-4211-b1d3-ec132016fe41
 
 	/// Rank of the focus region among its peers (1 = highest) for the crude death rate.
 	measure '_Rank death rate' = CALCULATE ( [Crude death rate per 1,000], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among peers" )
 		isHidden
 		displayFolder: _Helpers
+		lineageTag: b4d9566e-e12d-4f2a-80d1-a0b7d18a341e
 
 	/// Rank of the focus region among its peers (1 = highest) for GDP per inhabitant.
 	measure '_Rank GDP' = CALCULATE ( [GDP per inhabitant (EUR)], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among peers" )
 		isHidden
 		displayFolder: _Helpers
+		lineageTag: 3b3592ea-d710-4525-b88a-d8676854e383
 
 	/// Rank of the focus region among its peers (1 = highest) for the unemployment rate.
 	measure '_Rank unemployment' = CALCULATE ( [Unemployment rate], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among peers" )
 		isHidden
 		displayFolder: _Helpers
+		lineageTag: 2478ecce-6df3-4bbf-a82e-679cf1b40223
 
 	/// Rank of the focus region among its peers (1 = highest) for tertiary students per 1,000 residents.
 	measure '_Rank tertiary' = CALCULATE ( [Tertiary students per 1,000 residents], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among peers" )
 		isHidden
 		displayFolder: _Helpers
+		lineageTag: e4fb4d66-bbf7-4c05-9fca-90c515ab739e
 
 	/// TRUE when the Overview claim holds: population falling over five years, a larger share
 	/// aged 65+ than the country, fewer active companies than in the first December.
@@ -865,6 +914,7 @@ table _Measures
 			RETURN Pop < 0 && Old > OldCountry && Firms < 0
 		isHidden
 		displayFolder: _Helpers
+		lineageTag: f3f569bf-3984-4ede-ac55-c8ec3ea68b56
 
 	/// TRUE when trade, agriculture and manufacturing (ATECO G, A, C) all lost active companies
 	/// and at least one of professional, real-estate and financial services (M, L, K) grew.
@@ -873,14 +923,17 @@ table _Measures
 			RETURN MAXX ( FILTER ( T, Sector[Code] IN { "G", "A", "C" } ), [@c] ) < 0 && MAXX ( FILTER ( T, Sector[Code] IN { "M", "L", "K" } ), [@c] ) > 0
 		isHidden
 		displayFolder: _Helpers
+		lineageTag: c94762f4-a71d-400d-b76a-98e41eac1b46
 
 	/// Overview headline, first part. Claim in _Overview claim; neutral title otherwise.
 	measure 'Overview headline lead' = IF ( [_Overview claim], "An older, smaller region with", "The " & [Focus region name] & " at a" )
 		displayFolder: Report text
+		lineageTag: 79eb3049-cbce-48ab-a801-d80eb0a21812
 
 	/// Overview headline, accent part.
 	measure 'Overview headline accent' = IF ( [_Overview claim], "fewer firms", "glance" )
 		displayFolder: Report text
+		lineageTag: 53aa2648-1acf-473f-81c0-b5c339fa44a0
 
 	/// Overview paragraph: population from the first to the latest year, share aged 65+,
 	/// change in active companies.
@@ -898,6 +951,7 @@ table _Measures
 			        & FORMAT ( Old * 100, "0.0" ) & " % are aged 65 or over. Active companies are "
 			        & FORMAT ( ABS ( Firms ) * 100, "0.0" ) & " % " & IF ( Firms < 0, "fewer", "more" ) & " than in December " & FirstDec & "."
 		displayFolder: Report text
+		lineageTag: cf0cb80d-0cfb-444f-9a44-fc0db9471942
 
 	/// Population & Health headline, first part: "One resident in N is".
 	measure 'Population headline lead' =
@@ -909,10 +963,12 @@ table _Measures
 			        "One resident in " & SWITCH ( n, 2, "two", 3, "three", 4, "four", 5, "five", 6, "six", 7, "seven", 8, "eight", 9, "nine", FORMAT ( n, "0" ) ) & " is"
 			    )
 		displayFolder: Report text
+		lineageTag: e856f324-3ec4-40cf-86de-2579eb93a25e
 
 	/// Population & Health headline, accent part.
 	measure 'Population headline accent' = "65 or over"
 		displayFolder: Report text
+		lineageTag: 3364c9a9-ad46-473c-9514-5774c43dbed9
 
 	/// Population & Health paragraph: share aged 65+ against the country and the EU, women per
 	/// man among the over-85s.
@@ -928,21 +984,25 @@ table _Measures
 			        & " and " & FORMAT ( se * 100, "0.0" ) & " % in the EU. Among the over-85s there are "
 			        & FORMAT ( DIVIDE ( Women, Men ), "0.0" ) & " women for every man."
 		displayFolder: Report text
+		lineageTag: 6cb91801-0ab8-4cdd-a3fe-2418e151a233
 
 	/// Gap in GDP per inhabitant between the focus region and the country, latest common year.
 	measure '_Economy GDP gap' = CALCULATE ( [GDP per inhabitant (EUR)], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "vs Country" )
 		isHidden
 		displayFolder: _Helpers
+		lineageTag: 756e41b4-60ac-4d96-a943-493d5bc1e179
 
 	/// Economy & Labour headline, first part.
 	measure 'Economy headline lead' = "GDP per inhabitant is"
 		displayFolder: Report text
+		lineageTag: 7740acd9-2ebb-478f-8689-3ae7881ca7bf
 
 	/// Economy & Labour headline, accent part: the gap to the country, rounded to €100.
 	measure 'Economy headline accent' =
 			VAR Gap = [_Economy GDP gap]
 			RETURN IF ( NOT ISBLANK ( Gap ), "€" & FORMAT ( ROUND ( ABS ( Gap ), -2 ), "#,0" ) & IF ( Gap < 0, " below ", " above " ) & [Country name] )
 		displayFolder: Report text
+		lineageTag: 9053a1df-8f00-4e40-96bc-bbf7ff05ec16
 
 	/// Economy & Labour paragraph: GDP per inhabitant and its PPS index; unemployment from its
 	/// peak to the latest year, against the country.
@@ -962,6 +1022,7 @@ table _Measures
 			        & IF ( PeakYear < uy && PeakRate > u, "fell from " & FORMAT ( PeakRate * 100, "0.0" ) & " % in " & PeakYear & " to ", "is " )
 			        & FORMAT ( u * 100, "0.0" ) & " % in " & uy & ", against " & FORMAT ( uc * 100, "0.0" ) & " % in " & [Country name] & "."
 		displayFolder: Report text
+		lineageTag: 91c439db-4c4e-45c5-9fe0-2be2f8917d80
 
 	/// Education headline, first part, from the focus region's rank among its peers for
 	/// tertiary students per 1,000 residents.
@@ -970,6 +1031,7 @@ table _Measures
 			VAR n = [_Peer count]
 			RETURN SWITCH ( TRUE (), ISBLANK ( r ), "University students", r = n, "Fewer university students than", r = 1, "More university students than", "University students per resident:" )
 		displayFolder: Report text
+		lineageTag: 6848f639-c806-4a38-8967-8ad6c158cd27
 
 	/// Education headline, accent part.
 	measure 'Education headline accent' =
@@ -977,6 +1039,7 @@ table _Measures
 			VAR n = [_Peer count]
 			RETURN SWITCH ( TRUE (), ISBLANK ( r ), "per 1,000 residents", r = n || r = 1, "every peer region", "rank " & r & " of " & n )
 		displayFolder: Report text
+		lineageTag: 00a46f42-203d-408d-a722-ccca9c63b940
 
 	/// Education paragraph: tertiary students per 1,000 residents against the country and the
 	/// EU; share of women among tertiary students.
@@ -991,16 +1054,19 @@ table _Measures
 			    FORMAT ( t, "0.0" ) & " tertiary students per 1,000 residents in " & YEAR ( d ) & ", against " & FORMAT ( tc, "0.0" ) & " in " & [Country name]
 			        & " and " & FORMAT ( te, "0.0" ) & " in the EU. Women are " & FORMAT ( DIVIDE ( Women, Everyone ) * 100, "0" ) & " % of them."
 		displayFolder: Report text
+		lineageTag: ddffb61c-2656-4304-9e61-4126a299c286
 
 	/// Provinces headline, first part: the indicator on the map.
 	measure 'Provinces headline lead' = SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" ) & " is highest in"
 		displayFolder: Report text
+		lineageTag: 1677d51b-db6d-49ec-8f11-43574c66e4b3
 
 	/// Provinces headline, accent part: the province with the highest value.
 	measure 'Provinces headline accent' =
 			VAR Rows = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Geo[Name] ), "@v", [Province indicator value] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Province", REMOVEFILTERS ( Calendar ) )
 			RETURN MAXX ( TOPN ( 1, FILTER ( Rows, NOT ISBLANK ( [@v] ) ), [@v], DESC ), Geo[Name] )
 		displayFolder: Report text
+		lineageTag: 887792e5-043f-43c2-9a5f-6884474d2318
 
 	/// Provinces paragraph: highest and lowest province and the regional value.
 	measure 'Provinces paragraph' =
@@ -1013,16 +1079,19 @@ table _Measures
 			    MAXX ( Top, Geo[Name] ) & " " & MAXX ( Top, [@label] ) & ", against " & MAXX ( Bottom, [@label] ) & " in " & MAXX ( Bottom, Geo[Name] )
 			        & ". The regional figure is " & Region & "."
 		displayFolder: Report text
+		lineageTag: ed716638-531d-4bd7-b411-a5e62a4472ff
 
 	/// Business headline, first part. Claim in _Business claim.
 	measure 'Business headline lead' = IF ( [_Business claim], "Shops, farms and factories shrink;", "Active companies by sector:" )
 		displayFolder: Report text
+		lineageTag: a596e582-f258-479b-b73b-0568cd88f230
 
 	/// Business headline, accent part.
 	measure 'Business headline accent' =
 			VAR Total = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Sector ), REMOVEFILTERS ( Calendar ) )
 			RETURN IF ( [_Business claim], "services grow", IF ( Total < 0, "−", "+" ) & FORMAT ( ABS ( Total ) * 100, "0.0" ) & " % in total" )
 		displayFolder: Report text
+		lineageTag: db24a0b5-6a04-441b-891e-7e251b950175
 
 	/// Business paragraph: total change and the best and worst of the ten largest sections.
 	measure 'Business paragraph' =
@@ -1044,6 +1113,7 @@ table _Measures
 			        & MAXX ( Best, [@name] ) & " did best (" & IF ( b < 0, "−", "+" ) & FORMAT ( ABS ( b ) * 100, "0.0" ) & " %); "
 			        & MAXX ( Worst, [@name] ) & " did worst (" & IF ( w < 0, "−", "+" ) & FORMAT ( ABS ( w ) * 100, "0.0" ) & " %)."
 		displayFolder: Report text
+		lineageTag: 06c11e81-9745-4141-a830-5b77eb616db3
 
 	/// Benchmark headline, first part.
 	measure 'Benchmark headline lead' =
@@ -1053,6 +1123,7 @@ table _Measures
 			VAR Extremes = COUNTROWS ( FILTER ( R, [Value] = 1 || [Value] = n ) )
 			RETURN IF ( Extremes > 0 && MidCount >= 3, "Mid-table, but", "Among its peers," )
 		displayFolder: Report text
+		lineageTag: e962c6dc-7c07-4d89-8545-b1561f1ace01
 
 	/// Benchmark headline, accent part: the indicators where the focus region is lowest, else
 	/// highest, among its peers.
@@ -1077,6 +1148,7 @@ table _Measures
 			        "mid-table on every indicator"
 			    )
 		displayFolder: Report text
+		lineageTag: 63d29414-2aa1-4bda-a70a-7ae9edbd1872
 
 	/// Benchmark paragraph: the focus region's rank for each indicator.
 	measure 'Benchmark paragraph' =
@@ -1084,14 +1156,17 @@ table _Measures
 			    & ", aged 65+ " & [_Rank aged 65+] & ", deaths per 1,000 " & [_Rank death rate] & ", GDP per inhabitant " & [_Rank GDP]
 			    & ", unemployment " & [_Rank unemployment] & ", tertiary students " & [_Rank tertiary] & "."
 		displayFolder: Report text
+		lineageTag: 8cee9d09-a949-4555-81d0-d4fca9579636
 
 	/// About headline, first part.
 	measure 'About headline lead' = "How this report is"
 		displayFolder: Report text
+		lineageTag: 20427957-30d7-499e-8c29-0881029db707
 
 	/// About headline, accent part.
 	measure 'About headline accent' = "built and checked"
 		displayFolder: Report text
+		lineageTag: 2def5644-d962-4e3c-b5fc-137fa1997411
 
 	/// About paragraph, with the reconciliation result.
 	measure 'About paragraph' =
@@ -1099,16 +1174,19 @@ table _Measures
 			    & ", refreshed in Power BI Desktop. A Python pipeline adds the SARIMA forecast and the totals the report must match: "
 			    & CALCULATE ( [Reconciliation status], REMOVEFILTERS ( Reconciliation ) ) & "."
 		displayFolder: Report text
+		lineageTag: 0a3affca-24dc-4237-a5f7-62a1f2637d6c
 
 	/// Province detail headline, first part: the province from the drill-through.
 	measure 'Province detail headline lead' =
 			VAR p = SELECTEDVALUE ( Geo[Name] )
 			RETURN IF ( SELECTEDVALUE ( Geo[Role] ) = "Province", p & " against", "Right-click a province on" )
 		displayFolder: Report text
+		lineageTag: dc76d4ce-a112-4678-af94-84738e3a1280
 
 	/// Province detail headline, accent part.
 	measure 'Province detail headline accent' = IF ( SELECTEDVALUE ( Geo[Role] ) = "Province", "the " & [Focus region name], "the Provinces page" )
 		displayFolder: Report text
+		lineageTag: 98a3aaee-e036-4184-92fc-4eb4935b5ded
 
 	/// Province detail paragraph: population and its five-year change, companies per 1,000
 	/// residents and their change since the first December.
@@ -1127,6 +1205,7 @@ table _Measures
 			            & IF ( Firms < 0, "−", "+" ) & FORMAT ( ABS ( Firms ) * 100, "0.0" ) & " % since December " & FirstYear & "."
 			    )
 		displayFolder: Report text
+		lineageTag: 6dab6c61-15c6-48b7-a653-abed35f32857
 
 	column Placeholder
 		dataType: string

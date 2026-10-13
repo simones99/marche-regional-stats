@@ -1,19 +1,23 @@
 /// One point per area of the comparison set and per indicator, for the Benchmark dot plot.
 table 'Benchmark point'
+	lineageTag: 8e71c09d-f6c8-4269-9c9b-621ac25e2866
 
 	column Code
 		dataType: string
 		isHidden
+		lineageTag: dd4c103e-c37c-4dff-9858-b4d2af1ee1a9
 		summarizeBy: none
 		sourceColumn: [Code]
 
 	column Area
 		dataType: string
+		lineageTag: a5eb7f6c-5c1b-400c-8d55-c0f4fae5ca9b
 		summarizeBy: none
 		sourceColumn: [Area]
 
 	column Role
 		dataType: string
+		lineageTag: c90a2a2f-b4e8-4e6c-88b6-931e8ef9464e
 		summarizeBy: none
 		sourceColumn: [Role]
 
@@ -21,23 +25,27 @@ table 'Benchmark point'
 		dataType: int64
 		isHidden
 		formatString: 0
+		lineageTag: 27bf657d-0587-4394-9478-d2c2dd577ad1
 		summarizeBy: none
 		sourceColumn: [Row]
 
 	column Indicator
 		dataType: string
+		lineageTag: 952aebc1-0198-410c-b286-2accfa28c0e1
 		summarizeBy: none
 		sourceColumn: [Indicator]
 		sortByColumn: Row
 
 	column Point
 		dataType: string
+		lineageTag: 1d2cd200-7ec2-4565-b1d3-c6f7233306af
 		summarizeBy: none
 		sourceColumn: [Point]
 
 	partition 'Benchmark point' = calculated
 		mode: import
 		source =
-			VAR Areas = SELECTCOLUMNS ( FILTER ( Geo, Geo[Role] IN { "Focus", "Peer", "Country", "EU" } ), "Code", Geo[Code], "Area", Geo[Name], "Role", Geo[Role] )
-			VAR Indicators = DATATABLE ( "Row", INTEGER, "Indicator", STRING, { { 1, "Population change, 5 years" }, { 2, "Aged 65+" }, { 3, "Deaths per 1,000" }, { 4, "GDP per inhabitant" }, { 5, "Unemployment" }, { 6, "Tertiary students per 1,000" } } )
-			RETURN ADDCOLUMNS ( CROSSJOIN ( Areas, Indicators ), "Point", [Area] & " · " & [Indicator] )
+				VAR Areas = SELECTCOLUMNS ( FILTER ( Geo, Geo[Role] IN { "Focus", "Peer", "Country", "EU" } ), "Code", Geo[Code], "Area", Geo[Name], "Role", Geo[Role] )
+				VAR Indicators = DATATABLE ( "Row", INTEGER, "Indicator", STRING, { { 1, "Population change, 5 years" }, { 2, "Aged 65+" }, { 3, "Deaths per 1,000" }, { 4, "GDP per inhabitant" }, { 5, "Unemployment" }, { 6, "Tertiary students per 1,000" } } )
+				RETURN ADDCOLUMNS ( CROSSJOIN ( Areas, Indicators ), "Point", [Area] & " · " & [Indicator] )
+

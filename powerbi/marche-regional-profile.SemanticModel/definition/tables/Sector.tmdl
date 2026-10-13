@@ -18,6 +18,7 @@ table Sector
 
 	column ShortName
 		dataType: string
+		lineageTag: e921b01e-2eaa-48c7-acf8-f4d87cea3e36
 		summarizeBy: none
 		sourceColumn: ShortName
 		sortByColumn: Code

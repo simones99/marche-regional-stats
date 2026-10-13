@@ -16,12 +16,6 @@ table ISCED
 		sourceColumn: Name
 		sortByColumn: SortOrder
 
-	column ShortName
-		dataType: string
-		summarizeBy: none
-		sourceColumn: ShortName
-		sortByColumn: SortOrder
-
 	column SortOrder
 		dataType: int64
 		isHidden
@@ -43,6 +37,13 @@ table ISCED
 		lineageTag: f6a47eb3-392b-44f5-a7f8-02eab53b4baa
 		summarizeBy: none
 		sourceColumn: IsTotal
+
+	column ShortName
+		dataType: string
+		lineageTag: 004f20db-fcb3-43a9-8aae-6bffeda8068e
+		summarizeBy: none
+		sourceColumn: ShortName
+		sortByColumn: SortOrder
 
 	partition ISCED = m
 		mode: import

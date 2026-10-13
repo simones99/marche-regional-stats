@@ -1,9 +1,11 @@
 /// Benchmark chosen with the Overview buttons: the country, the EU or the peer average.
 /// Item and ValueItem name the Compare to items that the KPI gap measures apply.
 table Benchmark
+	lineageTag: 9cfa1ed0-32b0-4285-bd66-d6c273639076
 
 	column Benchmark
 		dataType: string
+		lineageTag: e6ca1c79-f748-48f9-b373-1deb580a1b20
 		summarizeBy: none
 		sourceColumn: [Benchmark]
 		sortByColumn: Order
@@ -11,12 +13,14 @@ table Benchmark
 	column Item
 		dataType: string
 		isHidden
+		lineageTag: 440c383b-6fd2-4a32-9216-fca7b9a77db4
 		summarizeBy: none
 		sourceColumn: [Item]
 
 	column ValueItem
 		dataType: string
 		isHidden
+		lineageTag: 2c576d11-ca57-492f-9885-1e2e8f181b82
 		summarizeBy: none
 		sourceColumn: [ValueItem]
 
@@ -24,15 +28,17 @@ table Benchmark
 		dataType: int64
 		isHidden
 		formatString: 0
+		lineageTag: 9bc93e61-e06e-4b7e-9b58-e7cfacad0df1
 		summarizeBy: none
 		sourceColumn: [Order]
 
 	partition Benchmark = calculated
 		mode: import
 		source =
-			VAR CountryName = CALCULATE ( SELECTEDVALUE ( Geo[Name] ), Geo[Role] = "Country" )
-			RETURN
-			    SELECTCOLUMNS (
-			        { ( CountryName, "vs Country", "Country", 1 ), ( "EU", "vs EU", "EU", 2 ), ( "Peers", "vs Peers avg", "Peers avg", 3 ) },
-			        "Benchmark", [Value1], "Item", [Value2], "ValueItem", [Value3], "Order", [Value4]
-			    )
+				VAR CountryName = CALCULATE ( SELECTEDVALUE ( Geo[Name] ), Geo[Role] = "Country" )
+				RETURN
+				    SELECTCOLUMNS (
+				        { ( CountryName, "vs Country", "Country", 1 ), ( "EU", "vs EU", "EU", 2 ), ( "Peers", "vs Peers avg", "Peers avg", 3 ) },
+				        "Benchmark", [Value1], "Item", [Value2], "ValueItem", [Value3], "Order", [Value4]
+				    )
+
