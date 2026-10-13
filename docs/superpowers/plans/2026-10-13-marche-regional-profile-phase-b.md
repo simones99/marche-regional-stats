@@ -1762,7 +1762,7 @@ git commit -m "Save the model after refreshing the Phase B tables and measures"
 - Delete: `…Report/StaticResources/SharedResources/BuiltInThemes/AccessibleCityPark.json`
 - Test: `tests/test_powerbi_report.py` (new)
 
-- [ ] **Step 1: Write the failing tests.** Create `tests/test_powerbi_report.py`:
+- [x] **Step 1: Write the failing tests.** Create `tests/test_powerbi_report.py`:
 
 ```python
 """Static checks of the report against the Phase B rules (spec, Visual system and
@@ -1852,9 +1852,9 @@ def test_registered_resources_exist_and_photos_are_small():
                 assert path.stat().st_size < 300_000, item["path"]
 ```
 
-- [ ] **Step 2: Run them.** `pytest tests/test_powerbi_report.py -v`. Expected: FAIL (theme file missing).
+- [x] **Step 2: Run them.** `pytest tests/test_powerbi_report.py -v`. Expected: FAIL (theme file missing).
 
-- [ ] **Step 3: Create the theme** `…Report/StaticResources/RegisteredResources/MarcheProfile.json`:
+- [x] **Step 3: Create the theme** `…Report/StaticResources/RegisteredResources/MarcheProfile.json`:
 
 ```json
 {
@@ -1930,7 +1930,7 @@ def test_registered_resources_exist_and_photos_are_small():
 }
 ```
 
-- [ ] **Step 4: Register it.** In `report.json`, replace the `customTheme` object with
+- [x] **Step 4: Register it.** In `report.json`, replace the `customTheme` object with
 
 ```json
     "customTheme": {
@@ -1975,9 +1975,9 @@ and the `resourcePackages` array with
 
 Then delete `StaticResources/SharedResources/BuiltInThemes/AccessibleCityPark.json` (`git rm`).
 
-- [ ] **Step 5: Run the tests.** `pytest tests/test_powerbi_report.py -v`. Expected: PASS.
+- [x] **Step 5: Run the tests.** `pytest tests/test_powerbi_report.py -v`. Expected: PASS.
 
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
 
 ```bash
 git add -A powerbi/marche-regional-profile.Report tests/test_powerbi_report.py
@@ -3268,7 +3268,7 @@ Only the user can run this task. Open the report and the design canvas side by s
   - Pyramid: *fx → `Pyramid colour`* on both series; overlap 100 %; gap 20 %; legend off.
   - Butterfly: *fx → `Education level colour`*.
   - Sectors (Business, Province detail): *fx → `Change colour`*.
-  - Data labels on, 10.5 pt.
+  - Data labels on, 10.5 pt, position *Outside end*, on the ranked bars and the sectors only. Leave them off on the pyramid and the butterfly: stacked bars put labels inside the fill, where the theme's dark label colour fails contrast.
 
 - [ ] **Step 3: Forecast chart (Business).** Actual: `#15201A`, solid, filled circles. Forecast: `#15201A`, dashed, hollow circles. *Analytics → Error bars* on *Forecast chart forecast*: upper `Forecast upper 95`, lower `Forecast lower 95`, *Bar* off, *Band* on, `#6B746E` at 80 % transparency.
 
