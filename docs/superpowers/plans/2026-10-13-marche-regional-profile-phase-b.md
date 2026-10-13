@@ -2684,7 +2684,7 @@ git commit -m "Add a PBIR writer that scaffolds report pages without overwriting
 - Modify: `src/marche_stats/cli.py`, `tests/test_powerbi_report.py`, `tests/test_pbir.py`
 - Creates (by running the step): `…Report/definition/pages/<Overview>/…`
 
-- [ ] **Step 1: Write the failing layout tests.** Append to `tests/test_powerbi_report.py`, and add `from marche_stats import report_layout` to its imports:
+- [x] **Step 1: Write the failing layout tests.** Append to `tests/test_powerbi_report.py`, and add `from marche_stats import report_layout` to its imports:
 
 ```python
 def written_pages():
@@ -2822,9 +2822,9 @@ def test_cli_scaffold_report_explains_a_locked_file(tmp_path, monkeypatch, capsy
     assert err.startswith("cannot replace pages/x/page.json: a file is locked")
 ```
 
-- [ ] **Step 2: Run them.** `pytest tests/test_powerbi_report.py tests/test_pbir.py -v`. Expected: `test_powerbi_report.py` fails with `ImportError: cannot import name 'report_layout'`; the CLI tests of `test_pbir.py` fail (`cli` has no `_desktop_running`).
+- [x] **Step 2: Run them.** `pytest tests/test_powerbi_report.py tests/test_pbir.py -v`. Expected: `test_powerbi_report.py` fails with `ImportError: cannot import name 'report_layout'`; the CLI tests of `test_pbir.py` fail (`cli` has no `_desktop_running`).
 
-- [ ] **Step 3: Create** `src/marche_stats/report_layout.py` with the shared parts and the Overview page:
+- [x] **Step 3: Create** `src/marche_stats/report_layout.py` with the shared parts and the Overview page:
 
 ```python
 """Layout of the report pages: what goes where, in px on the 8 px grid.
@@ -3358,7 +3358,7 @@ PAGE_NAMES = [p.name for p in pages()]
 
 `spike()` is not in `pages()`: Task 15 writes it once by hand and deletes it. A visual other than a shape or a textbox without alt text makes `scaffold()` raise; `alt=M(...)` binds the alt text to a text measure, so a screen reader reads what the card shows.
 
-- [ ] **Step 4: Add the CLI step.** In `cli.py`: add `pbir, report_layout` to the `from marche_stats import …` line and `import subprocess`, `import sys` to the imports; add `"scaffold-report"` to the step choices; after `ROOT = …` add
+- [x] **Step 4: Add the CLI step.** In `cli.py`: add `pbir, report_layout` to the `from marche_stats import …` line and `import subprocess`, `import sys` to the imports; add `"scaffold-report"` to the step choices; after `ROOT = …` add
 
 ```python
 LOCKED = (
@@ -3416,13 +3416,13 @@ and, before `if args.step == "check-sources":`,
         return 0
 ```
 
-- [ ] **Step 5: Hide the model check page.** The tests expect only the report pages to be visible. In `…Report/definition/pages/5e0c7a1d9b3f2a4c6e81/page.json`, add after `"displayName": "Model check",`:
+- [x] **Step 5: Hide the model check page.** The tests expect only the report pages to be visible. In `…Report/definition/pages/5e0c7a1d9b3f2a4c6e81/page.json`, add after `"displayName": "Model check",`:
 
 ```json
   "visibility": "HiddenInViewMode",
 ```
 
-- [ ] **Step 6: Scaffold the Overview page.** With Desktop closed:
+- [x] **Step 6: Scaffold the Overview page.** With Desktop closed:
 
 ```bash
 marche-stats scaffold-report
@@ -3430,9 +3430,9 @@ marche-stats scaffold-report
 
 Expected output: `wrote Overview`. If it first warns that Power BI Desktop is open, close Desktop without saving and run `marche-stats scaffold-report --force overview`. A `cannot replace … a file is locked` error leaves the old page intact: close whatever holds the file and run it again.
 
-- [ ] **Step 7: Run the tests.** `pytest -q`. Expected: all pass, including `test_report_fields_exist_in_model` (Phase A), which checks every field of the new visuals.
+- [x] **Step 7: Run the tests.** `pytest -q`. Expected: all pass, including `test_report_fields_exist_in_model` (Phase A), which checks every field of the new visuals.
 
-- [ ] **Step 8: Commit.**
+- [x] **Step 8: Commit.**
 
 ```bash
 ruff check src tests && ruff format --check src tests
