@@ -1701,7 +1701,7 @@ git commit -m "Add the data-driven headlines and paragraphs of every page"
 
 Only the user can run this task. The executor stops here and hands over these steps.
 
-- [ ] **Step 1: Publish the branch, so the raw URLs of the two new CSV files resolve.** Ask the user before pushing (pushing is outward-facing):
+- [x] **Step 1: Publish the branch, so the raw URLs of the two new CSV files resolve.** Ask the user before pushing (pushing is outward-facing):
 
 ```bash
 git push -u origin powerbi-phase-b
