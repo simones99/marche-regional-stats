@@ -1,0 +1,43 @@
+/// One point per area of the comparison set and per indicator, for the Benchmark dot plot.
+table 'Benchmark point'
+
+	column Code
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: [Code]
+
+	column Area
+		dataType: string
+		summarizeBy: none
+		sourceColumn: [Area]
+
+	column Role
+		dataType: string
+		summarizeBy: none
+		sourceColumn: [Role]
+
+	column Row
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: [Row]
+
+	column Indicator
+		dataType: string
+		summarizeBy: none
+		sourceColumn: [Indicator]
+		sortByColumn: Row
+
+	column Point
+		dataType: string
+		summarizeBy: none
+		sourceColumn: [Point]
+
+	partition 'Benchmark point' = calculated
+		mode: import
+		source =
+			VAR Areas = SELECTCOLUMNS ( FILTER ( Geo, Geo[Role] IN { "Focus", "Peer", "Country", "EU" } ), "Code", Geo[Code], "Area", Geo[Name], "Role", Geo[Role] )
+			VAR Indicators = DATATABLE ( "Row", INTEGER, "Indicator", STRING, { { 1, "Population change, 5 years" }, { 2, "Aged 65+" }, { 3, "Deaths per 1,000" }, { 4, "GDP per inhabitant" }, { 5, "Unemployment" }, { 6, "Tertiary students per 1,000" } } )
+			RETURN ADDCOLUMNS ( CROSSJOIN ( Areas, Indicators ), "Point", [Area] & " · " & [Indicator] )

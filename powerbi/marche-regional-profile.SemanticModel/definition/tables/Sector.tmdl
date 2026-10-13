@@ -16,33 +16,39 @@ table Sector
 		sourceColumn: Name
 		sortByColumn: Code
 
+	column ShortName
+		dataType: string
+		summarizeBy: none
+		sourceColumn: ShortName
+		sortByColumn: Code
+
 	partition Sector = m
 		mode: import
 		source =
 				#table(
-				    type table [Code = text, Name = text],
+				    type table [Code = text, Name = text, ShortName = text],
 				    {
-				        {"A", "Agriculture, forestry and fishing"},
-				        {"B", "Mining and quarrying"},
-				        {"C", "Manufacturing"},
-				        {"D", "Electricity, gas, steam and air conditioning supply"},
-				        {"E", "Water supply, sewerage and waste management"},
-				        {"F", "Construction"},
-				        {"G", "Wholesale and retail trade, repair of motor vehicles"},
-				        {"H", "Transportation and storage"},
-				        {"I", "Accommodation and food service activities"},
-				        {"J", "Information and communication"},
-				        {"K", "Financial and insurance activities"},
-				        {"L", "Real estate activities"},
-				        {"M", "Professional, scientific and technical activities"},
-				        {"N", "Administrative and support service activities"},
-				        {"O", "Public administration and defence, compulsory social security"},
-				        {"P", "Education"},
-				        {"Q", "Human health and social work activities"},
-				        {"R", "Arts, entertainment and recreation"},
-				        {"S", "Other service activities"},
-				        {"T", "Activities of households as employers"},
-				        {"X", "Not classified"}
+				        {"A", "Agriculture, forestry and fishing", "Agriculture"},
+				        {"B", "Mining and quarrying", "Mining"},
+				        {"C", "Manufacturing", "Manufacturing"},
+				        {"D", "Electricity, gas, steam and air conditioning supply", "Energy"},
+				        {"E", "Water supply, sewerage and waste management", "Water and waste"},
+				        {"F", "Construction", "Construction"},
+				        {"G", "Wholesale and retail trade, repair of motor vehicles", "Trade"},
+				        {"H", "Transportation and storage", "Transport"},
+				        {"I", "Accommodation and food service activities", "Hotels and food"},
+				        {"J", "Information and communication", "Information"},
+				        {"K", "Financial and insurance activities", "Finance"},
+				        {"L", "Real estate activities", "Real estate"},
+				        {"M", "Professional, scientific and technical activities", "Professional"},
+				        {"N", "Administrative and support service activities", "Administrative"},
+				        {"O", "Public administration and defence, compulsory social security", "Public administration"},
+				        {"P", "Education", "Education"},
+				        {"Q", "Human health and social work activities", "Health"},
+				        {"R", "Arts, entertainment and recreation", "Arts and leisure"},
+				        {"S", "Other service activities", "Other services"},
+				        {"T", "Activities of households as employers", "Households"},
+				        {"X", "Not classified", "Not classified"}
 				    }
 				)
 

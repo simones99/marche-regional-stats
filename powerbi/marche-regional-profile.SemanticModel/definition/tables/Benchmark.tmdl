@@ -1,0 +1,38 @@
+/// Benchmark chosen with the Overview buttons: the country, the EU or the peer average.
+/// Item and ValueItem name the Compare to items that the KPI gap measures apply.
+table Benchmark
+
+	column Benchmark
+		dataType: string
+		summarizeBy: none
+		sourceColumn: [Benchmark]
+		sortByColumn: Order
+
+	column Item
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: [Item]
+
+	column ValueItem
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: [ValueItem]
+
+	column Order
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: [Order]
+
+	partition Benchmark = calculated
+		mode: import
+		source =
+			VAR CountryName = CALCULATE ( SELECTEDVALUE ( Geo[Name] ), Geo[Role] = "Country" )
+			RETURN
+			    SELECTCOLUMNS (
+			        { ( CountryName, "vs Country", "Country", 1 ), ( "EU", "vs EU", "EU", 2 ), ( "Peers", "vs Peers avg", "Peers avg", 3 ) },
+			        "Benchmark", [Value1], "Item", [Value2], "ValueItem", [Value3], "Order", [Value4]
+			    )

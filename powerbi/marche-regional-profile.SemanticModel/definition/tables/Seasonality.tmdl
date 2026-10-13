@@ -1,0 +1,36 @@
+/// Average STL seasonal effect on active companies by calendar month
+/// (powerbi/data/seasonality.csv, the profile of docs/results.md, section 3).
+table Seasonality
+
+	column Month
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: Month
+
+	column MonthName
+		dataType: string
+		summarizeBy: none
+		sourceColumn: MonthName
+		sortByColumn: Month
+
+	column Effect
+		dataType: double
+		isHidden
+		formatString: +#,0;-#,0;0
+		summarizeBy: sum
+		sourceColumn: Effect
+
+	partition Seasonality = m
+		mode: import
+		source =
+			let
+			    Source = Csv.Document(Web.Contents(RepoRawBase & "/powerbi/data/seasonality.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+			    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+			    Renamed = Table.RenameColumns(Promoted, {{"month", "Month"}, {"month_name", "MonthName"}, {"effect", "Effect"}}),
+			    Typed = Table.TransformColumnTypes(Renamed, {{"Month", Int64.Type}, {"MonthName", type text}, {"Effect", type number}}, "en-US")
+			in
+			    Typed
+
+	annotation PBI_ResultType = Table

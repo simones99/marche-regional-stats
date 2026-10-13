@@ -1,0 +1,28 @@
+/// Sources listed in the About page's freshness table, in display order.
+table 'Data source'
+
+	column Source
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Source
+		sortByColumn: Order
+
+	column Order
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: Order
+
+	partition 'Data source' = m
+		mode: import
+		source =
+			#table(
+			    type table [Source = text, Order = Int64.Type],
+			    {
+			        {"Population", 1}, {"Deaths", 2}, {"GDP, regions", 3}, {"GDP, provinces", 4},
+			        {"Unemployment", 5}, {"Enrolment", 6}, {"Active companies", 7}, {"Forecast", 8}
+			    }
+			)
+
+	annotation PBI_ResultType = Table

@@ -172,3 +172,18 @@ def test_measure_table_has_the_spec_indicators():
         "Companies per 1,000 residents",
         "Reconciliation status",
     } <= measures
+
+
+def test_phase_b_tables_and_columns():
+    tables = model_tables()
+    for name in ("ProvinceShape", "Seasonality", "Benchmark", "Benchmark point", "Data source"):
+        assert name in tables, name
+    assert {"GeoCode", "Path", "LabelX", "LabelY"} <= tables["ProvinceShape"]["columns"]
+    assert {"Month", "MonthName", "Effect"} <= tables["Seasonality"]["columns"]
+    assert {"Benchmark", "Item", "ValueItem", "Order"} <= tables["Benchmark"]["columns"]
+    assert {"Code", "Area", "Role", "Row", "Indicator", "Point"} <= tables["Benchmark point"][
+        "columns"
+    ]
+    assert {"Source", "Order"} <= tables["Data source"]["columns"]
+    assert "ShortName" in tables["ISCED"]["columns"]
+    assert "ShortName" in tables["Sector"]["columns"]
