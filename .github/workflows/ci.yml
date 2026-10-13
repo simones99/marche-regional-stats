@@ -22,3 +22,18 @@ jobs:
           ruff format --check src tests
       - name: Test (synthetic business register, Eurostat fixtures, full report)
         run: pytest -q
+
+  bpa:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Tabular Editor 2
+        shell: pwsh
+        run: |
+          Invoke-WebRequest "https://github.com/TabularEditor/TabularEditor/releases/download/2.27.2/TabularEditor.Portable.zip" -OutFile "$env:RUNNER_TEMP\te2.zip"
+          Expand-Archive "$env:RUNNER_TEMP\te2.zip" "$env:RUNNER_TEMP\te2"
+      - name: Best Practice Analyzer
+        shell: pwsh
+        run: |
+          & "$env:RUNNER_TEMP\te2\TabularEditor.exe" "powerbi\marche-regional-profile.SemanticModel\definition" -A "https://raw.githubusercontent.com/microsoft/Analysis-Services/master/BestPracticeRules/BPARules.json" -G | Out-Host
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
