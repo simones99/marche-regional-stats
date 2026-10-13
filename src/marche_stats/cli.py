@@ -5,7 +5,16 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from marche_stats import companies, eurostat, pngs, powerbi_export, report, sources
+from marche_stats import (
+    companies,
+    eurostat,
+    pbir,
+    pngs,
+    powerbi_export,
+    report,
+    report_layout,
+    sources,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -14,7 +23,15 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="marche-stats", description=__doc__)
     parser.add_argument(
         "step",
-        choices=["download", "report", "run", "export-powerbi", "export-pngs", "check-sources"],
+        choices=[
+            "download",
+            "report",
+            "run",
+            "export-powerbi",
+            "export-pngs",
+            "check-sources",
+            "scaffold-report",
+        ],
     )
     parser.add_argument(
         "--companies",
@@ -37,6 +54,13 @@ def main(argv: list[str] | None = None) -> int:
         help="PDF exported from Power BI Desktop (export-pngs)",
     )
     parser.add_argument("--holdout", type=int, default=24, help="test months for SARIMA")
+    parser.add_argument(
+        "--force",
+        action="append",
+        default=[],
+        metavar="PAGE",
+        help="scaffold-report: rewrite this page (repeatable)",
+    )
     args = parser.parse_args(argv)
     geojson = args.eurostat_dir / "marche_nuts3.geojson"
 
@@ -46,6 +70,11 @@ def main(argv: list[str] | None = None) -> int:
     if args.step == "export-pngs":
         for path in pngs.export(args.pdf, args.pdf.parent / "png"):
             print(path)
+        return 0
+    if args.step == "scaffold-report":
+        definition = args.powerbi / "marche-regional-profile.Report" / "definition"
+        written = pbir.scaffold(report_layout.pages(), definition, force=args.force)
+        print("\n".join(f"wrote {name}" for name in written) or "no new pages")
         return 0
     if args.step == "check-sources":
         results = sources.check(args.powerbi / sources.MODEL_DEFINITION)

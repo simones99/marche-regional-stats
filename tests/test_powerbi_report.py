@@ -7,6 +7,8 @@ import json
 import re
 from pathlib import Path
 
+from marche_stats import report_layout
+
 ROOT = Path(__file__).resolve().parents[1]
 REPORT = ROOT / "powerbi" / "marche-regional-profile.Report"
 DEFINITION = REPORT / "definition"
@@ -83,3 +85,65 @@ def test_registered_resources_exist_and_photos_are_small():
             assert path.exists(), item["path"]
             if item["type"] == "Image":
                 assert path.stat().st_size < 300_000, item["path"]
+
+
+def written_pages():
+    meta = read(DEFINITION / "pages" / "pages.json")
+    for name in meta["pageOrder"]:
+        folder = DEFINITION / "pages" / name
+        visuals = [read(p) for p in sorted((folder / "visuals").glob("*/visual.json"))]
+        yield read(folder / "page.json"), visuals
+
+
+def layout_pages():
+    return [(p, v) for p, v in written_pages() if p["displayName"] in report_layout.PAGE_NAMES]
+
+
+def test_pages_follow_the_layout_order():
+    names = [p["displayName"] for p, _ in written_pages()]
+    assert names[: len(report_layout.PAGE_NAMES)] == report_layout.PAGE_NAMES
+    assert names[-1] == "Model check"
+
+
+def test_visible_pages_are_the_report_pages():
+    visible = [
+        p["displayName"] for p, _ in written_pages() if p.get("visibility") != "HiddenInViewMode"
+    ]
+    assert visible == [p.name for p in report_layout.pages() if not p.hidden]
+
+
+def test_every_visible_page_has_the_navigator():
+    for page, visuals in written_pages():
+        if page.get("visibility") == "HiddenInViewMode":
+            continue
+        types = {v["visual"]["visualType"] for v in visuals}
+        assert report_layout.NAVIGATOR_TYPE in types, page["displayName"]
+
+
+def test_visuals_sit_on_the_grid_inside_the_page():
+    for page, visuals in layout_pages():
+        for v in visuals:
+            pos, where = v["position"], f"{page['displayName']}: {v['name']}"
+            assert pos["x"] % 8 == 0 and pos["y"] % 8 == 0, where
+            for size in (pos["width"], pos["height"]):
+                assert size < 8 or size % 8 == 0, where
+            assert pos["x"] + pos["width"] <= page["width"], where
+            assert pos["y"] + pos["height"] <= page["height"], where
+
+
+def test_data_visuals_have_alt_text():
+    for page, visuals in layout_pages():
+        for v in visuals:
+            if "query" not in v["visual"]:
+                continue
+            general = v["visual"].get("visualContainerObjects", {}).get("general", [{}])
+            assert "altText" in general[0].get("properties", {}), (
+                f"{page['displayName']}: {v['name']}"
+            )
+
+
+def test_pages_use_the_palette_and_the_font_minimum():
+    for page, visuals in layout_pages():
+        for v in visuals:
+            assert colours(v) <= PALETTE, f"{page['displayName']}: {v['name']}"
+            assert all(size >= MIN_POINTS for size in font_sizes(v)), v["name"]
