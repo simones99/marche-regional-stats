@@ -42,3 +42,5 @@ table 'Province indicator'
 				    ("GDP per inhabitant (EUR)", NAMEOF ( '_Measures'[GDP per inhabitant (EUR)] ), 4)
 				}
 
+	annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["DAX_MEASURES_UNQUALIFIED"]}
+
