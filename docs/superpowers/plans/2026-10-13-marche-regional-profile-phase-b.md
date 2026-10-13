@@ -996,7 +996,7 @@ git commit -m "Add the measures behind the report charts and colours"
 - Modify: `…/definition/tables/_Measures.tmdl`
 - Test: `tests/test_powerbi_model.py`
 
-- [ ] **Step 1: Write the failing test.** Append:
+- [x] **Step 1: Write the failing test.** Append:
 
 ```python
 def test_kpi_province_map_and_dot_measures():
@@ -1024,9 +1024,9 @@ def test_kpi_province_map_and_dot_measures():
     } <= model_tables()["_Measures"]["measures"]
 ```
 
-- [ ] **Step 2: Run it.** Expected: FAIL.
+- [x] **Step 2: Run it.** Expected: FAIL.
 
-- [ ] **Step 3: Add the KPI gap measures.** The KPI cards on Overview filter `Geo[Role] = "Focus"`; the `Benchmark` buttons choose the comparison. `−` is U+2212.
+- [x] **Step 3: Add the KPI gap measures.** The KPI cards on Overview filter `Geo[Role] = "Focus"`; the `Benchmark` buttons choose the comparison. `−` is U+2212.
 
 ```
 	/// Five-year population change of the focus region and of the benchmark chosen on Overview.
@@ -1085,7 +1085,7 @@ def test_kpi_province_map_and_dot_measures():
 		displayFolder: Report text
 ```
 
-- [ ] **Step 4: Add the province measures.**
+- [x] **Step 4: Add the province measures.**
 
 ```
 	/// Value of the indicator chosen in the Province indicator field parameter (default:
@@ -1166,7 +1166,7 @@ def test_kpi_province_map_and_dot_measures():
 		displayFolder: Report visuals
 ```
 
-- [ ] **Step 5: Add the map.** Four equal-interval classes between the lowest and the highest province, the accent tints of the spec, name and value printed on each province, legend on the right. `#` is written `%23` in the data URL.
+- [x] **Step 5: Add the map.** Four equal-interval classes between the lowest and the highest province, the accent tints of the spec, name and value printed on each province, legend on the right. `#` is written `%23` in the data URL.
 
 ```
 	/// SVG map of the provinces for the indicator chosen in Province indicator: four equal
@@ -1239,7 +1239,7 @@ def test_kpi_province_map_and_dot_measures():
 		displayFolder: Report visuals
 ```
 
-- [ ] **Step 6: Add the dot plot and Benchmark helpers.**
+- [x] **Step 6: Add the dot plot and Benchmark helpers.**
 
 ```
 	/// Value of the indicator on the row of Benchmark point, for the area of that row.
@@ -1291,9 +1291,9 @@ def test_kpi_province_map_and_dot_measures():
 		displayFolder: Report text
 ```
 
-- [ ] **Step 7: Run the model tests.** `pytest tests/test_powerbi_model.py -v`. Expected: all pass.
+- [x] **Step 7: Run the model tests.** `pytest tests/test_powerbi_model.py -v`. Expected: all pass.
 
-- [ ] **Step 8: Commit.**
+- [x] **Step 8: Commit.**
 
 ```bash
 git add powerbi/marche-regional-profile.SemanticModel tests/test_powerbi_model.py
