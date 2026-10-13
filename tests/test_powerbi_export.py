@@ -91,12 +91,14 @@ def test_reconciliation_matches_series_and_section_sums(fitted):
     assert first["active_companies"] == pesaro[month].sum()
 
 
-def test_cli_export_powerbi_writes_three_files(companies_csv, tmp_path):
+def test_cli_export_powerbi_writes_five_files(companies_csv, tmp_path):
     code = cli.main(
         [
             "export-powerbi",
             "--companies",
             str(companies_csv),
+            "--eurostat-dir",
+            str(FIXTURES),
             "--powerbi",
             str(tmp_path),
             "--holdout",
@@ -105,7 +107,17 @@ def test_cli_export_powerbi_writes_three_files(companies_csv, tmp_path):
     )
     assert code == 0
     names = sorted(p.name for p in (tmp_path / "data").iterdir())
-    assert names == ["forecast.csv", "forecast_accuracy.csv", "reconciliation.csv"]
+    assert names == [
+        "forecast.csv",
+        "forecast_accuracy.csv",
+        "province_shapes.csv",
+        "reconciliation.csv",
+        "seasonality.csv",
+    ]
+    shapes = pd.read_csv(tmp_path / "data" / "province_shapes.csv")
+    assert len(shapes) == 5
+    seasonality = pd.read_csv(tmp_path / "data" / "seasonality.csv")
+    assert list(seasonality["month"]) == list(range(1, 13))
     forecast = pd.read_csv(tmp_path / "data" / "forecast.csv")
     assert forecast["date"].iloc[0] == "2009-03-31"
 

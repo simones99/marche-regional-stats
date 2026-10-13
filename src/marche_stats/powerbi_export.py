@@ -136,8 +136,8 @@ def seasonality_table(series: pd.Series) -> pd.DataFrame:
     )
 
 
-def build(companies_csv: Path, out_dir: Path, holdout: int = 24) -> dict[str, Path]:
-    """Fit the model and write forecast.csv, forecast_accuracy.csv and reconciliation.csv."""
+def build(companies_csv: Path, out_dir: Path, geojson: Path, holdout: int = 24) -> dict[str, Path]:
+    """Fit the model and write the five CSV files the report reads from powerbi/data/."""
     wide = companies.read_wide(companies_csv)
     series = companies.modelling_series(wide)
     evaluation = timeseries.evaluate(series, holdout=holdout)
@@ -146,6 +146,8 @@ def build(companies_csv: Path, out_dir: Path, holdout: int = 24) -> dict[str, Pa
         "forecast.csv": forecast_table(series, evaluation, future),
         "forecast_accuracy.csv": accuracy_table(evaluation),
         "reconciliation.csv": reconciliation_table(wide, series),
+        "seasonality.csv": seasonality_table(series),
+        "province_shapes.csv": province_shapes_table(geojson),
     }
     out_dir.mkdir(parents=True, exist_ok=True)
     paths = {}
