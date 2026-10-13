@@ -1032,9 +1032,9 @@ def test_kpi_province_map_and_dot_measures():
 	/// Five-year population change of the focus region and of the benchmark chosen on Overview.
 	measure 'KPI gap Population' =
 			VAR Label = SELECTEDVALUE ( Benchmark[Benchmark], [Country name] )
-			VAR Item = SELECTEDVALUE ( Benchmark[ValueItem], "Country" )
+			VAR CompareItem = SELECTEDVALUE ( Benchmark[ValueItem], "Country" )
 			VAR Own = [Population change 5y %]
-			VAR Other = CALCULATE ( [Population change 5y %], 'Compare to'[Comparison] = Item )
+			VAR Other = CALCULATE ( [Population change 5y %], 'Compare to'[Comparison] = CompareItem )
 			RETURN
 			    IF (
 			        NOT ISBLANK ( Own ),
@@ -1046,8 +1046,8 @@ def test_kpi_province_map_and_dot_measures():
 	/// Gap in the share aged 65+ to the benchmark chosen on Overview, in percentage points.
 	measure 'KPI gap Share aged 65+' =
 			VAR Label = SELECTEDVALUE ( Benchmark[Benchmark], [Country name] )
-			VAR Item = SELECTEDVALUE ( Benchmark[Item], "vs Country" )
-			VAR Gap = CALCULATE ( [Share aged 65+], 'Compare to'[Comparison] = Item )
+			VAR CompareItem = SELECTEDVALUE ( Benchmark[Item], "vs Country" )
+			VAR Gap = CALCULATE ( [Share aged 65+], 'Compare to'[Comparison] = CompareItem )
 			VAR RefYear = YEAR ( CALCULATE ( [_Ref date Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "65+" ) )
 			RETURN IF ( NOT ISBLANK ( Gap ), IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ) * 100, "0.0" ) & " pp vs " & Label & " · " & RefYear )
 		displayFolder: Report text
@@ -1055,24 +1055,24 @@ def test_kpi_province_map_and_dot_measures():
 	/// Gap in the crude death rate to the benchmark chosen on Overview.
 	measure 'KPI gap Crude death rate' =
 			VAR Label = SELECTEDVALUE ( Benchmark[Benchmark], [Country name] )
-			VAR Item = SELECTEDVALUE ( Benchmark[Item], "vs Country" )
-			VAR Gap = CALCULATE ( [Crude death rate per 1,000], 'Compare to'[Comparison] = Item )
+			VAR CompareItem = SELECTEDVALUE ( Benchmark[Item], "vs Country" )
+			VAR Gap = CALCULATE ( [Crude death rate per 1,000], 'Compare to'[Comparison] = CompareItem )
 			RETURN IF ( NOT ISBLANK ( Gap ), IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ), "0.0" ) & " vs " & Label & " · " & YEAR ( [_Ref date Deaths] ) )
 		displayFolder: Report text
 
 	/// Gap in the unemployment rate to the benchmark chosen on Overview, in percentage points.
 	measure 'KPI gap Unemployment rate' =
 			VAR Label = SELECTEDVALUE ( Benchmark[Benchmark], [Country name] )
-			VAR Item = SELECTEDVALUE ( Benchmark[Item], "vs Country" )
-			VAR Gap = CALCULATE ( [Unemployment rate], 'Compare to'[Comparison] = Item )
+			VAR CompareItem = SELECTEDVALUE ( Benchmark[Item], "vs Country" )
+			VAR Gap = CALCULATE ( [Unemployment rate], 'Compare to'[Comparison] = CompareItem )
 			RETURN IF ( NOT ISBLANK ( Gap ), IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ) * 100, "0.0" ) & " pp vs " & Label & " · " & YEAR ( [_Ref date Unemployment] ) )
 		displayFolder: Report text
 
 	/// Gap in GDP per inhabitant to the benchmark chosen on Overview, in euro.
 	measure 'KPI gap GDP per inhabitant' =
 			VAR Label = SELECTEDVALUE ( Benchmark[Benchmark], [Country name] )
-			VAR Item = SELECTEDVALUE ( Benchmark[Item], "vs Country" )
-			VAR Gap = CALCULATE ( [GDP per inhabitant (EUR)], 'Compare to'[Comparison] = Item )
+			VAR CompareItem = SELECTEDVALUE ( Benchmark[Item], "vs Country" )
+			VAR Gap = CALCULATE ( [GDP per inhabitant (EUR)], 'Compare to'[Comparison] = CompareItem )
 			RETURN IF ( NOT ISBLANK ( Gap ), IF ( Gap < 0, "−€", "+€" ) & FORMAT ( ABS ( Gap ), "#,0" ) & " vs " & Label & " · " & YEAR ( [_Ref date GDP] ) )
 		displayFolder: Report text
 
@@ -1101,6 +1101,14 @@ def test_kpi_province_map_and_dot_measures():
 			)
 		displayFolder: Report visuals
 		formatStringDefinition = SWITCH ( SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ), 0, "+0.0%;-0.0%;0.0%", 1, "0.0%", 4, "#,0", "0.0" )
+
+	/// Name of the indicator chosen for the Provinces map. The field parameter's name column
+	/// cannot be read alone (it is grouped by the Fields column), so it is looked up by Order.
+	measure 'Province indicator name' =
+			VAR Ind = SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 )
+			RETURN MAXX ( FILTER ( ALL ( 'Province indicator' ), 'Province indicator'[Province indicator Order] = Ind ), 'Province indicator'[Province indicator] )
+		displayFolder: Report text
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
 
 	/// Province indicator value as text, as the map and the headlines print it.
 	measure 'Province indicator label' =
@@ -1146,23 +1154,23 @@ def test_kpi_province_map_and_dot_measures():
 		displayFolder: Report text
 
 	/// Background of the Provinces table column when its indicator is the one on the map.
-	measure 'Highlight population change' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" ) = "Population change 5y %", "#D0E3D7" )
+	measure 'Highlight population change' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ) = 0, "#D0E3D7" )
 		displayFolder: Report visuals
 
 	/// Background of the Provinces table column when its indicator is the one on the map.
-	measure 'Highlight aged 65+' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" ) = "Share aged 65+", "#D0E3D7" )
+	measure 'Highlight aged 65+' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ) = 1, "#D0E3D7" )
 		displayFolder: Report visuals
 
 	/// Background of the Provinces table column when its indicator is the one on the map.
-	measure 'Highlight death rate' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" ) = "Crude death rate per 1,000", "#D0E3D7" )
+	measure 'Highlight death rate' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ) = 2, "#D0E3D7" )
 		displayFolder: Report visuals
 
 	/// Background of the Provinces table column when its indicator is the one on the map.
-	measure 'Highlight companies' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" ) = "Companies per 1,000 residents", "#D0E3D7" )
+	measure 'Highlight companies' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ) = 3, "#D0E3D7" )
 		displayFolder: Report visuals
 
 	/// Background of the Provinces table column when its indicator is the one on the map.
-	measure 'Highlight GDP' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" ) = "GDP per inhabitant (EUR)", "#D0E3D7" )
+	measure 'Highlight GDP' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ) = 4, "#D0E3D7" )
 		displayFolder: Report visuals
 ```
 
@@ -1174,8 +1182,8 @@ def test_kpi_province_map_and_dot_measures():
 	/// and value, legend on the right. Shown in an Image visual (data category Image URL).
 	measure 'Map SVG' =
 			VAR Ind = SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 )
-			VAR IndName = SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" )
-			VAR Rows =
+			VAR IndName = [Province indicator name]
+			VAR ProvinceRows =
 			    CALCULATETABLE (
 			        ADDCOLUMNS (
 			            VALUES ( Geo[Code] ),
@@ -1189,12 +1197,12 @@ def test_kpi_province_map_and_dot_measures():
 			        REMOVEFILTERS ( Geo ),
 			        Geo[Role] = "Province"
 			    )
-			VAR Lo = MINX ( Rows, [@v] )
-			VAR Hi = MAXX ( Rows, [@v] )
+			VAR Lo = MINX ( ProvinceRows, [@v] )
+			VAR Hi = MAXX ( ProvinceRows, [@v] )
 			VAR Step = ( Hi - Lo ) / 4
 			VAR Classes =
 			    ADDCOLUMNS (
-			        Rows,
+			        ProvinceRows,
 			        "@class", IF ( ISBLANK ( [@v] ), 0, IF ( Step = 0, 4, MIN ( 4, INT ( ( [@v] - Lo ) / Step ) + 1 ) ) )
 			    )
 			VAR Painted =
@@ -1526,24 +1534,24 @@ def test_report_text_measures():
 		displayFolder: Report text
 
 	/// Provinces headline, first part: the indicator on the map.
-	measure 'Provinces headline lead' = SELECTEDVALUE ( 'Province indicator'[Province indicator], "Companies per 1,000 residents" ) & " is highest in"
+	measure 'Provinces headline lead' = [Province indicator name] & " is highest in"
 		displayFolder: Report text
 
 	/// Provinces headline, accent part: the province with the highest value.
 	measure 'Provinces headline accent' =
-			VAR Rows = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Geo[Name] ), "@v", [Province indicator value] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Province", REMOVEFILTERS ( Calendar ) )
-			RETURN MAXX ( TOPN ( 1, FILTER ( Rows, NOT ISBLANK ( [@v] ) ), [@v], DESC ), Geo[Name] )
+			VAR ProvinceRows = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Geo[Name] ), "@v", [Province indicator value] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Province", REMOVEFILTERS ( Calendar ) )
+			RETURN MAXX ( TOPN ( 1, FILTER ( ProvinceRows, NOT ISBLANK ( [@v] ) ), [@v], DESC ), Geo[Name] )
 		displayFolder: Report text
 
 	/// Provinces paragraph: highest and lowest province and the regional value.
 	measure 'Provinces paragraph' =
-			VAR Rows = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Geo[Name] ), "@v", [Province indicator value], "@label", [Province indicator label] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Province", REMOVEFILTERS ( Calendar ) )
-			VAR Valid = FILTER ( Rows, NOT ISBLANK ( [@v] ) )
-			VAR Top = TOPN ( 1, Valid, [@v], DESC )
-			VAR Bottom = TOPN ( 1, Valid, [@v], ASC )
+			VAR ProvinceRows = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Geo[Name] ), "@v", [Province indicator value], "@label", [Province indicator label] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Province", REMOVEFILTERS ( Calendar ) )
+			VAR Valid = FILTER ( ProvinceRows, NOT ISBLANK ( [@v] ) )
+			VAR Highest = TOPN ( 1, Valid, [@v], DESC )
+			VAR Lowest = TOPN ( 1, Valid, [@v], ASC )
 			VAR Region = CALCULATE ( [Province indicator label], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
 			RETURN
-			    MAXX ( Top, Geo[Name] ) & " " & MAXX ( Top, [@label] ) & ", against " & MAXX ( Bottom, [@label] ) & " in " & MAXX ( Bottom, Geo[Name] )
+			    MAXX ( Highest, Geo[Name] ) & " " & CONCATENATEX ( Highest, [@label] ) & ", against " & CONCATENATEX ( Lowest, [@label] ) & " in " & MAXX ( Lowest, Geo[Name] )
 			        & ". The regional figure is " & Region & "."
 		displayFolder: Report text
 
@@ -1711,7 +1719,7 @@ git push -u origin powerbi-phase-b
 
 - [x] **Step 3: Refresh.** Expected: every table loads, including `ProvinceShape` (5 rows), `Seasonality` (12 rows), `Benchmark` (3 rows: Italy, EU, Peers), `Benchmark point` (48 rows), `Data source` (8 rows). If Desktop rejects a measure, it names it: fix the DAX in Desktop, note the change, and the executor copies it back into this plan's task after Step 6.
 
-- [ ] **Step 4: Check the text measures against the values of 13 October 2026.** On the hidden *Model check* page (or a scratch card, deleted afterwards), show each measure in a card:
+- [x] **Step 4: Check the text measures against the values of 13 October 2026.** On the hidden *Model check* page (or a scratch card, deleted afterwards), show each measure in a card:
 
 | Measure | Expected |
 |---|---|
@@ -1735,6 +1743,13 @@ git push -u origin powerbi-phase-b
 | Map SVG | Starts with `data:image/svg+xml;utf8,%3Csvg` or `data:image/svg+xml;utf8,<svg`; with a Table visual set to show it as an image, the five provinces appear with names and values |
 
 A different number is a finding: compare it with `docs/results.md` and the Phase A check page before changing a measure.
+
+Outcome (13 October 2026, executor): checked with DAX queries against Desktop's local engine instead of scratch cards. Every text measure matched the table (the Economy paragraph reads 89 %, no PPS year lag), except 14 measures that the engine had saved as errors, which made the Overview KPI gap cards and the Spike map fail:
+- `Item`, `Rows` and `Top` are rejected as variable names (the five KPI gaps, `Map SVG`, `Provinces headline accent`, `Provinces paragraph`): renamed `CompareItem`, `ProvinceRows`, `Highest` (and `Bottom` to `Lowest`);
+- `SELECTEDVALUE ( 'Province indicator'[Province indicator] )` fails because the name column is grouped by the Fields column (the five `Highlight` measures, `Map SVG`, `Provinces headline lead`): they read the Order column, and the new measure `Province indicator name` looks the name up by Order;
+- `MAXX` over the text column `[@label]` of a table variable returns blank: `Provinces paragraph` uses `CONCATENATEX` on its one-row tables.
+
+The code blocks of Tasks 8 and 9 carry the fixes. `test_dax_variables_are_not_rejected_names` and `test_measures_do_not_read_a_field_parameter_name_alone` in `tests/test_powerbi_model.py` guard the first two.
 
 - [x] **Step 5: Delete the scratch cards, save, close Desktop.**
 
@@ -3454,7 +3469,7 @@ The PBIR forms of the textbox, shape, image, page navigator, card and slicer com
 
 Expected: `['Spike']`, a new folder `…Report/definition/pages/73cc33b96ddcddc98995/` and that name first in `pageOrder` of `pages.json`. Do not commit it: Step 3 deletes it. Until then `test_pages_follow_the_layout_order` fails, because Spike comes before Overview.
 
-- [ ] **Step 1 (user): Open the report.** Open `powerbi/marche-regional-profile.pbip`. Expected on Overview, against the canvas artboard "D · Story + dashboard":
+- [x] **Step 1 (user): Open the report.** Open `powerbi/marche-regional-profile.pbip`. Expected on Overview, against the canvas artboard "D · Story + dashboard":
   - the dark navigation bar with "Regional profile", the region name, the page navigator listing the visible pages (only Overview at this point; Model check is hidden) and "Data up to Mar 2025";
   - the light story column with OVERVIEW, the two-part headline, the paragraph, the Valadier photo and the source line;
   - the surface on the right with "Compare with", the benchmark buttons, six KPI cards with their gap lines, and the two line charts.
@@ -3467,7 +3482,7 @@ Expected: `['Spike']`, a new folder `…Report/definition/pages/73cc33b96ddcddc9
   - the three shapes have their own fill (bar `#15201A`, surface `#ECEEEA`, rule `#C9CEC9`), not the first data colour `#00753A`;
   - on the hidden page "Spike" (visible in edit mode), each of the nine visuals renders without an error icon: map image, year dropdown, pyramid bars, dot plot, column chart, multi-row card, ranked bars, table, matrix.
 
-- [ ] **Step 2 (user): Fix what Desktop did not accept.** For each visual that is missing, blank or shows an error: delete it, insert the same visual type at the same position and size, bind the same fields (Task 14, `overview()`), and set the same title and alt text. Typical cases:
+- [x] **Step 2 (user): Fix what Desktop did not accept.** For each visual that is missing, blank or shows an error: delete it, insert the same visual type at the same position and size, bind the same fields (Task 14, `overview()`), and set the same title and alt text. Typical cases:
   - the page navigator (*Insert → Buttons → Navigator → Page navigator*);
   - the photo (*Insert → Image*, then pick `photo-overview-valadier.jpg` from the report's resources);
   - a textbox whose text is missing (*Insert → Text box*, type the text, Segoe UI 10.5 pt, colour `#4F5A53`);
@@ -3481,13 +3496,13 @@ Expected: `['Spike']`, a new folder `…Report/definition/pages/73cc33b96ddcddc9
 
   If the headline, the paragraph or a KPI gap line is cut off in the classic card, switch that card to the new *Card* visual, turn off its label, turn on text wrap. Then save and close Desktop.
 
-- [ ] **Step 3 (executor): Learn Desktop's form.** Run `git diff --stat powerbi/marche-regional-profile.Report` and `git diff` on each changed or new `visual.json`. For each visual type Desktop rewrote, on Overview and on Spike, update the matching helper in `report_layout.py` (`textbox`, `shape`, `image`, `measure_image`, `card`, `slicer`, `navigator`, `chart`, `table`) or the `Visual(…)` calls of Tasks 17–18 (`scatterChart`, `pivotTable`, `multiRowCard`) so that it writes what Desktop wrote: same `visualType`, same object and property names, same expression form, including the tab-order setting of the shapes. Keep positions, fields, titles and alt text as they are. Do not re-run `scaffold-report` on Overview (Desktop's files stay).
+- [x] **Step 3 (executor): Learn Desktop's form.** Run `git diff --stat powerbi/marche-regional-profile.Report` and `git diff` on each changed or new `visual.json`. For each visual type Desktop rewrote, on Overview and on Spike, update the matching helper in `report_layout.py` (`textbox`, `shape`, `image`, `measure_image`, `card`, `slicer`, `navigator`, `chart`, `table`) or the `Visual(…)` calls of Tasks 17–18 (`scatterChart`, `pivotTable`, `multiRowCard`) so that it writes what Desktop wrote: same `visualType`, same object and property names, same expression form, including the tab-order setting of the shapes. Keep positions, fields, titles and alt text as they are. Do not re-run `scaffold-report` on Overview (Desktop's files stay).
 
   Then delete the spike page: remove the folder `…Report/definition/pages/73cc33b96ddcddc98995/` and its entry in `pageOrder` of `pages.json`; if `activePageName` is `73cc33b96ddcddc98995`, set it to `fed758b7a842befdf49b` (Overview). `git status --short powerbi` must not list the spike folder.
 
-- [ ] **Step 4: Run the tests.** `pytest -q`. If `test_pages_use_the_palette_and_the_font_minimum` fails on a value Desktop wrote, set that value in Desktop to a palette colour or to 10.5 pt and save again.
+- [x] **Step 4: Run the tests.** `pytest -q`. If `test_pages_use_the_palette_and_the_font_minimum` fails on a value Desktop wrote, set that value in Desktop to a palette colour or to 10.5 pt and save again.
 
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
 
 ```bash
 git add src/marche_stats powerbi/marche-regional-profile.Report
@@ -3501,7 +3516,7 @@ git commit -m "Match the PBIR writer to the visual JSON that Desktop saves"
 **Files:**
 - Modify: `src/marche_stats/report_layout.py`
 
-- [ ] **Step 1: Add the three page functions** before `def pages()`:
+- [x] **Step 1: Add the three page functions** before `def pages()`:
 
 ```python
 def population() -> Page:
@@ -3590,11 +3605,11 @@ def education() -> Page:
 
 and change `pages()` to `return [overview(), population(), economy(), education()]`.
 
-- [ ] **Step 2: Scaffold.** Desktop closed: `marche-stats scaffold-report`. Expected: `wrote Population & Health`, `wrote Economy & Labour`, `wrote Education` (Overview is skipped).
+- [x] **Step 2: Scaffold.** Desktop closed: `marche-stats scaffold-report`. Expected: `wrote Population & Health`, `wrote Economy & Labour`, `wrote Education` (Overview is skipped).
 
-- [ ] **Step 3: Run the tests.** `pytest -q`. Expected: all pass.
+- [x] **Step 3: Run the tests.** `pytest -q`. Expected: all pass.
 
-- [ ] **Step 4: Commit.**
+- [x] **Step 4: Commit.**
 
 ```bash
 ruff check src tests && ruff format src tests
@@ -3609,7 +3624,7 @@ git commit -m "Scaffold the population, economy and education pages"
 **Files:**
 - Modify: `src/marche_stats/report_layout.py`
 
-- [ ] **Step 1: Add the four page functions** before `def pages()`:
+- [x] **Step 1: Add the four page functions** before `def pages()`:
 
 ```python
 PROVINCE_MEASURES = [
@@ -3785,11 +3800,11 @@ def about() -> Page:
 
 and change `pages()` to `return [overview(), population(), economy(), education(), provinces(), business(), benchmark(), about()]`.
 
-- [ ] **Step 2: Scaffold.** Desktop closed: `marche-stats scaffold-report`. Expected: the four new pages.
+- [x] **Step 2: Scaffold.** Desktop closed: `marche-stats scaffold-report`. Expected: the four new pages.
 
-- [ ] **Step 3: Run the tests.** `pytest -q`. Expected: all pass.
+- [x] **Step 3: Run the tests.** `pytest -q`. Expected: all pass.
 
-- [ ] **Step 4: Commit.**
+- [x] **Step 4: Commit.**
 
 ```bash
 ruff check src tests && ruff format src tests
@@ -3804,7 +3819,7 @@ git commit -m "Scaffold the provinces, business, benchmark and about pages"
 **Files:**
 - Modify: `src/marche_stats/report_layout.py`
 
-- [ ] **Step 1: Add the hidden pages** before `def pages()`. The rows of the `Province indicator` field parameter have the same names as its measures, so `PROVINCE_MEASURES` (Task 17) also names the filter values:
+- [x] **Step 1: Add the hidden pages** before `def pages()`. The rows of the `Province indicator` field parameter have the same names as its measures, so `PROVINCE_MEASURES` (Task 17) also names the filter values:
 
 ```python
 def province_detail() -> Page:
@@ -3870,9 +3885,9 @@ def province_tooltip() -> Page:
 
 and change `pages()` to append `province_detail(), area_tooltip(), province_tooltip()`.
 
-- [ ] **Step 2: Scaffold and test.** Desktop closed: `marche-stats scaffold-report`, then `pytest -q`. Expected: three new pages; all tests pass.
+- [x] **Step 2: Scaffold and test.** Desktop closed: `marche-stats scaffold-report`, then `pytest -q`. Expected: three new pages; all tests pass.
 
-- [ ] **Step 3: Commit.**
+- [x] **Step 3: Commit.**
 
 ```bash
 ruff check src tests && ruff format src tests
@@ -3886,7 +3901,7 @@ git commit -m "Scaffold the province detail and tooltip pages"
 
 Only the user can run this task. Open the report and the design canvas side by side; for each page, compare with its artboard ("D · Story + dashboard" for Overview, "2 · …" to "8 · …" for the others) and apply the steps below. Save often; close Desktop at the end.
 
-- [ ] **Step 1: Line charts (all pages).** In *Format → Lines* and *Markers*, per series:
+- [x] **Step 1: Line charts (all pages).** In *Format → Lines* and *Markers*, per series:
   - focus region: accent `#00753A`, solid, 3 px, filled circle;
   - country: `#6B746E`, dashed, hollow square;
   - EU: `#6B746E`, dotted, filled triangle;
@@ -3894,36 +3909,36 @@ Only the user can run this task. Open the report and the design canvas side by s
 
   Turn on *Series labels* at the line end. Turn the legend off where series labels name the lines.
 
-- [ ] **Step 2: Bar charts.**
+- [x] **Step 2: Bar charts.**
   - Ranked bars (Population, Economy, Education): *Bars → Color → fx → Field value → `Area colour`*. If *Bars → Border* can be set per bar, outline the country and EU bars in `#6B746E` instead of the dark fill.
   - Pyramid: *fx → `Pyramid colour`* on both series; overlap 100 %; gap 20 %; legend off.
   - Butterfly: *fx → `Education level colour`*.
   - Sectors (Business, Province detail): *fx → `Change colour`*.
   - Data labels on, 10.5 pt, position *Outside end*, on the ranked bars and the sectors only. Leave them off on the pyramid and the butterfly: stacked bars put labels inside the fill, where the theme's dark label colour fails contrast.
 
-- [ ] **Step 3: Forecast chart (Business).** Actual: `#15201A`, solid, filled circles. Forecast: `#15201A`, dashed, hollow circles. *Analytics → Error bars* on *Forecast chart forecast*: upper `Forecast upper 95`, lower `Forecast lower 95`, *Bar* off, *Band* on, `#6B746E` at 80 % transparency.
+- [x] **Step 3: Forecast chart (Business).** Actual: `#15201A`, solid, filled circles. Forecast: `#15201A`, dashed, hollow circles. *Analytics → Error bars* on *Forecast chart forecast*: upper `Forecast upper 95`, lower `Forecast lower 95`, *Bar* off, *Band* on, `#6B746E` at 80 % transparency.
 
-- [ ] **Step 4: Slicers and interactions.**
+- [x] **Step 4: Slicers and interactions.**
   - Set every button slicer to *Style: Tile*, single select, and the Overview benchmark to its first value (the country).
   - *Format → Edit interactions*:
     - the Population year slicer filters only the pyramid;
     - the Benchmark *Compare to* slicer filters only the matrix (none on the ranks table, the dot plot and the text cards);
     - the ISCED slicer filters only the butterfly chart.
 
-- [ ] **Step 5: Provinces.** Map image: scaling *Fit*. Table: *Cell elements → Background color → fx → Field value* for each indicator column with its `Highlight …` measure.
+- [x] **Step 5: Provinces.** Map image: scaling *Fit*. Table: *Cell elements → Background color → fx → Field value* for each indicator column with its `Highlight …` measure.
 
-- [ ] **Step 6: Drill-through and tooltips.**
+- [x] **Step 6: Drill-through and tooltips.**
   - Province detail: *Page information → Drill through → Add* `Geo[Name]`. Keep the back button Desktop adds and move it to x 576, y 32, 32 × 24.
   - Area tooltip and Province tooltip: *Page information → Allow use as tooltip*; canvas 320 × 240.
   - Point the ranked bars and the line charts to *Area tooltip* (*Format → Tooltips → Report page*), and the Provinces table to *Province tooltip*.
 
-- [ ] **Step 7: Accessibility pass.**
+- [x] **Step 7: Accessibility pass.**
   - *View → Selection → Tab order*: matches reading order (navigation, story, controls, visuals).
   - Every visual's alt text is set (*General → Alt text*).
   - Text cards: wrap on, label off.
   - Headline 30 pt; nothing under 10.5 pt.
 
-- [ ] **Step 8: Save, close, and hand back.** Select the Overview page before the last save: the published report opens on the page that was active when it was saved. The executor runs:
+- [x] **Step 8: Save, close, and hand back.** Select the Overview page before the last save: the published report opens on the page that was active when it was saved. The executor runs:
 
 ```bash
 pytest -q
