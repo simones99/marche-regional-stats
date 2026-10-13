@@ -1992,7 +1992,7 @@ git commit -m "Add the three-colour Segoe UI theme and register it in the report
 - Create: `…Report/StaticResources/RegisteredResources/photo-overview-valadier.jpg`, `photo-education-urbino.jpg`, `photo-about-due-sorelle.jpg`
 - Modify: `…Report/definition/report.json`
 
-- [ ] **Step 1: Download, crop and compress.** The slots are 384 × 304 (story column) and 576 × 160 (About strip); the files are twice that size for sharp exports. Save this script outside the repository (e.g. the scratch folder) and run it from the repository root:
+- [x] **Step 1: Download, crop and compress.** The slots are 384 × 304 (story column) and 576 × 160 (About strip); the files are twice that size for sharp exports. Save this script outside the repository (e.g. the scratch folder) and run it from the repository root:
 
 ```python
 """Fetch the three Commons photos at 1600 px and crop them to their report slots."""
@@ -2034,7 +2034,7 @@ for name, (title, (width, height)) in PHOTOS.items():
 
 Expected: three files, each under 300 KB. Look at each: the Valadier temple and the Urbino skyline are centred; the Due Sorelle beach shows the cliff and the sea. If a crop cuts the subject, change `left`/`top` for that file and rerun.
 
-- [ ] **Step 2: Register the images.** Add to the `RegisteredResources` items in `report.json`:
+- [x] **Step 2: Register the images.** Add to the `RegisteredResources` items in `report.json`:
 
 ```json
         {
@@ -2054,9 +2054,9 @@ Expected: three files, each under 300 KB. Look at each: the Valadier temple and 
         }
 ```
 
-- [ ] **Step 3: Run the tests.** `pytest tests/test_powerbi_report.py -v`. Expected: PASS.
+- [x] **Step 3: Run the tests.** `pytest tests/test_powerbi_report.py -v`. Expected: PASS.
 
-- [ ] **Step 4: Commit.**
+- [x] **Step 4: Commit.**
 
 ```bash
 git add powerbi/marche-regional-profile.Report
