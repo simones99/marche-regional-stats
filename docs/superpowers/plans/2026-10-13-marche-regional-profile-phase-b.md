@@ -2076,6 +2076,7 @@ git commit -m "Add the Valadier, Urbino and Due Sorelle photos to the report res
 ```python
 import json
 import re
+import sys
 
 import pytest
 
@@ -2256,6 +2257,25 @@ def test_duplicate_visual_keys_are_rejected(tmp_path):
     page = Page("one", "One", [Visual("a", "shape", 0, 0, 8, 8), Visual("a", "shape", 8, 0, 8, 8)])
     with pytest.raises(ValueError, match="duplicate"):
         pbir.scaffold([page], _definition(tmp_path))
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows file locking")
+def test_locked_page_is_left_intact_when_forced(tmp_path):
+    definition = _definition(tmp_path)
+    page = Page("one", "One", [Visual("a", "shape", 0, 0, 8, 8)])
+    pbir.scaffold([page], definition)
+    folder = definition / "pages" / pbir.object_id("one")
+    before = sorted(p.relative_to(folder) for p in folder.rglob("*"))
+    with open(folder / "page.json"):
+        with pytest.raises(PermissionError):
+            pbir.scaffold([page], definition, force={"one"})
+    assert sorted(p.relative_to(folder) for p in folder.rglob("*")) == before
+
+
+def test_force_keys_must_be_page_keys(tmp_path):
+    page = Page("one", "One", [])
+    with pytest.raises(ValueError, match="unknown page keys.*One"):
+        pbir.scaffold([page], _definition(tmp_path), force={"One"})
 ```
 
 - [ ] **Step 2: Run them.** `pytest tests/test_pbir.py -v`. Expected: FAIL with `ImportError`.
@@ -2461,20 +2481,31 @@ def _page_files(page: Page) -> dict[Path, str]:
 
 
 def _write_page(folder: Path, files: dict[Path, str]) -> None:
-    """Write the page into a temporary sibling folder, then rename it into place."""
+    """Stage the page, swap it in, and keep the old folder until the swap succeeds."""
     staging = folder.with_name(folder.name + ".tmp")
+    backup = folder.with_name(folder.name + ".old")
+    if backup.exists() and not folder.exists():  # an earlier run stopped mid-swap
+        backup.rename(folder)
     shutil.rmtree(staging, ignore_errors=True)
+    shutil.rmtree(backup, ignore_errors=True)
     try:
         for relative, text in files.items():
             target = staging / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             with target.open("w", encoding="utf-8", newline="\n") as handle:
                 handle.write(text)
-        shutil.rmtree(folder, ignore_errors=True)
-        staging.rename(folder)
+        if folder.exists():
+            folder.rename(backup)  # PermissionError if a file is locked: nothing is lost
+        try:
+            staging.rename(folder)
+        except BaseException:
+            if backup.exists():
+                backup.rename(folder)
+            raise
     except BaseException:
         shutil.rmtree(staging, ignore_errors=True)
         raise
+    shutil.rmtree(backup, ignore_errors=True)
 
 
 def _merged_order(order: list[str], ours: list[str]) -> list[str]:
@@ -2518,6 +2549,9 @@ def scaffold(pages: list[Page], definition: Path, force: Collection[str] = ()) -
     changes something. Pages the layout does not know (the Phase A model check page) stay.
     """
     _validate(pages)
+    unknown = set(force) - {p.key for p in pages}
+    if unknown:
+        raise ValueError(f"unknown page keys {sorted(unknown)}")
     written = []
     pages_dir = definition / "pages"
     for page in pages:
@@ -3421,7 +3455,7 @@ Only the user can run this task. Open the report and the design canvas side by s
   - Text cards: wrap on, label off.
   - Headline 30 pt; nothing under 10.5 pt.
 
-- [ ] **Step 8: Save, close, and hand back.** The executor runs:
+- [ ] **Step 8: Save, close, and hand back.** Select the Overview page before the last save: the published report opens on the page that was active when it was saved. The executor runs:
 
 ```bash
 pytest -q

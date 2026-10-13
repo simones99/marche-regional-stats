@@ -196,20 +196,31 @@ def _page_files(page: Page) -> dict[Path, str]:
 
 
 def _write_page(folder: Path, files: dict[Path, str]) -> None:
-    """Write the page into a temporary sibling folder, then rename it into place."""
+    """Stage the page, swap it in, and keep the old folder until the swap succeeds."""
     staging = folder.with_name(folder.name + ".tmp")
+    backup = folder.with_name(folder.name + ".old")
+    if backup.exists() and not folder.exists():  # an earlier run stopped mid-swap
+        backup.rename(folder)
     shutil.rmtree(staging, ignore_errors=True)
+    shutil.rmtree(backup, ignore_errors=True)
     try:
         for relative, text in files.items():
             target = staging / relative
             target.parent.mkdir(parents=True, exist_ok=True)
             with target.open("w", encoding="utf-8", newline="\n") as handle:
                 handle.write(text)
-        shutil.rmtree(folder, ignore_errors=True)
-        staging.rename(folder)
+        if folder.exists():
+            folder.rename(backup)  # PermissionError if a file is locked: nothing is lost
+        try:
+            staging.rename(folder)
+        except BaseException:
+            if backup.exists():
+                backup.rename(folder)
+            raise
     except BaseException:
         shutil.rmtree(staging, ignore_errors=True)
         raise
+    shutil.rmtree(backup, ignore_errors=True)
 
 
 def _merged_order(order: list[str], ours: list[str]) -> list[str]:
@@ -253,6 +264,9 @@ def scaffold(pages: list[Page], definition: Path, force: Collection[str] = ()) -
     changes something. Pages the layout does not know (the Phase A model check page) stay.
     """
     _validate(pages)
+    unknown = set(force) - {p.key for p in pages}
+    if unknown:
+        raise ValueError(f"unknown page keys {sorted(unknown)}")
     written = []
     pages_dir = definition / "pages"
     for page in pages:

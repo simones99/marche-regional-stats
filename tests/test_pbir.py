@@ -1,5 +1,6 @@
 import json
 import re
+import sys
 
 import pytest
 
@@ -180,3 +181,22 @@ def test_duplicate_visual_keys_are_rejected(tmp_path):
     page = Page("one", "One", [Visual("a", "shape", 0, 0, 8, 8), Visual("a", "shape", 8, 0, 8, 8)])
     with pytest.raises(ValueError, match="duplicate"):
         pbir.scaffold([page], _definition(tmp_path))
+
+
+@pytest.mark.skipif(sys.platform != "win32", reason="Windows file locking")
+def test_locked_page_is_left_intact_when_forced(tmp_path):
+    definition = _definition(tmp_path)
+    page = Page("one", "One", [Visual("a", "shape", 0, 0, 8, 8)])
+    pbir.scaffold([page], definition)
+    folder = definition / "pages" / pbir.object_id("one")
+    before = sorted(p.relative_to(folder) for p in folder.rglob("*"))
+    with open(folder / "page.json"):
+        with pytest.raises(PermissionError):
+            pbir.scaffold([page], definition, force={"one"})
+    assert sorted(p.relative_to(folder) for p in folder.rglob("*")) == before
+
+
+def test_force_keys_must_be_page_keys(tmp_path):
+    page = Page("one", "One", [])
+    with pytest.raises(ValueError, match="unknown page keys.*One"):
+        pbir.scaffold([page], _definition(tmp_path), force={"One"})
