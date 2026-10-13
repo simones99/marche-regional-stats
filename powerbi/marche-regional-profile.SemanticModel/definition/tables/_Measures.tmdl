@@ -630,8 +630,8 @@ table _Measures
 			    3, [Companies per 1,000 residents],
 			    4, [GDP per inhabitant (EUR)]
 			)
-		formatStringDefinition = SWITCH ( SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ), 0, "+0.0%;-0.0%;0.0%", 1, "0.0%", 4, "#,0", "0.0" )
 		displayFolder: Report visuals
+		formatStringDefinition = SWITCH ( SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ), 0, "+0.0%;-0.0%;0.0%", 1, "0.0%", 4, "#,0", "0.0" )
 
 	/// Province indicator value as text, as the map and the headlines print it.
 	measure 'Province indicator label' =

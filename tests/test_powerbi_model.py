@@ -56,6 +56,20 @@ def test_tmdl_lines_are_tab_indented():
             assert not line.startswith(" "), f"{path.name}:{number} starts with a space"
 
 
+def test_measure_properties_come_before_child_objects():
+    # formatStringDefinition and annotation are child objects: TMDL rejects a property
+    # (displayFolder: …) after them with "Invalid indentation".
+    for path in MODEL.rglob("*.tmdl"):
+        child = None
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if re.match(r"\t\S", line):  # a new object: measure, column, partition…
+                child = None
+            elif re.match(r"\t\t(formatStringDefinition|annotation) ", line):
+                child = number
+            elif child and re.match(r"\t\t\w+:", line):
+                pytest.fail(f"{path.name}:{number} is a property after the child object on {child}")
+
+
 def test_relationships_use_existing_columns():
     path = MODEL / "relationships.tmdl"
     if not path.exists():
