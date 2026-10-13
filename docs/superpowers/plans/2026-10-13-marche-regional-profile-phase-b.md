@@ -801,7 +801,7 @@ def test_report_visual_measures():
         "Active companies index",
         "Sector change, ten largest",
         "Seasonal effect",
-        "MAPE",
+        "Forecast MAPE",
         "Forecast chart actual",
         "Forecast chart forecast",
         "Latest period",
@@ -960,7 +960,7 @@ def test_report_visual_measures():
 		displayFolder: Report visuals
 
 	/// Mean absolute percentage error of the method in context on the holdout months.
-	measure MAPE = DIVIDE ( SUM ( ForecastAccuracy[MAPE] ), 100 )
+	measure 'Forecast MAPE' = DIVIDE ( SUM ( ForecastAccuracy[MAPE] ), 100 )
 		formatString: 0.00%
 		displayFolder: Report visuals
 
@@ -1038,8 +1038,8 @@ def test_kpi_province_map_and_dot_measures():
 			RETURN
 			    IF (
 			        NOT ISBLANK ( Own ),
-			        IF ( Own < 0, "−", "+" ) & FORMAT ( ABS ( Own ) * 100, "0.0" ) & " % in 5 years · " & Label & " "
-			            & IF ( Other < 0, "−", "+" ) & FORMAT ( ABS ( Other ) * 100, "0.0" ) & " %"
+			        IF ( Own < 0, "−", "+" ) & FORMAT ( ABS ( Own ) * 100, "0.0" ) & " % in 5 years"
+			            & IF ( NOT ISBLANK ( Other ), " · " & Label & " " & IF ( Other < 0, "−", "+" ) & FORMAT ( ABS ( Other ) * 100, "0.0" ) & " %" )
 			    )
 		displayFolder: Report text
 
@@ -1048,8 +1048,8 @@ def test_kpi_province_map_and_dot_measures():
 			VAR Label = SELECTEDVALUE ( Benchmark[Benchmark], [Country name] )
 			VAR Item = SELECTEDVALUE ( Benchmark[Item], "vs Country" )
 			VAR Gap = CALCULATE ( [Share aged 65+], 'Compare to'[Comparison] = Item )
-			VAR Year = YEAR ( CALCULATE ( [_Ref date Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "65+" ) )
-			RETURN IF ( NOT ISBLANK ( Gap ), IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ) * 100, "0.0" ) & " pp vs " & Label & " · " & Year )
+			VAR RefYear = YEAR ( CALCULATE ( [_Ref date Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "65+" ) )
+			RETURN IF ( NOT ISBLANK ( Gap ), IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ) * 100, "0.0" ) & " pp vs " & Label & " · " & RefYear )
 		displayFolder: Report text
 
 	/// Gap in the crude death rate to the benchmark chosen on Overview.
@@ -1121,13 +1121,13 @@ def test_kpi_province_map_and_dot_measures():
 	/// Gap between the province and the focus region for the chosen indicator. GDP compares
 	/// the same year: provincial GDP lags the regional series.
 	measure 'Province gap to region' =
-			VAR Order = SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 )
+			VAR Ind = SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 )
 			VAR Region = [Focus region name]
 			VAR v = [Province indicator value]
 			VAR d = [_Ref date GDP]
 			VAR r =
 			    IF (
-			        Order = 4,
+			        Ind = 4,
 			        CALCULATE ( SUM ( GDP[Value] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", GDP[Date] = d, GDP[UnitCode] = "EUR_HAB" ),
 			        CALCULATE ( [Province indicator value], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
 			    )
@@ -1136,7 +1136,7 @@ def test_kpi_province_map_and_dot_measures():
 			    IF (
 			        NOT ISBLANK ( v ) && NOT ISBLANK ( r ),
 			        SWITCH (
-			            Order,
+			            Ind,
 			            0, IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ) * 100, "0.0" ) & " pp vs " & Region,
 			            1, IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ) * 100, "0.0" ) & " pp vs " & Region,
 			            4, IF ( Gap < 0, "−€", "+€" ) & FORMAT ( ABS ( Gap ), "#,0" ) & " vs " & Region & " · " & YEAR ( d ),
@@ -1166,7 +1166,7 @@ def test_kpi_province_map_and_dot_measures():
 		displayFolder: Report visuals
 ```
 
-- [x] **Step 5: Add the map.** Four equal-interval classes between the lowest and the highest province, the accent tints of the spec, name and value printed on each province, legend on the right. `#` is written `%23` in the data URL.
+- [x] **Step 5: Add the map.** Four equal-interval classes between the lowest and the highest province, the accent tints of the spec, name and value printed on each province, legend on the right; a province without a value is drawn in neutral grey (`#ECEEEA`). In the data URL `%` is written `%25`, then `#` is written `%23`.
 
 ```
 	/// SVG map of the provinces for the indicator chosen in Province indicator: four equal
@@ -1195,12 +1195,12 @@ def test_kpi_province_map_and_dot_measures():
 			VAR Classes =
 			    ADDCOLUMNS (
 			        Rows,
-			        "@class", IF ( Step = 0, 4, MIN ( 4, INT ( ( [@v] - Lo ) / Step ) + 1 ) )
+			        "@class", IF ( ISBLANK ( [@v] ), 0, IF ( Step = 0, 4, MIN ( 4, INT ( ( [@v] - Lo ) / Step ) + 1 ) ) )
 			    )
 			VAR Painted =
 			    ADDCOLUMNS (
 			        Classes,
-			        "@fill", SWITCH ( [@class], 1, "#D0E3D7", 2, "#7AB696", 3, "#4A9C72", "#00753A" ),
+			        "@fill", SWITCH ( [@class], 0, "#ECEEEA", 1, "#D0E3D7", 2, "#7AB696", 3, "#4A9C72", "#00753A" ),
 			        "@ink", IF ( [@class] = 4, "#F5F6F3", "#15201A" )
 			    )
 			VAR Shapes =
@@ -1224,7 +1224,14 @@ def test_kpi_province_map_and_dot_measures():
 			            VAR i = [Value]
 			            VAR a = Lo + ( i - 1 ) * Step
 			            VAR b = Lo + i * Step
-			            VAR Fmt = SWITCH ( Ind, 0, FORMAT ( a * 100, "0.0" ) & " to " & FORMAT ( b * 100, "0.0" ) & " %", 1, FORMAT ( a * 100, "0.0" ) & " to " & FORMAT ( b * 100, "0.0" ) & " %", 4, "€" & FORMAT ( a / 1000, "0.0" ) & "K to " & FORMAT ( b / 1000, "0.0" ) & "K", FORMAT ( a, "0.0" ) & " to " & FORMAT ( b, "0.0" ) )
+			            VAR Fmt =
+			                SWITCH (
+			                    Ind,
+			                    0, IF ( a < 0, "−", "" ) & FORMAT ( ABS ( a ) * 100, "0.0" ) & " to " & IF ( b < 0, "−", "" ) & FORMAT ( ABS ( b ) * 100, "0.0" ) & " %",
+			                    1, IF ( a < 0, "−", "" ) & FORMAT ( ABS ( a ) * 100, "0.0" ) & " to " & IF ( b < 0, "−", "" ) & FORMAT ( ABS ( b ) * 100, "0.0" ) & " %",
+			                    4, IF ( a < 0, "−", "" ) & "€" & FORMAT ( ABS ( a ) / 1000, "0.0" ) & "K to " & IF ( b < 0, "−", "" ) & "€" & FORMAT ( ABS ( b ) / 1000, "0.0" ) & "K",
+			                    IF ( a < 0, "−", "" ) & FORMAT ( ABS ( a ), "0.0" ) & " to " & IF ( b < 0, "−", "" ) & FORMAT ( ABS ( b ), "0.0" )
+			                )
 			            VAR y = 72 + ( 4 - i ) * 40
 			            RETURN
 			                "<rect x='424' y='" & y & "' width='32' height='24' fill='" & SWITCH ( i, 1, "#D0E3D7", 2, "#7AB696", 3, "#4A9C72", "#00753A" ) & "' stroke='#6B746E'/>"
@@ -1232,9 +1239,9 @@ def test_kpi_province_map_and_dot_measures():
 			            ""
 			        )
 			VAR Svg =
-			    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 400' font-family='Segoe UI, sans-serif'>"
+			    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 780 400' font-family='Segoe UI, sans-serif'>"
 			        & Shapes & Labels & Legend & "</svg>"
-			RETURN IF ( NOT ISBLANK ( Lo ), "data:image/svg+xml;utf8," & SUBSTITUTE ( Svg, "#", "%23" ) )
+			RETURN IF ( NOT ISBLANK ( Lo ), "data:image/svg+xml;utf8," & SUBSTITUTE ( SUBSTITUTE ( Svg, "%", "%25" ), "#", "%23" ) )
 		dataCategory: ImageUrl
 		displayFolder: Report visuals
 ```
@@ -1379,7 +1386,7 @@ def test_report_text_measures():
 			VAR Pop = CALCULATE ( [Population change 5y %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
 			VAR Old = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
 			VAR OldCountry = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Country", REMOVEFILTERS ( Calendar ) )
-			VAR Firms = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
+			VAR Firms = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
 			RETURN Pop < 0 && Old > OldCountry && Firms < 0
 		isHidden
 		displayFolder: _Helpers
@@ -1387,7 +1394,7 @@ def test_report_text_measures():
 	/// TRUE when trade, agriculture and manufacturing (ATECO G, A, C) all lost active companies
 	/// and at least one of professional, real-estate and financial services (M, L, K) grew.
 	measure '_Business claim' =
-			VAR T = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Sector[Code] ), "@c", [Active companies change %] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Sector ) )
+			VAR T = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Sector[Code] ), "@c", [Active companies change %] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Sector ), REMOVEFILTERS ( Calendar ) )
 			RETURN MAXX ( FILTER ( T, Sector[Code] IN { "G", "A", "C" } ), [@c] ) < 0 && MAXX ( FILTER ( T, Sector[Code] IN { "M", "L", "K" } ), [@c] ) > 0
 		isHidden
 		displayFolder: _Helpers
@@ -1407,15 +1414,15 @@ def test_report_text_measures():
 	/// Overview paragraph: population from the first to the latest year, share aged 65+,
 	/// change in active companies.
 	measure 'Overview paragraph' =
-			VAR FirstDate = CALCULATE ( MIN ( Population[Date] ), REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
-			VAR PopFirst = CALCULATE ( SUM ( Population[Residents] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), Population[Date] = FirstDate, REMOVEFILTERS ( Sex ), Sex[Code] = "T", REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL" )
+			VAR PopFirstDate = CALCULATE ( MIN ( Population[Date] ), REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
+			VAR PopFirst = CALCULATE ( SUM ( Population[Residents] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), Population[Date] = PopFirstDate, REMOVEFILTERS ( Sex ), Sex[Code] = "T", REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL" )
 			VAR PopLast = CALCULATE ( [Population], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
-			VAR LastYear = YEAR ( CALCULATE ( [_Ref date Population], REMOVEFILTERS ( Calendar ) ) )
+			VAR LastYear = YEAR ( CALCULATE ( [_Ref date Population], REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" ) )
 			VAR Old = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
-			VAR Firms = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
+			VAR Firms = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
 			VAR FirstDec = YEAR ( CALCULATE ( MIN ( Companies[Date] ), REMOVEFILTERS (), Calendar[MonthNumber] = 12 ) )
 			RETURN
-			    "Residents " & IF ( PopLast < PopFirst, "fell", "rose" ) & " from " & FORMAT ( PopFirst / 1000000, "0.00" ) & " million in " & YEAR ( FirstDate )
+			    "Residents " & IF ( PopLast < PopFirst, "fell", "rose" ) & " from " & FORMAT ( PopFirst / 1000000, "0.00" ) & " million in " & YEAR ( PopFirstDate )
 			        & " to " & FORMAT ( PopLast / 1000000, "0.00" ) & " million in " & LastYear & ". "
 			        & FORMAT ( Old * 100, "0.0" ) & " % are aged 65 or over. Active companies are "
 			        & FORMAT ( ABS ( Firms ) * 100, "0.0" ) & " % " & IF ( Firms < 0, "fewer", "more" ) & " than in December " & FirstDec & "."
@@ -1439,7 +1446,7 @@ def test_report_text_measures():
 	/// Population & Health paragraph: share aged 65+ against the country and the EU, women per
 	/// man among the over-85s.
 	measure 'Population paragraph' =
-			VAR d = CALCULATE ( [_Ref date Population], REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "65+" )
+			VAR d = CALCULATE ( [_Ref date Population], REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "65+" )
 			VAR s = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
 			VAR sc = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Country", REMOVEFILTERS ( Calendar ) )
 			VAR se = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "EU", REMOVEFILTERS ( Calendar ) )
@@ -1471,13 +1478,13 @@ def test_report_text_measures():
 	measure 'Economy paragraph' =
 			VAR g = CALCULATE ( [GDP per inhabitant (EUR)], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
 			VAR pps = CALCULATE ( [GDP per inhabitant (PPS, EU = 100)], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
-			VAR gy = YEAR ( CALCULATE ( [_Ref date GDP], REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ) ) )
+			VAR gy = YEAR ( CALCULATE ( [_Ref date GDP], REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" ) )
 			VAR Years = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Calendar[Year] ), "@u", [Unemployment rate] ), REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
 			VAR Peak = TOPN ( 1, FILTER ( Years, NOT ISBLANK ( [@u] ) ), [@u], DESC )
 			VAR PeakRate = MAXX ( Peak, [@u] )
 			VAR PeakYear = MAXX ( Peak, Calendar[Year] )
 			VAR u = CALCULATE ( [Unemployment rate], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
-			VAR uy = YEAR ( CALCULATE ( [_Ref date Unemployment], REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ) ) )
+			VAR uy = YEAR ( CALCULATE ( [_Ref date Unemployment], REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" ) )
 			VAR uc = CALCULATE ( [Unemployment rate], REMOVEFILTERS ( Geo ), Geo[Role] = "Country", REMOVEFILTERS ( Calendar ) )
 			RETURN
 			    "€" & FORMAT ( g, "#,0" ) & " in " & gy & ", " & FORMAT ( pps, "0" ) & " % of the EU average in purchasing power. Unemployment "
@@ -1507,7 +1514,7 @@ def test_report_text_measures():
 	/// Education paragraph: tertiary students per 1,000 residents against the country and the
 	/// EU; share of women among tertiary students.
 	measure 'Education paragraph' =
-			VAR d = CALCULATE ( [_Ref date Enrolment], REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), REMOVEFILTERS ( ISCED ), ISCED[Group] = "ISCED 5-8" )
+			VAR d = CALCULATE ( [_Ref date Enrolment], REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( ISCED ), ISCED[Group] = "ISCED 5-8" )
 			VAR t = CALCULATE ( [Tertiary students per 1,000 residents], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
 			VAR tc = CALCULATE ( [Tertiary students per 1,000 residents], REMOVEFILTERS ( Geo ), Geo[Role] = "Country", REMOVEFILTERS ( Calendar ) )
 			VAR te = CALCULATE ( [Tertiary students per 1,000 residents], REMOVEFILTERS ( Geo ), Geo[Role] = "EU", REMOVEFILTERS ( Calendar ) )
@@ -1524,17 +1531,17 @@ def test_report_text_measures():
 
 	/// Provinces headline, accent part: the province with the highest value.
 	measure 'Provinces headline accent' =
-			VAR Rows = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Geo[Name] ), "@v", [Province indicator value] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Province" )
+			VAR Rows = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Geo[Name] ), "@v", [Province indicator value] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Province", REMOVEFILTERS ( Calendar ) )
 			RETURN MAXX ( TOPN ( 1, FILTER ( Rows, NOT ISBLANK ( [@v] ) ), [@v], DESC ), Geo[Name] )
 		displayFolder: Report text
 
 	/// Provinces paragraph: highest and lowest province and the regional value.
 	measure 'Provinces paragraph' =
-			VAR Rows = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Geo[Name] ), "@v", [Province indicator value], "@label", [Province indicator label] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Province" )
+			VAR Rows = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Geo[Name] ), "@v", [Province indicator value], "@label", [Province indicator label] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Province", REMOVEFILTERS ( Calendar ) )
 			VAR Valid = FILTER ( Rows, NOT ISBLANK ( [@v] ) )
 			VAR Top = TOPN ( 1, Valid, [@v], DESC )
 			VAR Bottom = TOPN ( 1, Valid, [@v], ASC )
-			VAR Region = CALCULATE ( [Province indicator label], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
+			VAR Region = CALCULATE ( [Province indicator label], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
 			RETURN
 			    MAXX ( Top, Geo[Name] ) & " " & MAXX ( Top, [@label] ) & ", against " & MAXX ( Bottom, [@label] ) & " in " & MAXX ( Bottom, Geo[Name] )
 			        & ". The regional figure is " & Region & "."
@@ -1546,7 +1553,7 @@ def test_report_text_measures():
 
 	/// Business headline, accent part.
 	measure 'Business headline accent' =
-			VAR Total = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Sector ) )
+			VAR Total = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Sector ), REMOVEFILTERS ( Calendar ) )
 			RETURN IF ( [_Business claim], "services grow", IF ( Total < 0, "−", "+" ) & FORMAT ( ABS ( Total ) * 100, "0.0" ) & " % in total" )
 		displayFolder: Report text
 
@@ -1555,14 +1562,14 @@ def test_report_text_measures():
 			VAR T =
 			    CALCULATETABLE (
 			        ADDCOLUMNS ( FILTER ( VALUES ( Sector[Code] ), Sector[Code] <> "X" ), "@name", CALCULATE ( SELECTEDVALUE ( Sector[ShortName] ) ), "@size", [Active companies], "@c", [Active companies change %] ),
-			        REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Sector )
+			        REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Sector ), REMOVEFILTERS ( Calendar )
 			    )
 			VAR Largest = TOPN ( 10, T, [@size], DESC )
 			VAR Best = TOPN ( 1, Largest, [@c], DESC )
 			VAR Worst = TOPN ( 1, Largest, [@c], ASC )
 			VAR b = MAXX ( Best, [@c] )
 			VAR w = MAXX ( Worst, [@c] )
-			VAR Total = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Sector ) )
+			VAR Total = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Sector ), REMOVEFILTERS ( Calendar ) )
 			VAR FirstYear = YEAR ( CALCULATE ( MIN ( Companies[Date] ), REMOVEFILTERS (), Calendar[MonthNumber] = 12 ) )
 			VAR LastYear = YEAR ( CALCULATE ( MAX ( Companies[Date] ), REMOVEFILTERS (), Calendar[MonthNumber] = 12 ) )
 			RETURN
@@ -1579,9 +1586,9 @@ def test_report_text_measures():
 	measure 'Benchmark headline lead' =
 			VAR n = [_Peer count]
 			VAR R = { [_Rank population change], [_Rank aged 65+], [_Rank death rate], [_Rank GDP], [_Rank unemployment], [_Rank tertiary] }
-			VAR Mid = COUNTROWS ( FILTER ( R, [Value] > 1 && [Value] < n ) )
+			VAR MidCount = COUNTROWS ( FILTER ( R, [Value] > 1 && [Value] < n ) )
 			VAR Extremes = COUNTROWS ( FILTER ( R, [Value] = 1 || [Value] = n ) )
-			RETURN IF ( Extremes > 0 && Mid >= 3, "Mid-table, but", "Among its peers," )
+			RETURN IF ( Extremes > 0 && MidCount >= 3, "Mid-table, but", "Among its peers," )
 		displayFolder: Report text
 
 	/// Benchmark headline, accent part: the indicators where the focus region is lowest, else
@@ -1643,15 +1650,17 @@ def test_report_text_measures():
 	/// Province detail paragraph: population and its five-year change, companies per 1,000
 	/// residents and their change since the first December.
 	measure 'Province detail paragraph' =
-			VAR Pop = [Population]
-			VAR Change = [Population change 5y %]
-			VAR Firms = [Active companies change %]
+			VAR Pop = CALCULATE ( [Population], REMOVEFILTERS ( Calendar ) )
+			VAR Change = CALCULATE ( [Population change 5y %], REMOVEFILTERS ( Calendar ) )
+			VAR Firms = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Calendar ) )
+			VAR PerThousand = CALCULATE ( [Companies per 1,000 residents], REMOVEFILTERS ( Calendar ) )
+			VAR RefYear = YEAR ( CALCULATE ( [_Ref date Population], REMOVEFILTERS ( Calendar ) ) )
 			VAR FirstYear = YEAR ( CALCULATE ( MIN ( Companies[Date] ), REMOVEFILTERS (), Calendar[MonthNumber] = 12 ) )
 			RETURN
 			    IF (
 			        SELECTEDVALUE ( Geo[Role] ) = "Province",
-			        "Population on 1 January " & YEAR ( [_Ref date Population] ) & ": " & FORMAT ( Pop, "#,0" ) & " (" & IF ( Change < 0, "−", "+" ) & FORMAT ( ABS ( Change ) * 100, "0.0" )
-			            & " % in 5 years). Active companies: " & FORMAT ( [Companies per 1,000 residents], "0.0" ) & " per 1,000 residents, "
+			        "Population on 1 January " & RefYear & ": " & FORMAT ( Pop, "#,0" ) & " (" & IF ( Change < 0, "−", "+" ) & FORMAT ( ABS ( Change ) * 100, "0.0" )
+			            & " % in 5 years). Active companies: " & FORMAT ( PerThousand, "0.0" ) & " per 1,000 residents, "
 			            & IF ( Firms < 0, "−", "+" ) & FORMAT ( ABS ( Firms ) * 100, "0.0" ) & " % since December " & FirstYear & "."
 			    )
 		displayFolder: Report text
@@ -1707,7 +1716,7 @@ git push -u origin powerbi-phase-b
 | Measure | Expected |
 |---|---|
 | Overview headline lead / accent | An older, smaller region with / fewer firms |
-| Overview paragraph | Residents fell from about 1.55 million in 2014 to 1.48 million in 2025. 26.6 % are aged 65 or over. Active companies are 17.1 % fewer than in December 2009. |
+| Overview paragraph | Residents fell from 1.55 million in 2014 to 1.48 million in 2025. 26.6 % are aged 65 or over. Active companies are 17.1 % fewer than in December 2009. |
 | Population headline lead | One resident in four is |
 | Population paragraph | 26.6 % on 1 January 2025, against 24.7 % in Italy and 22.0 % in the EU. Among the over-85s there are 1.8 women for every man. |
 | Economy headline accent | €3,200 below Italy |
@@ -3032,9 +3041,9 @@ def business() -> Page:
     v.append(
         chart("mape", "clusteredBarChart", RIGHT_X, 536, HALF_W, 152,
               "Forecast error on the 24-month test (MAPE)", C("ForecastAccuracy", "Method"),
-              [M("MAPE")],
+              [M("Forecast MAPE")],
               "Bar chart of the mean absolute percentage error of SARIMA and two naive forecasts",
-              sort=(M("MAPE"), "Ascending"))
+              sort=(M("Forecast MAPE"), "Ascending"))
     )
     return Page("business", "Business deep dive", v)
 

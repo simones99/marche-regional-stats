@@ -207,7 +207,7 @@ def test_report_visual_measures():
         "Active companies index",
         "Sector change, ten largest",
         "Seasonal effect",
-        "MAPE",
+        "Forecast MAPE",
         "Forecast chart actual",
         "Forecast chart forecast",
         "Latest period",
