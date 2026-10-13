@@ -173,7 +173,7 @@ git commit -m "Project the province outlines into a 400 px box for the report ma
 - Modify: `src/marche_stats/powerbi_export.py`
 - Test: `tests/test_powerbi_export.py`
 
-- [ ] **Step 1: Write the failing test.** Append:
+- [x] **Step 1: Write the failing test.** Append:
 
 ```python
 def test_seasonality_table_has_twelve_months(fitted):
@@ -189,9 +189,9 @@ def test_seasonality_table_has_twelve_months(fitted):
     assert abs(table["effect"].sum()) < 0.02 * series.mean()
 ```
 
-- [ ] **Step 2: Run it.** `pytest tests/test_powerbi_export.py::test_seasonality_table_has_twelve_months -v`. Expected: FAIL with `AttributeError: … has no attribute 'seasonality_table'`.
+- [x] **Step 2: Run it.** `pytest tests/test_powerbi_export.py::test_seasonality_table_has_twelve_months -v`. Expected: FAIL with `AttributeError: … has no attribute 'seasonality_table'`.
 
-- [ ] **Step 3: Implement.** Add after `province_shapes_table`:
+- [x] **Step 3: Implement.** Add after `province_shapes_table`:
 
 ```python
 def seasonality_table(series: pd.Series) -> pd.DataFrame:
@@ -207,9 +207,9 @@ def seasonality_table(series: pd.Series) -> pd.DataFrame:
     )
 ```
 
-- [ ] **Step 4: Run it.** Same command. Expected: PASS.
+- [x] **Step 4: Run it.** Same command. Expected: PASS.
 
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
 
 ```bash
 ruff check src tests && ruff format src tests
@@ -227,7 +227,7 @@ git commit -m "Export the monthly seasonal profile for the business page"
 - Modify: `tests/test_powerbi_export.py` (`test_cli_export_powerbi_writes_three_files`)
 - Create: `powerbi/data/province_shapes.csv`, `powerbi/data/seasonality.csv`
 
-- [ ] **Step 1: Update the CLI test first.** Rename `test_cli_export_powerbi_writes_three_files` to `test_cli_export_powerbi_writes_five_files`, add `"--eurostat-dir", str(FIXTURES),` to its argument list after the `--companies` pair, and replace its `names` assertion with:
+- [x] **Step 1: Update the CLI test first.** Rename `test_cli_export_powerbi_writes_three_files` to `test_cli_export_powerbi_writes_five_files`, add `"--eurostat-dir", str(FIXTURES),` to its argument list after the `--companies` pair, and replace its `names` assertion with:
 
 ```python
     assert names == [
@@ -243,9 +243,9 @@ git commit -m "Export the monthly seasonal profile for the business page"
     assert list(seasonality["month"]) == list(range(1, 13))
 ```
 
-- [ ] **Step 2: Run it.** `pytest tests/test_powerbi_export.py -v -k cli`. Expected: FAIL (three files written).
+- [x] **Step 2: Run it.** `pytest tests/test_powerbi_export.py -v -k cli`. Expected: FAIL (three files written).
 
-- [ ] **Step 3: Implement `build`.** Replace `build` in `powerbi_export.py` with:
+- [x] **Step 3: Implement `build`.** Replace `build` in `powerbi_export.py` with:
 
 ```python
 def build(companies_csv: Path, out_dir: Path, geojson: Path, holdout: int = 24) -> dict[str, Path]:
@@ -272,7 +272,7 @@ def build(companies_csv: Path, out_dir: Path, geojson: Path, holdout: int = 24) 
     return paths
 ```
 
-- [ ] **Step 4: Pass the GeoJSON from the CLI.** In `cli.py`, add after `args = parser.parse_args(argv)`:
+- [x] **Step 4: Pass the GeoJSON from the CLI.** In `cli.py`, add after `args = parser.parse_args(argv)`:
 
 ```python
     geojson = args.eurostat_dir / "marche_nuts3.geojson"
@@ -284,9 +284,9 @@ and change both `powerbi_export.build(...)` calls to:
         powerbi_export.build(args.companies, args.powerbi / "data", geojson, holdout=args.holdout)
 ```
 
-- [ ] **Step 5: Run the tests.** `pytest -q`. Expected: all pass.
+- [x] **Step 5: Run the tests.** `pytest -q`. Expected: all pass.
 
-- [ ] **Step 6: Regenerate the real files.** `data/raw/` holds the companies file and `marche_nuts3.geojson` (run `marche-stats download` if not).
+- [x] **Step 6: Regenerate the real files.** `data/raw/` holds the companies file and `marche_nuts3.geojson` (run `marche-stats download` if not).
 
 ```bash
 marche-stats export-powerbi
@@ -294,7 +294,7 @@ marche-stats export-powerbi
 
 Check: `powerbi/data/seasonality.csv` has the effects of `docs/results.md`, section 3 (Jan −936, Feb −967, …, Dec +71, written as `-936.0000` etc.). `forecast.csv`, `forecast_accuracy.csv` and `reconciliation.csv` are unchanged (`git diff --stat powerbi/data` lists only the two new files).
 
-- [ ] **Step 7: Commit.**
+- [x] **Step 7: Commit.**
 
 ```bash
 ruff check src tests && ruff format --check src tests
