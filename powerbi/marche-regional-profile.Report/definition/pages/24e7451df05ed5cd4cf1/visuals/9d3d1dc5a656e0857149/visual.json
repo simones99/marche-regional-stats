@@ -42,11 +42,12 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Students (women, negative)"
+                  "Property": "Students (women, tertiary, negative)"
                 }
               },
-              "queryRef": "_Measures.Students (women, negative)",
-              "nativeQueryRef": "Students (women, negative)"
+              "queryRef": "_Measures.Students (women, tertiary, negative)",
+              "nativeQueryRef": "Students (women, tertiary, negative)",
+              "displayName": "Women, tertiary"
             },
             {
               "field": {
@@ -56,11 +57,42 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Students (men)"
+                  "Property": "Students (women, other levels, negative)"
                 }
               },
-              "queryRef": "_Measures.Students (men)",
-              "nativeQueryRef": "Students (men)"
+              "queryRef": "_Measures.Students (women, other levels, negative)",
+              "nativeQueryRef": "Students (women, other levels, negative)",
+              "displayName": "Women, other levels"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Students (men, tertiary)"
+                }
+              },
+              "queryRef": "_Measures.Students (men, tertiary)",
+              "nativeQueryRef": "Students (men, tertiary)",
+              "displayName": "Men, tertiary"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Students (men, other levels)"
+                }
+              },
+              "queryRef": "_Measures.Students (men, other levels)",
+              "nativeQueryRef": "Students (men, other levels)",
+              "displayName": "Men, other levels"
             }
           ]
         }
@@ -118,7 +150,103 @@
         }
       ]
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "dataPoint": [
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#00753A'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Measures.Students (women, tertiary, negative)"
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#6B746E'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Measures.Students (women, other levels, negative)"
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#00753A'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Measures.Students (men, tertiary)"
+          }
+        },
+        {
+          "properties": {
+            "fill": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#6B746E'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Measures.Students (men, other levels)"
+          }
+        }
+      ],
+      "categoryAxis": [
+        {
+          "properties": {
+            "preferredCategoryWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "8D"
+                }
+              }
+            },
+            "innerPadding": {
+              "expr": {
+                "Literal": {
+                  "Value": "20L"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   },
   "filterConfig": {
     "filters": [

@@ -98,7 +98,7 @@ Every page has the navigation, an eyebrow with the page name, a headline whose l
 ### 2 · Population & Health
 
 - Story: headline "One resident in four is **65 or over**"; pyramid-year slicer; line chart of the crude death rate 2019–2024, Marche against Italy and EU.
-- Dashboard: age pyramid of the focus region (men left, women right, five-year bands, bands aged 65+ in the accent); ranked bars of the share aged 65+ (focus, peers, Italy, EU).
+- Dashboard: age pyramid of the focus region over the full column height (men left, women right, five-year bands, bands aged 65+ in the accent). Desktop needs about 23 px per band, so the 19 bands leave no room for the ranked bars of the share aged 65+ planned below it; Overview (KPI) and Benchmark compare that share instead.
 
 ### 3 · Economy & Labour
 

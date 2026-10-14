@@ -4,5 +4,62 @@
   "displayName": "Population & Health",
   "displayOption": "FitToPage",
   "height": 720,
-  "width": 1280
+  "width": 1280,
+  "visualInteractions": [
+    {
+      "source": "38b27ed7394668d247e3",
+      "target": "e287aa631e230715613c",
+      "type": "NoFilter"
+    },
+    {
+      "source": "38b27ed7394668d247e3",
+      "target": "577d57a47c91e96ccf92",
+      "type": "NoFilter"
+    },
+    {
+      "source": "38b27ed7394668d247e3",
+      "target": "32ec4a5fe0b32538cb47",
+      "type": "DataFilter"
+    },
+    {
+      "source": "38b27ed7394668d247e3",
+      "target": "da0b95daeb97b8489786",
+      "type": "NoFilter"
+    },
+    {
+      "source": "38b27ed7394668d247e3",
+      "target": "b2b7c516666a11000c87",
+      "type": "NoFilter"
+    },
+    {
+      "source": "38b27ed7394668d247e3",
+      "target": "45ef657f8e1c1615912c",
+      "type": "NoFilter"
+    },
+    {
+      "source": "38b27ed7394668d247e3",
+      "target": "1dc8f5d36e5d23301bff",
+      "type": "NoFilter"
+    },
+    {
+      "source": "38b27ed7394668d247e3",
+      "target": "cb37a406220ec5772b91",
+      "type": "NoFilter"
+    },
+    {
+      "source": "38b27ed7394668d247e3",
+      "target": "50afc28286fa0ea9a50e",
+      "type": "NoFilter"
+    },
+    {
+      "source": "38b27ed7394668d247e3",
+      "target": "9d3aec10a458f5c62a2d",
+      "type": "NoFilter"
+    },
+    {
+      "source": "38b27ed7394668d247e3",
+      "target": "7099ee78a955563f729d",
+      "type": "NoFilter"
+    }
+  ]
 }

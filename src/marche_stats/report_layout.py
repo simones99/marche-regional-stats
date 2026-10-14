@@ -20,7 +20,7 @@ from marche_stats.pbir import (
     solid,
 )
 
-ACCENT, TEXT, MUTED = "#00753A", "#15201A", "#4F5A53"
+ACCENT, TEXT, MUTED, GREY = "#00753A", "#15201A", "#4F5A53", "#6B746E"
 EVERY = {"id": "default"}  # the "All" series selector; shapes and new cards read it
 BASE, SURFACE, RULE = "#F5F6F3", "#ECEEEA", "#C9CEC9"
 NAVIGATOR_TYPE = "pageNavigator"
@@ -270,6 +270,7 @@ def chart(
     tooltips: list[Field] | None = None,
     filters: tuple[dict, ...] = (),
     sort: tuple[Field, str] | None = None,
+    objects: dict | None = None,
 ) -> Visual:
     roles: dict[str, list[Field]] = {"Category": [category], "Y": values}
     if series:
@@ -277,8 +278,37 @@ def chart(
     if tooltips:
         roles["Tooltips"] = tooltips
     return Visual(
-        key, kind, x, y, w, h, roles=roles, title=title, alt=alt, filters=list(filters), sort=sort
+        key,
+        kind,
+        x,
+        y,
+        w,
+        h,
+        roles=roles,
+        title=title,
+        alt=alt,
+        objects=objects,
+        filters=list(filters),
+        sort=sort,
     )
+
+
+def two_sided_bars(left: tuple[str, str], right: tuple[str, str]) -> tuple[list, dict]:
+    """Values and formatting of a pyramid or butterfly whose highlighted rows are in the accent.
+
+    Desktop offers no fx colour on a bar chart with two measures, so each side is split into a
+    highlighted and a plain measure (one of them blank in every row), each with a fixed colour.
+    """
+    values = [M(name) for name in (*left, *right)]
+    colours = [
+        {
+            "properties": {"fill": solid(ACCENT if i % 2 == 0 else GREY)},
+            "selector": {"metadata": f"{f.table}.{f.name}"},
+        }
+        for i, f in enumerate(values)
+    ]
+    axis = {"innerPadding": integer(20)}
+    return values, {"dataPoint": colours, "categoryAxis": [{"properties": axis}]}
 
 
 def ranked_bars(
@@ -614,6 +644,10 @@ def population() -> Page:
         )
     )
     v.append(source("Eurostat demo_r_pjangrp3, demo_r_magec3"))
+    pyramid, pyramid_format = two_sided_bars(
+        ("Population (men aged 65+, negative)", "Population (men under 65, negative)"),
+        ("Population (women aged 65+)", "Population (women under 65)"),
+    )
     v.append(
         chart(
             "pyramid",
@@ -621,26 +655,15 @@ def population() -> Page:
             DASH_X,
             32,
             DASH_W,
-            352,
+            656,  # Desktop needs about 23 px per band to show all 19 without a scroll bar
             "Residents by age and sex, 1 January (men left, women right)",
             C("AgeGroup", "Name"),
-            [M("Population (men, negative)"), M("Population (women)")],
+            pyramid,
             "Population pyramid of the focus region by five-year age band"
             "; bands aged 65 and over in the accent colour",
             filters=(FOCUS, in_filter(C("AgeGroup", "IsBand"), [True])),
             sort=(C("AgeGroup", "Name"), "Descending"),
-        )
-    )
-    v.append(
-        ranked_bars(
-            "aged-65",
-            DASH_X,
-            408,
-            DASH_W,
-            280,
-            "Share aged 65+",
-            "Share aged 65+",
-            "Bar chart of the share aged 65 and over for the focus region, peers, country and EU",
+            objects=pyramid_format,
         )
     )
     return Page("population", "Population & Health", v)
@@ -735,6 +758,10 @@ def education() -> Page:
             horizontal=True,
         )
     )
+    butterfly, butterfly_format = two_sided_bars(
+        ("Students (women, tertiary, negative)", "Students (women, other levels, negative)"),
+        ("Students (men, tertiary)", "Students (men, other levels)"),
+    )
     v.append(
         chart(
             "butterfly",
@@ -745,11 +772,12 @@ def education() -> Page:
             304,
             "Students enrolled by level and sex (women left, men right)",
             C("ISCED", "ShortName"),
-            [M("Students (women, negative)"), M("Students (men)")],
+            butterfly,
             "Butterfly chart of students enrolled in the focus region by level and sex"
             "; tertiary levels in the accent colour",
             filters=(FOCUS, in_filter(C("ISCED", "IsTotal"), [False])),
             sort=(C("ISCED", "ShortName"), "Ascending"),
+            objects=butterfly_format,
         )
     )
     v.append(

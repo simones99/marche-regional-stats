@@ -5,5 +5,6 @@
   "displayOption": "FitToPage",
   "height": 240,
   "width": 320,
-  "visibility": "HiddenInViewMode"
+  "visibility": "HiddenInViewMode",
+  "type": "Tooltip"
 }

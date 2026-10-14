@@ -221,6 +221,22 @@ def test_navigator_leaves_out_the_hidden_pages():
                 assert pages["showHiddenPages"] == off, page["displayName"]
 
 
+def test_two_sided_bars_colour_each_series():
+    # Desktop offers no fx colour on a bar chart with two measures: the pyramid and the
+    # butterfly split each side into an accent and a grey measure with a fixed colour.
+    accent = pbir.solid(report_layout.ACCENT)
+    for page_key, key in (("population", "pyramid"), ("education", "butterfly")):
+        written = {v["name"]: v for _, vs in layout_pages() for v in vs}
+        v = written[pbir.object_id(page_key, key)]["visual"]
+        refs = [p["queryRef"] for p in v["query"]["queryState"]["Y"]["projections"]]
+        assert len(refs) == 4, key
+        points = v["objects"]["dataPoint"]
+        fills = {d["selector"]["metadata"]: d["properties"]["fill"] for d in points}
+        assert set(fills) == set(refs), key
+        assert [fills[r] == accent for r in refs] == [True, False, True, False], key
+        assert "innerPadding" in v["objects"]["categoryAxis"][0]["properties"], key
+
+
 def test_pages_use_the_palette_and_the_font_minimum():
     for page, visuals in layout_pages():
         for v in visuals:
