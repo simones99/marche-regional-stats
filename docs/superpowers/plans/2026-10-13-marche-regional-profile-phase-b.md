@@ -3853,7 +3853,7 @@ git commit -m "Scaffold the provinces, business, benchmark and about pages"
 **Files:**
 - Modify: `src/marche_stats/report_layout.py`
 
-- [ ] **Step 1: Add the hidden pages** before `def pages()`. The rows of the `Province indicator` field parameter have the same names as its measures, so `PROVINCE_MEASURES` (Task 17) also names the filter values:
+- [x] **Step 1: Add the hidden pages** before `def pages()`. The rows of the `Province indicator` field parameter have the same names as its measures, so `PROVINCE_MEASURES` (Task 17) also names the filter values:
 
 ```python
 def province_detail() -> Page:
@@ -3919,9 +3919,11 @@ def province_tooltip() -> Page:
 
 and change `pages()` to append `province_detail(), area_tooltip(), province_tooltip()`.
 
-- [ ] **Step 2: Scaffold and test.** Desktop closed: `marche-stats scaffold-report`, then `pytest -q`. Expected: three new pages; all tests pass.
+  Deviation (14 October 2026): Task 15 showed that a 48 px classic card cuts the gap lines, so the province gap cards are `text_card` (new card, 64 px, `GAP_H`), the KPI rows step by `KPI_H + GAP_H + 8` (32 and 192), and the sector chart starts at 352 and is 336 px high.
 
-- [ ] **Step 3: Commit.**
+- [x] **Step 2: Scaffold and test.** Desktop closed: `marche-stats scaffold-report`, then `pytest -q`. Expected: three new pages; all tests pass.
+
+- [x] **Step 3: Commit.**
 
 ```bash
 ruff check src tests && ruff format src tests

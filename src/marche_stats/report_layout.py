@@ -1120,6 +1120,128 @@ def about() -> Page:
     return Page("about", "About", v)
 
 
+def province_detail() -> Page:
+    v = chrome("Province detail", "Province detail")
+    v.append(
+        chart(
+            "index",
+            "lineChart",
+            STORY_X,
+            SLOT_Y,
+            STORY_W,
+            SLOT_H,
+            "Active companies, December 2009 = 100",
+            C("Calendar", "Year"),
+            [M("Active companies index")],
+            "Line chart of the province's active companies as an index, first December = 100",
+        )
+    )
+    v.append(source("Eurostat, Chamber of Commerce of the Marche"))
+    for i, name in enumerate(PROVINCE_MEASURES):
+        only = in_filter(C("Province indicator", "Province indicator"), [name])
+        x, y = THIRDS[i % 3], 32 + (i // 3) * (KPI_H + GAP_H + 8)
+        v.append(
+            card(
+                f"kpi-{i}",
+                x,
+                y,
+                THIRD_W,
+                KPI_H,
+                "Province indicator value",
+                size=24,
+                title=name,
+                alt=f"{name} of the province",
+                filters=(only,),
+            )
+        )
+        v.append(
+            text_card(
+                f"kpi-{i}-gap",
+                x,
+                y + KPI_H,
+                THIRD_W,
+                GAP_H,
+                "Province gap to region",
+                M("Province gap to region"),
+                (only,),
+            )
+        )
+    v.append(
+        chart(
+            "sectors",
+            "clusteredBarChart",
+            DASH_X,
+            352,
+            DASH_W,
+            336,
+            "Change by sector since December 2009",
+            C("Sector", "ShortName"),
+            [M("Sector change, ten largest")],
+            "Bar chart of the change in active companies in the province for its ten largest"
+            " ATECO sections",
+            sort=(M("Sector change, ten largest"), "Descending"),
+        )
+    )
+    return Page("province-detail", "Province detail", v, hidden=True)
+
+
+def area_tooltip() -> Page:
+    return Page(
+        "area-tooltip",
+        "Area tooltip",
+        [
+            card("name", 16, 16, 288, 32, "Area name", alt="Area"),
+            Visual(
+                "values",
+                "multiRowCard",
+                16,
+                56,
+                288,
+                136,
+                roles={"Values": [M(m) for m in BENCHMARK_MEASURES]},
+                alt="Indicators of the area",
+            ),
+            card(
+                "flags",
+                16,
+                200,
+                288,
+                24,
+                "Flags text",
+                size=10.5,
+                color=MUTED,
+                alt="Eurostat flags",
+            ),
+        ],
+        hidden=True,
+        width=320,
+        height=240,
+    )
+
+
+def province_tooltip() -> Page:
+    return Page(
+        "province-tooltip",
+        "Province tooltip",
+        [
+            card("name", 16, 16, 288, 32, "Area name", alt="Province"),
+            Visual(
+                "values",
+                "multiRowCard",
+                16,
+                56,
+                288,
+                168,
+                roles={"Values": [M(m) for m in PROVINCE_MEASURES]},
+                alt="Indicators of the province",
+            ),
+        ],
+        hidden=True,
+        width=320,
+        height=240,
+    )
+
+
 def pages() -> list[Page]:
     return [
         overview(),
@@ -1130,6 +1252,9 @@ def pages() -> list[Page]:
         business(),
         benchmark(),
         about(),
+        province_detail(),
+        area_tooltip(),
+        province_tooltip(),
     ]
 
 
