@@ -3550,7 +3550,7 @@ git commit -m "Match the PBIR writer to the visual JSON that Desktop saves"
 **Files:**
 - Modify: `src/marche_stats/report_layout.py`
 
-- [ ] **Step 1: Add the three page functions** before `def pages()`:
+- [x] **Step 1: Add the three page functions** before `def pages()`:
 
 ```python
 def population() -> Page:
@@ -3639,11 +3639,11 @@ def education() -> Page:
 
 and change `pages()` to `return [overview(), population(), economy(), education()]`.
 
-- [ ] **Step 2: Scaffold.** Desktop closed: `marche-stats scaffold-report`. Expected: `wrote Population & Health`, `wrote Economy & Labour`, `wrote Education` (Overview is skipped).
+- [x] **Step 2: Scaffold.** Desktop closed: `marche-stats scaffold-report`. Expected: `wrote Population & Health`, `wrote Economy & Labour`, `wrote Education` (Overview is skipped).
 
-- [ ] **Step 3: Run the tests.** `pytest -q`. Expected: all pass.
+- [x] **Step 3: Run the tests.** `pytest -q`. Expected: all pass.
 
-- [ ] **Step 4: Commit.**
+- [x] **Step 4: Commit.**
 
 ```bash
 ruff check src tests && ruff format src tests

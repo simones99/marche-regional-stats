@@ -581,8 +581,195 @@ def spike() -> Page:
     return Page("spike", "Spike", visuals, hidden=True)
 
 
+def population() -> Page:
+    v = chrome("Population", "Population & Health")
+    v.append(
+        slicer(
+            "year",
+            STORY_X,
+            SLOT_Y,
+            160,
+            64,
+            C("Calendar", "Year"),
+            "Year of the age pyramid",
+            mode="Dropdown",
+            header=True,
+        )
+    )
+    v.append(
+        chart(
+            "deaths",
+            "lineChart",
+            STORY_X,
+            424,
+            STORY_W,
+            224,
+            "Deaths per 1,000 residents",
+            C("Calendar", "Year"),
+            [M("Crude death rate per 1,000")],
+            "Line chart of the crude death rate by year"
+            " for the focus region, the country and the EU",
+            series=C("Geo", "Name"),
+            filters=(LINES,),
+        )
+    )
+    v.append(source("Eurostat demo_r_pjangrp3, demo_r_magec3"))
+    v.append(
+        chart(
+            "pyramid",
+            "barChart",
+            DASH_X,
+            32,
+            DASH_W,
+            352,
+            "Residents by age and sex, 1 January (men left, women right)",
+            C("AgeGroup", "Name"),
+            [M("Population (men, negative)"), M("Population (women)")],
+            "Population pyramid of the focus region by five-year age band"
+            "; bands aged 65 and over in the accent colour",
+            filters=(FOCUS, in_filter(C("AgeGroup", "IsBand"), [True])),
+            sort=(C("AgeGroup", "Name"), "Descending"),
+        )
+    )
+    v.append(
+        ranked_bars(
+            "aged-65",
+            DASH_X,
+            408,
+            DASH_W,
+            280,
+            "Share aged 65+",
+            "Share aged 65+",
+            "Bar chart of the share aged 65 and over for the focus region, peers, country and EU",
+        )
+    )
+    return Page("population", "Population & Health", v)
+
+
+def economy() -> Page:
+    v = chrome("Economy", "Economy & Labour")
+    v.append(
+        ranked_bars(
+            "gdp-rank",
+            STORY_X,
+            SLOT_Y,
+            STORY_W,
+            SLOT_H,
+            "GDP per inhabitant, euro",
+            "GDP per inhabitant (EUR)",
+            "Bar chart of GDP per inhabitant for the focus region, peers, country and EU",
+        )
+    )
+    v.append(source("Eurostat nama_10r_2gdp, lfst_r_lfu3rt"))
+    v.append(
+        textbox(
+            "legend",
+            DASH_X,
+            32,
+            DASH_W,
+            24,
+            "●  Focus region, solid      □  Country, dashed      ▲  EU-27, dotted",
+        )
+    )
+    v.append(
+        chart(
+            "gdp",
+            "lineChart",
+            DASH_X,
+            80,
+            DASH_W,
+            288,
+            "GDP per inhabitant, euro",
+            C("Calendar", "Year"),
+            [M("GDP per inhabitant (EUR)")],
+            "Line chart of GDP per inhabitant by year for the focus region, the country and the EU",
+            series=C("Geo", "Name"),
+            filters=(LINES,),
+        )
+    )
+    v.append(
+        chart(
+            "unemployment",
+            "lineChart",
+            DASH_X,
+            392,
+            DASH_W,
+            296,
+            "Unemployment rate, ages 15-74",
+            C("Calendar", "Year"),
+            [M("Unemployment rate")],
+            "Line chart of the unemployment rate by year"
+            " for the focus region, the country and the EU",
+            series=C("Geo", "Name"),
+            filters=(LINES,),
+        )
+    )
+    return Page("economy", "Economy & Labour", v)
+
+
+def education() -> Page:
+    v = chrome("Education", "Education")
+    v.append(
+        image(
+            "photo",
+            STORY_X,
+            SLOT_Y,
+            STORY_W,
+            SLOT_H,
+            "photo-education-urbino.jpg",
+            "Urbino's historic centre with the cathedral dome and the towers of the Ducal Palace",
+        )
+    )
+    v.append(source("Eurostat educ_uoe_enra11 · Photo: Fabio Poggi, CC BY 3.0"))
+    v.append(textbox("level-label", DASH_X, 40, 120, 24, "ISCED level"))
+    v.append(
+        slicer(
+            "level",
+            800,
+            32,
+            448,
+            40,
+            C("ISCED", "Group"),
+            "Filter by education level",
+            filters=(in_filter(C("ISCED", "Group"), ["ISCED 0-3", "ISCED 4", "ISCED 5-8"]),),
+            horizontal=True,
+        )
+    )
+    v.append(
+        chart(
+            "butterfly",
+            "barChart",
+            DASH_X,
+            96,
+            DASH_W,
+            304,
+            "Students enrolled by level and sex (women left, men right)",
+            C("ISCED", "ShortName"),
+            [M("Students (women, negative)"), M("Students (men)")],
+            "Butterfly chart of students enrolled in the focus region by level and sex"
+            "; tertiary levels in the accent colour",
+            filters=(FOCUS, in_filter(C("ISCED", "IsTotal"), [False])),
+            sort=(C("ISCED", "ShortName"), "Ascending"),
+        )
+    )
+    v.append(
+        ranked_bars(
+            "tertiary",
+            DASH_X,
+            424,
+            DASH_W,
+            264,
+            "Tertiary students per 1,000 residents",
+            "Tertiary students per 1,000 residents",
+            "Bar chart of tertiary students per 1,000 residents"
+            " for the focus region, peers, country and EU",
+        )
+    )
+    return Page("education", "Education", v)
+
+
 def pages() -> list[Page]:
-    return [overview()]
+    return [overview(), population(), economy(), education()]
 
 
 PAGE_NAMES = [p.name for p in pages()]
