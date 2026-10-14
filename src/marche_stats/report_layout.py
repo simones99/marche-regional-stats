@@ -768,8 +768,369 @@ def education() -> Page:
     return Page("education", "Education", v)
 
 
+PROVINCE_MEASURES = [
+    "Population change 5y %",
+    "Share aged 65+",
+    "Crude death rate per 1,000",
+    "Companies per 1,000 residents",
+    "GDP per inhabitant (EUR)",
+]
+BENCHMARK_MEASURES = [
+    "Population change 5y %",
+    "Share aged 65+",
+    "Crude death rate per 1,000",
+    "GDP per inhabitant (EUR)",
+    "Unemployment rate",
+    "Tertiary students per 1,000 residents",
+]
+
+
+def provinces() -> Page:
+    v = chrome("Provinces", "Provinces")
+    v.append(
+        slicer(
+            "indicator",
+            STORY_X,
+            SLOT_Y,
+            STORY_W,
+            SLOT_H,
+            C("Province indicator", "Province indicator"),
+            "Indicator shown on the map",
+            header=True,
+        )
+    )
+    v.append(source("Eurostat, Chamber of Commerce · GISCO boundaries, © EuroGeographics"))
+    v.append(
+        measure_image(
+            "map",
+            DASH_X,
+            32,
+            DASH_W,
+            320,
+            "Map SVG",
+            "Map of the provinces shaded by the selected indicator; each province shows its name"
+            " and value",
+        )
+    )
+    v.append(
+        table(
+            "table",
+            DASH_X,
+            376,
+            DASH_W,
+            280,
+            "All indicators by province",
+            [C("Geo", "Name"), *[M(m) for m in PROVINCE_MEASURES]],
+            "Table of the five indicators by province",
+            filters=(PROVINCES,),
+        )
+    )
+    v.append(
+        textbox(
+            "drill-hint",
+            DASH_X,
+            664,
+            DASH_W,
+            24,
+            "Right-click a province › Drill through › Province detail",
+        )
+    )
+    return Page("provinces", "Provinces", v)
+
+
+def business() -> Page:
+    v = chrome("Business", "Business deep dive · focus region only")
+    v.append(
+        chart(
+            "index",
+            "lineChart",
+            STORY_X,
+            SLOT_Y,
+            STORY_W,
+            SLOT_H,
+            "Active companies by province, December 2009 = 100",
+            C("Calendar", "Year"),
+            [M("Active companies index")],
+            "Line chart of active companies by province as an index, first December = 100; one"
+            " marker shape per province",
+            series=C("Geo", "Name"),
+            filters=(PROVINCES,),
+        )
+    )
+    v.append(source("Chamber of Commerce of the Marche · SARIMA by marche-stats"))
+    v.append(
+        chart(
+            "forecast",
+            "lineChart",
+            DASH_X,
+            32,
+            DASH_W,
+            280,
+            "Active companies: last 24 months and 12-month SARIMA forecast",
+            C("Calendar", "Date"),
+            [M("Forecast chart actual"), M("Forecast chart forecast")],
+            "Line chart of active companies in the last 24 months and the SARIMA forecast for the"
+            " next 12, with its 95 % interval",
+            tooltips=[M("Forecast lower 95"), M("Forecast upper 95")],
+        )
+    )
+    v.append(
+        chart(
+            "sectors",
+            "clusteredBarChart",
+            DASH_X,
+            336,
+            HALF_W,
+            352,
+            "Change by sector since December 2009",
+            C("Sector", "ShortName"),
+            [M("Sector change, ten largest")],
+            "Bar chart of the change in active companies for the ten largest ATECO sections;"
+            " growing sections in the accent colour",
+            filters=(FOCUS,),
+            sort=(M("Sector change, ten largest"), "Descending"),
+        )
+    )
+    v.append(
+        chart(
+            "season",
+            "clusteredColumnChart",
+            RIGHT_X,
+            336,
+            HALF_W,
+            184,
+            "Seasonal effect by month",
+            C("Seasonality", "MonthName"),
+            [M("Seasonal effect")],
+            "Column chart of the average seasonal effect on active companies by calendar month",
+            sort=(C("Seasonality", "MonthName"), "Ascending"),
+        )
+    )
+    v.append(
+        chart(
+            "mape",
+            "clusteredBarChart",
+            RIGHT_X,
+            536,
+            HALF_W,
+            152,
+            "Forecast error on the 24-month test (MAPE)",
+            C("ForecastAccuracy", "Method"),
+            [M("Forecast MAPE")],
+            "Bar chart of the mean absolute percentage error of SARIMA and two naive forecasts",
+            sort=(M("Forecast MAPE"), "Ascending"),
+        )
+    )
+    return Page("business", "Business deep dive", v)
+
+
+def benchmark() -> Page:
+    v = chrome("Benchmark", "Benchmark")
+    v.append(
+        textbox(
+            "dot-labels",
+            STORY_X,
+            SLOT_Y,
+            128,
+            SLOT_H,
+            [
+                "Population change, 5 years",
+                "Aged 65+",
+                "Deaths per 1,000",
+                "GDP per inhabitant",
+                "Unemployment",
+                "Tertiary students per 1,000",
+            ],
+        )
+    )
+    v.append(
+        Visual(
+            "dots",
+            "scatterChart",
+            352,
+            SLOT_Y,
+            256,
+            SLOT_H,
+            roles={
+                "Category": [C("Benchmark point", "Point")],
+                "Series": [C("Benchmark point", "Role")],
+                "X": [M("Dot position")],
+                "Y": [M("Dot row")],
+            },
+            title="Where the focus region sits, lowest to highest",
+            alt=(
+                "Dot plot of the focus region, its peers, the country and the EU for six"
+                " indicators, from the lowest value on the left to the highest on the right"
+            ),
+        )
+    )
+    v.append(source("Eurostat · peers set by the PeerRegions parameter"))
+    v.append(textbox("show-label", DASH_X, 40, 120, 24, "Show"))
+    v.append(
+        slicer(
+            "compare",
+            800,
+            32,
+            448,
+            40,
+            C("Compare to", "Comparison"),
+            "Show values or differences from a benchmark",
+            filters=(
+                in_filter(
+                    C("Compare to", "Comparison"), ["Value", "vs Country", "vs EU", "vs Peers avg"]
+                ),
+            ),
+            horizontal=True,
+        )
+    )
+    v.append(
+        Visual(
+            "matrix",
+            "pivotTable",
+            DASH_X,
+            96,
+            DASH_W,
+            432,
+            roles={"Rows": [C("Geo", "Name")], "Values": [M(m) for m in BENCHMARK_MEASURES]},
+            title="Indicators by area",
+            alt="Matrix of six indicators for the focus region, its peers, the country and the EU",
+            filters=[AREAS],
+        )
+    )
+    v.append(
+        table(
+            "ranks",
+            DASH_X,
+            544,
+            DASH_W,
+            64,
+            "Rank among peers (1 = highest)",
+            [M("Rank row label"), *[M(m) for m in BENCHMARK_MEASURES]],
+            "Rank of the focus region among its peers for each indicator",
+            filters=(FOCUS, in_filter(C("Compare to", "Comparison"), ["Rank among peers"])),
+        )
+    )
+    v.append(
+        card(
+            "years",
+            DASH_X,
+            624,
+            DASH_W,
+            64,
+            "Benchmark years",
+            size=10.5,
+            color=MUTED,
+            alt="Years compared and rank direction",
+        )
+    )
+    return Page("benchmark", "Benchmark", v)
+
+
+def about() -> Page:
+    v = chrome("About", "About")
+    v.append(
+        textbox(
+            "about-text",
+            STORY_X,
+            SLOT_Y,
+            STORY_W,
+            SLOT_H,
+            [
+                "# Sources",
+                "Eurostat: population, deaths, GDP, unemployment, enrolment",
+                "GISCO NUTS 2024: codes and province boundaries",
+                "Chamber of Commerce of the Marche: active companies, 2009–2025",
+                "# Limits",
+                "Companies end in March 2025: ATECO 2025 replaces ATECO 2007 from April",
+                "February 2025 is dropped: identical to January, so not updated",
+                "Provincial GDP lags the regional series by a year",
+                "# Refresh",
+                "Open the .pbip in Power BI Desktop, choose Refresh, use anonymous access",
+                "# Photos (Wikimedia Commons)",
+                "Kimahri88, CC0 · Fabio Poggi, CC BY 3.0 · Gaspa, CC BY 2.0",
+            ],
+        )
+    )
+    v.append(source("github.com/simones99/marche-regional-stats"))
+    checkpoint = [
+        C("Reconciliation", "Checkpoint"),
+        M("Reconciliation in model"),
+        M("Reconciliation status"),
+    ]
+    v.append(
+        table(
+            "reconciliation-a",
+            DASH_X,
+            32,
+            HALF_W,
+            256,
+            "Reconciliation: region and north",
+            checkpoint,
+            "Reconciliation checkpoints for the region, Pesaro e Urbino and Ancona",
+            filters=(in_filter(C("Reconciliation", "GeoCode"), ["ITI3", "ITI31", "ITI32"]),),
+        )
+    )
+    v.append(
+        table(
+            "reconciliation-b",
+            RIGHT_X,
+            32,
+            HALF_W,
+            256,
+            "Reconciliation: south",
+            checkpoint,
+            "Reconciliation checkpoints for Macerata, Ascoli Piceno and Fermo",
+            filters=(in_filter(C("Reconciliation", "GeoCode"), ["ITI33", "ITI34", "ITI35"]),),
+        )
+    )
+    v.append(
+        table(
+            "freshness",
+            DASH_X,
+            312,
+            DASH_W,
+            184,
+            "Latest period per source",
+            [C("Data source", "Source"), M("Latest period")],
+            "Table of the latest period available for each source",
+        )
+    )
+    v.append(
+        textbox(
+            "flags-note",
+            DASH_X,
+            504,
+            DASH_W,
+            24,
+            "Tooltips mark Eurostat flags: p provisional, e estimated, b break in series.",
+        )
+    )
+    v.append(
+        image(
+            "photo",
+            DASH_X,
+            528,
+            DASH_W,
+            160,
+            "photo-about-due-sorelle.jpg",
+            "The Spiaggia delle Due Sorelle, a white beach below the Conero cliffs, seen from"
+            " above",
+        )
+    )
+    return Page("about", "About", v)
+
+
 def pages() -> list[Page]:
-    return [overview(), population(), economy(), education()]
+    return [
+        overview(),
+        population(),
+        economy(),
+        education(),
+        provinces(),
+        business(),
+        benchmark(),
+        about(),
+    ]
 
 
 PAGE_NAMES = [p.name for p in pages()]

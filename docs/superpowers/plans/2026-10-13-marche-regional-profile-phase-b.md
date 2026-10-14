@@ -3658,7 +3658,7 @@ git commit -m "Scaffold the population, economy and education pages"
 **Files:**
 - Modify: `src/marche_stats/report_layout.py`
 
-- [ ] **Step 1: Add the four page functions** before `def pages()`:
+- [x] **Step 1: Add the four page functions** before `def pages()`:
 
 ```python
 PROVINCE_MEASURES = [
@@ -3834,11 +3834,11 @@ def about() -> Page:
 
 and change `pages()` to `return [overview(), population(), economy(), education(), provinces(), business(), benchmark(), about()]`.
 
-- [ ] **Step 2: Scaffold.** Desktop closed: `marche-stats scaffold-report`. Expected: the four new pages.
+- [x] **Step 2: Scaffold.** Desktop closed: `marche-stats scaffold-report`. Expected: the four new pages.
 
-- [ ] **Step 3: Run the tests.** `pytest -q`. Expected: all pass.
+- [x] **Step 3: Run the tests.** `pytest -q`. Expected: all pass.
 
-- [ ] **Step 4: Commit.**
+- [x] **Step 4: Commit.**
 
 ```bash
 ruff check src tests && ruff format src tests
