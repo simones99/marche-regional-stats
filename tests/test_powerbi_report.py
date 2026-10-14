@@ -196,6 +196,31 @@ def test_kpi_gap_lines_wrap_in_the_new_card():
             assert value["selector"] == label["selector"] == {"id": "default"}, gap.key
 
 
+def test_shapes_fill_through_the_all_selector_and_skip_the_tab_order():
+    # Desktop ignores a shape's fill colour without the "All" series selector and saves
+    # a negative tabOrder for a visual left out of the tab order.
+    for page, visuals in layout_pages():
+        for v in visuals:
+            if v["visual"]["visualType"] != "shape":
+                continue
+            where = f"{page['displayName']}: {v['name']}"
+            fills = v["visual"]["objects"]["fill"]
+            assert any(
+                f.get("selector") == {"id": "default"} and "fillColor" in f["properties"]
+                for f in fills
+            ), where
+            assert v["position"]["tabOrder"] < 0, where
+
+
+def test_navigator_leaves_out_the_hidden_pages():
+    off = {"expr": {"Literal": {"Value": "false"}}}
+    for page, visuals in layout_pages():
+        for v in visuals:
+            if v["visual"]["visualType"] == report_layout.NAVIGATOR_TYPE:
+                pages = v["visual"]["objects"]["pages"][0]["properties"]
+                assert pages["showHiddenPages"] == off, page["displayName"]
+
+
 def test_pages_use_the_palette_and_the_font_minimum():
     for page, visuals in layout_pages():
         for v in visuals:

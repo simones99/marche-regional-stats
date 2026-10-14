@@ -3499,7 +3499,7 @@ Expected: `['Spike']`, a new folder `…Report/definition/pages/73cc33b96ddcddc9
 
   Deviation (13 October 2026, end of day): the user asked to commit everything before stopping, so the Spike page, `pages.json` and the Overview files Desktop had saved were committed together in a work-in-progress commit, with `test_pages_follow_the_layout_order` still failing. In Step 3, compare against `c23f63e` (the last commit before it), not against the working tree: `git diff c23f63e -- powerbi/marche-regional-profile.Report` for Overview, and a fresh `report_layout.spike()` scaffold in a temporary folder for Spike. Then delete Spike as written and commit.
 
-- [ ] **Step 1 (user): Open the report.** Open `powerbi/marche-regional-profile.pbip`. Expected on Overview, against the canvas artboard "D · Story + dashboard":
+- [x] **Step 1 (user): Open the report.** Open `powerbi/marche-regional-profile.pbip`. Expected on Overview, against the canvas artboard "D · Story + dashboard":
   - the dark navigation bar with "Regional profile", the region name, the page navigator listing the visible pages (only Overview at this point; Model check is hidden) and "Data up to Mar 2025";
   - the light story column with OVERVIEW, the two-part headline, the paragraph, the Valadier photo and the source line;
   - the surface on the right with "Compare with", the benchmark buttons, six KPI cards with their gap lines, and the two line charts.
@@ -3512,7 +3512,7 @@ Expected: `['Spike']`, a new folder `…Report/definition/pages/73cc33b96ddcddc9
   - the three shapes have their own fill (bar `#15201A`, surface `#ECEEEA`, rule `#C9CEC9`), not the first data colour `#00753A`;
   - on the hidden page "Spike" (visible in edit mode), each of the nine visuals renders without an error icon: map image, year dropdown, pyramid bars, dot plot, column chart, multi-row card, ranked bars, table, matrix.
 
-- [ ] **Step 2 (user): Fix what Desktop did not accept.** For each visual that is missing, blank or shows an error: delete it, insert the same visual type at the same position and size, bind the same fields (Task 14, `overview()`), and set the same title and alt text. Typical cases:
+- [x] **Step 2 (user): Fix what Desktop did not accept.** For each visual that is missing, blank or shows an error: delete it, insert the same visual type at the same position and size, bind the same fields (Task 14, `overview()`), and set the same title and alt text. Typical cases:
   - the page navigator (*Insert → Buttons → Navigator → Page navigator*);
   - the photo (*Insert → Image*, then pick `photo-overview-valadier.jpg` from the report's resources);
   - a textbox whose text is missing (*Insert → Text box*, type the text, Segoe UI 10.5 pt, colour `#4F5A53`);
@@ -3528,13 +3528,15 @@ Expected: `['Spike']`, a new folder `…Report/definition/pages/73cc33b96ddcddc9
 
   Outcome (13 October 2026): the six KPI gap lines were cut off, and the classic card's word wrap did not help. The executor replaced them with `text_card` (the new card, `cardVisual`, role `Data`, value in Segoe UI 10.5 pt with `textWrap`, label off, both with the "All" series selector `{"id": "default"}`, without which Desktop ignored the font size), writing only those six `visual.json` files; object and property names come from the `cardVisual` section of Microsoft's report theme schema (`reportThemeSchema-2.157.json`), the role name from Desktop's own scripts. `test_kpi_gap_lines_wrap_in_the_new_card` checks them. Step 3 compares them with what Desktop saves.
 
-- [ ] **Step 3 (executor): Learn Desktop's form.** Run `git diff --stat powerbi/marche-regional-profile.Report` and `git diff` on each changed or new `visual.json`. For each visual type Desktop rewrote, on Overview and on Spike, update the matching helper in `report_layout.py` (`textbox`, `shape`, `image`, `measure_image`, `card`, `slicer`, `navigator`, `chart`, `table`) or the `Visual(…)` calls of Tasks 17–18 (`scatterChart`, `pivotTable`, `multiRowCard`) so that it writes what Desktop wrote: same `visualType`, same object and property names, same expression form, including the tab-order setting of the shapes. Keep positions, fields, titles and alt text as they are. Do not re-run `scaffold-report` on Overview (Desktop's files stay).
+- [x] **Step 3 (executor): Learn Desktop's form.** Run `git diff --stat powerbi/marche-regional-profile.Report` and `git diff` on each changed or new `visual.json`. For each visual type Desktop rewrote, on Overview and on Spike, update the matching helper in `report_layout.py` (`textbox`, `shape`, `image`, `measure_image`, `card`, `slicer`, `navigator`, `chart`, `table`) or the `Visual(…)` calls of Tasks 17–18 (`scatterChart`, `pivotTable`, `multiRowCard`) so that it writes what Desktop wrote: same `visualType`, same object and property names, same expression form, including the tab-order setting of the shapes. Keep positions, fields, titles and alt text as they are. Do not re-run `scaffold-report` on Overview (Desktop's files stay).
 
   Then delete the spike page: remove the folder `…Report/definition/pages/73cc33b96ddcddc98995/` and its entry in `pageOrder` of `pages.json`; if `activePageName` is `73cc33b96ddcddc98995`, set it to `fed758b7a842befdf49b` (Overview). `git status --short powerbi` must not list the spike folder.
 
-- [ ] **Step 4: Run the tests.** `pytest -q`. If `test_pages_use_the_palette_and_the_font_minimum` fails on a value Desktop wrote, set that value in Desktop to a palette colour or to 10.5 pt and save again.
+  Outcome (14 October 2026): Desktop rendered every Overview and Spike visual. After the user's fixes, Desktop's saves taught five forms, now written by the helpers: a shape's fill colour needs a second `fill` entry with the "All" selector `{"id": "default"}` (without it Desktop paints the first data colour); a visual left out of the tab order has a negative `tabOrder` (shapes); the page navigator needs `pages.showHiddenPages` = false, or it lists Model check and Spike; the first field of the Category, Rows, Columns and X roles, and of a slicer's Values, is saved with `"active": true`; integer settings are `L` literals (`pbir.integer`). The user also reshaped the story header in Desktop (headline and accent 27 pt, headline 56-184, eyebrow and "Regional profile" at y 24, source 56 px high); `chrome()` and `source()` now write that, snapped to the grid, so pages 2-8 match. The KPI gap lines still ended in "…" in a 48 px new card with border and padding off, so the gap cards are 64 px high (`KPI_Y` 80, `GAP_H` 64) and the line charts start at 400 and are 288 px high; the Overview files were moved to match. Desktop dropped the two photos no page used yet from `report.json` and the resources folder: both restored. The benchmark selection Desktop saved (EU) was removed. Still to check in Desktop: that the gap lines now wrap.
 
-- [ ] **Step 5: Commit.**
+- [x] **Step 4: Run the tests.** `pytest -q`. If `test_pages_use_the_palette_and_the_font_minimum` fails on a value Desktop wrote, set that value in Desktop to a palette colour or to 10.5 pt and save again.
+
+- [x] **Step 5: Commit.**
 
 ```bash
 git add src/marche_stats powerbi/marche-regional-profile.Report

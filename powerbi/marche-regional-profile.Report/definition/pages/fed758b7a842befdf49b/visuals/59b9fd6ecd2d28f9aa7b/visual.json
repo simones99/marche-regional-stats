@@ -3,11 +3,11 @@
   "name": "59b9fd6ecd2d28f9aa7b",
   "position": {
     "x": 872,
-    "y": 184,
+    "y": 168,
     "z": 18000,
-    "height": 48,
+    "height": 64,
     "width": 176,
-    "tabOrder": 18000
+    "tabOrder": 14000
   },
   "visual": {
     "visualType": "cardVisual",
@@ -90,6 +90,38 @@
             "id": "default"
           }
         }
+      ],
+      "outline": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "paddingUniform": {
+              "expr": {
+                "Literal": {
+                  "Value": "0L"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
       ]
     },
     "visualContainerObjects": {
@@ -105,6 +137,19 @@
                     }
                   },
                   "Property": "KPI gap Share aged 65+"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

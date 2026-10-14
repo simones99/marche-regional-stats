@@ -7,9 +7,21 @@ done in Power BI Desktop, and Desktop's saved files are then the source of truth
 
 from __future__ import annotations
 
-from marche_stats.pbir import C, Field, M, Page, Visual, field_expr, in_filter, literal, solid
+from marche_stats.pbir import (
+    C,
+    Field,
+    M,
+    Page,
+    Visual,
+    field_expr,
+    in_filter,
+    integer,
+    literal,
+    solid,
+)
 
 ACCENT, TEXT, MUTED = "#00753A", "#15201A", "#4F5A53"
+EVERY = {"id": "default"}  # the "All" series selector; shapes and new cards read it
 BASE, SURFACE, RULE = "#F5F6F3", "#ECEEEA", "#C9CEC9"
 NAVIGATOR_TYPE = "pageNavigator"
 
@@ -18,6 +30,9 @@ DASH_X, DASH_W = 672, 576
 HALF_W, RIGHT_X = 280, 968
 THIRD_W, THIRDS = 176, (672, 872, 1072)
 SLOT_Y, SLOT_H = 344, 304
+HEADLINE_PT = 27  # 30 pt did not fit the Overview headline in Desktop
+KPI_Y, KPI_H, GAP_H = 80, 88, 64  # a gap line needs two lines of 10.5 pt
+CHART_Y, CHART_H = 400, 288
 
 FOCUS = in_filter(C("Geo", "Role"), ["Focus"])
 AREAS = in_filter(C("Geo", "Role"), ["Focus", "Peer", "Country", "EU"])
@@ -26,6 +41,7 @@ PROVINCES = in_filter(C("Geo", "Role"), ["Province"])
 
 
 def shape(key: str, x: int, y: int, w: int, h: int, color: str) -> Visual:
+    """Decorative rectangle. Desktop ignores a fill colour without the "All" selector."""
     return Visual(
         key,
         "shape",
@@ -35,7 +51,10 @@ def shape(key: str, x: int, y: int, w: int, h: int, color: str) -> Visual:
         h,
         objects={
             "shape": [{"properties": {"tileShape": literal("rectangle")}}],
-            "fill": [{"properties": {"show": literal(True), "fillColor": solid(color)}}],
+            "fill": [
+                {"properties": {"show": literal(True)}},
+                {"properties": {"fillColor": solid(color)}, "selector": EVERY},
+            ],
             "outline": [{"properties": {"show": literal(False)}}],
         },
     )
@@ -79,16 +98,20 @@ def card(
     filters: tuple[dict, ...] = (),
     font: str | None = None,
     background: bool = True,
+    precision: int | None = None,
 ) -> Visual:
     """Classic card showing one measure (a number, or a text measure for the story).
 
     alt is required (pbir raises without it): a literal, or M(<text measure>) to have the
     shown text read aloud. font None keeps the theme's Segoe UI Semibold. background False
-    drops the theme's light background, for cards on the dark navigation rail.
+    drops the theme's light background, for cards on the dark navigation rail. precision
+    fixes the decimals, so the automatic display units keep the value readable (1.48M).
     """
     labels = {"color": solid(color), "fontSize": literal(size)}
     if font:
         labels["fontFamily"] = literal(font)
+    if precision is not None:
+        labels["labelPrecision"] = integer(precision)
     container = None
     if not background:
         container = {"background": [{"properties": {"show": literal(False)}}]}
@@ -126,7 +149,8 @@ def text_card(
     The classic card keeps its text on one line and cuts it; the new card wraps it. Object
     and property names follow the cardVisual section of the report theme schema. The new
     card reads them per series: the selector {"id": "default"} is its "All" series, and
-    without it Desktop ignores them.
+    without it Desktop ignores them. Border, padding and title are off, so the text has
+    the whole box.
     """
     value = {
         "fontSize": literal(10.5),
@@ -134,7 +158,6 @@ def text_card(
         "fontFamily": literal("Segoe UI"),
         "textWrap": literal(True),
     }
-    every = {"id": "default"}
     return Visual(
         key,
         "cardVisual",
@@ -145,10 +168,13 @@ def text_card(
         roles={"Data": [M(measure)]},
         alt=alt,
         objects={
-            "value": [{"properties": value, "selector": every}],
-            "label": [{"properties": {"show": literal(False)}, "selector": every}],
+            "value": [{"properties": value, "selector": EVERY}],
+            "label": [{"properties": {"show": literal(False)}, "selector": EVERY}],
+            "outline": [{"properties": {"show": literal(False)}, "selector": EVERY}],
+            "padding": [{"properties": {"paddingUniform": integer(0)}, "selector": EVERY}],
         },
         filters=list(filters),
+        container={"title": [{"properties": {"show": literal(False)}}]},
     )
 
 
@@ -301,7 +327,10 @@ def table(
 
 
 def navigator(key: str, x: int, y: int, w: int, h: int) -> Visual:
-    """Page navigator: one button per visible page, stacked vertically."""
+    """Page navigator: one button per visible page, stacked vertically.
+
+    Desktop lists the hidden pages too unless showHiddenPages is off.
+    """
     return Visual(
         key,
         NAVIGATOR_TYPE,
@@ -310,7 +339,10 @@ def navigator(key: str, x: int, y: int, w: int, h: int) -> Visual:
         w,
         h,
         alt="Report pages",
-        objects={"layout": [{"properties": {"orientation": literal(1)}}]},
+        objects={
+            "layout": [{"properties": {"orientation": literal(1)}}],
+            "pages": [{"properties": {"showHiddenPages": literal(False)}}],
+        },
     )
 
 
@@ -320,7 +352,7 @@ def chrome(prefix: str, page_name: str) -> list[Visual]:
         shape("nav", 0, 0, 192, 720, TEXT),
         shape("surface", 640, 0, 640, 720, SURFACE),
         shape("rule", 640, 0, 1, 720, RULE),
-        textbox("nav-kicker", 24, 32, 144, 24, "Regional profile", color=RULE),
+        textbox("nav-kicker", 24, 24, 144, 32, "Regional profile", color=RULE),
         card(
             "nav-region",
             24,
@@ -346,25 +378,25 @@ def chrome(prefix: str, page_name: str) -> list[Visual]:
             alt=M("Data up to"),
             background=False,
         ),
-        textbox("eyebrow", STORY_X, 32, STORY_W, 24, page_name.upper()),
+        textbox("eyebrow", STORY_X, 24, STORY_W, 32, page_name.upper()),
         card(
             "headline",
             STORY_X,
-            72,
+            56,
             STORY_W,
-            96,
+            128,
             f"{prefix} headline lead",
-            size=30,
+            size=HEADLINE_PT,
             alt=M(f"{prefix} headline lead"),
         ),
         card(
             "headline-accent",
             STORY_X,
-            168,
+            184,
             STORY_W,
             48,
             f"{prefix} headline accent",
-            size=30,
+            size=HEADLINE_PT,
             color=ACCENT,
             alt=M(f"{prefix} headline accent"),
         ),
@@ -382,7 +414,7 @@ def chrome(prefix: str, page_name: str) -> list[Visual]:
 
 
 def source(text: str) -> Visual:
-    return textbox("source", STORY_X, 656, STORY_W, 40, text)
+    return textbox("source", STORY_X, 656, STORY_W, 56, text)
 
 
 KPIS = (
@@ -410,7 +442,7 @@ def overview() -> Page:
         )
     )
     v.append(source("Eurostat, Chamber of Commerce of the Marche · Photo: Kimahri88, CC0"))
-    v.append(textbox("compare-label", DASH_X, 40, 280, 24, "Compare with"))
+    v.append(textbox("compare-label", DASH_X, 32, 280, 32, "Compare with"))
     v.append(
         slicer(
             "benchmark",
@@ -424,30 +456,31 @@ def overview() -> Page:
         )
     )
     for i, (key, title, value, gap) in enumerate(KPIS):
-        x, y = THIRDS[i % 3], 96 + (i // 3) * 144
+        x, y = THIRDS[i % 3], KPI_Y + (i // 3) * (KPI_H + GAP_H + 8)
         v.append(
             card(
                 f"kpi-{key}",
                 x,
                 y,
                 THIRD_W,
-                88,
+                KPI_H,
                 value,
                 size=24,
                 title=title,
                 alt=f"{title} of the focus region",
                 filters=(FOCUS,),
+                precision=2 if key == "population" else None,
             )
         )
-        v.append(text_card(f"kpi-{key}-gap", x, y + 88, THIRD_W, 48, gap, M(gap), (FOCUS,)))
+        v.append(text_card(f"kpi-{key}-gap", x, y + KPI_H, THIRD_W, GAP_H, gap, M(gap), (FOCUS,)))
     v.append(
         chart(
             "population",
             "lineChart",
             DASH_X,
-            384,
+            CHART_Y,
             HALF_W,
-            304,
+            CHART_H,
             "Population on 1 January",
             C("Calendar", "Year"),
             [M("Population")],
@@ -460,9 +493,9 @@ def overview() -> Page:
             "companies",
             "lineChart",
             RIGHT_X,
-            384,
+            CHART_Y,
             HALF_W,
-            304,
+            CHART_H,
             "Active companies in December",
             C("Calendar", "Year"),
             [M("Active companies, December")],

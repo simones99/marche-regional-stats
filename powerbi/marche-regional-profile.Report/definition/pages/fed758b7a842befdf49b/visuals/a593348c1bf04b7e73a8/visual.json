@@ -3,11 +3,11 @@
   "name": "a593348c1bf04b7e73a8",
   "position": {
     "x": 672,
-    "y": 184,
+    "y": 168,
     "z": 16000,
-    "height": 48,
+    "height": 64,
     "width": 176,
-    "tabOrder": 16000
+    "tabOrder": 12000
   },
   "visual": {
     "visualType": "cardVisual",
@@ -90,6 +90,38 @@
             "id": "default"
           }
         }
+      ],
+      "outline": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "paddingUniform": {
+              "expr": {
+                "Literal": {
+                  "Value": "0L"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
       ]
     },
     "visualContainerObjects": {
@@ -105,6 +137,19 @@
                     }
                   },
                   "Property": "KPI gap Population"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

@@ -5,9 +5,9 @@
     "x": 872,
     "y": 328,
     "z": 24000,
-    "height": 48,
+    "height": 64,
     "width": 176,
-    "tabOrder": 24000
+    "tabOrder": 20000
   },
   "visual": {
     "visualType": "cardVisual",
@@ -90,6 +90,38 @@
             "id": "default"
           }
         }
+      ],
+      "outline": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "paddingUniform": {
+              "expr": {
+                "Literal": {
+                  "Value": "0L"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
       ]
     },
     "visualContainerObjects": {
@@ -105,6 +137,19 @@
                     }
                   },
                   "Property": "KPI gap GDP per inhabitant"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }

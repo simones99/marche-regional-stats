@@ -7,7 +7,7 @@
     "z": 2000,
     "height": 720,
     "width": 1,
-    "tabOrder": 2000
+    "tabOrder": -2001
   },
   "visual": {
     "visualType": "shape",
@@ -46,6 +46,24 @@
                 }
               }
             }
+          }
+        },
+        {
+          "properties": {
+            "fillColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#C9CEC9'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
           }
         }
       ],

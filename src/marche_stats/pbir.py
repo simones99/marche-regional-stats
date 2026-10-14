@@ -20,6 +20,8 @@ VISUAL_SCHEMA = f"{SCHEMAS}/visualContainer/2.13.0/schema.json"
 PAGE_SCHEMA = f"{SCHEMAS}/page/2.1.0/schema.json"
 HIDDEN = "HiddenInViewMode"
 DECORATIVE = {"shape", "textbox"}  # every other visual needs alt text
+UNTABBED = {"shape"}  # left out of the tab order: Desktop saves a negative tabOrder
+ACTIVE_ROLES = {"Category", "Rows", "Columns", "X"}  # Desktop marks their first field active
 RENAME_ATTEMPTS, RENAME_DELAY = 5, 0.1  # seconds, doubled after each failed attempt
 
 
@@ -86,6 +88,11 @@ def literal(value: str | float | bool) -> dict:
     return {"expr": {"Literal": {"Value": _literal_text(value)}}}
 
 
+def integer(value: int) -> dict:
+    """Integer literal (suffix L), the form Desktop saves for counts such as padding."""
+    return {"expr": {"Literal": {"Value": f"{value}L"}}}
+
+
 def solid(color: str) -> dict:
     return {"solid": {"color": literal(color)}}
 
@@ -95,8 +102,15 @@ def field_expr(f: Field) -> dict:
     return {kind: {"Expression": {"SourceRef": {"Entity": f.table}}, "Property": f.name}}
 
 
-def projection(f: Field) -> dict:
-    return {"field": field_expr(f), "queryRef": f"{f.table}.{f.name}", "nativeQueryRef": f.name}
+def projection(f: Field, active: bool = False) -> dict:
+    body = {"field": field_expr(f), "queryRef": f"{f.table}.{f.name}", "nativeQueryRef": f.name}
+    if active:
+        body["active"] = True
+    return body
+
+
+def _active(visual_type: str, role: str) -> bool:
+    return role in ACTIVE_ROLES or (visual_type == "slicer" and role == "Values")
 
 
 def in_filter(column: Field, values: list[str | bool]) -> dict:
@@ -135,7 +149,12 @@ def visual_json(page_key: str, v: Visual, order: int) -> dict:
     if v.roles:
         visual["query"] = {
             "queryState": {
-                role: {"projections": [projection(f) for f in fields]}
+                role: {
+                    "projections": [
+                        projection(f, active=i == 0 and _active(v.type, role))
+                        for i, f in enumerate(fields)
+                    ]
+                }
                 for role, fields in v.roles.items()
             }
         }
@@ -164,7 +183,7 @@ def visual_json(page_key: str, v: Visual, order: int) -> dict:
             "z": order * 1000,
             "height": v.h,
             "width": v.w,
-            "tabOrder": order * 1000,
+            "tabOrder": -(order * 1000 + 1) if v.type in UNTABBED else order * 1000,
         },
         "visual": visual,
     }
