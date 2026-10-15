@@ -32,38 +32,6 @@
             }
           ]
         },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Forecast chart actual"
-                }
-              },
-              "queryRef": "_Measures.Forecast chart actual",
-              "nativeQueryRef": "Forecast chart actual"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Forecast chart forecast"
-                }
-              },
-              "queryRef": "_Measures.Forecast chart forecast",
-              "nativeQueryRef": "Forecast chart forecast"
-            }
-          ]
-        },
         "Tooltips": {
           "projections": [
             {
@@ -95,8 +63,62 @@
               "nativeQueryRef": "Forecast upper 95"
             }
           ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Forecast chart actual"
+                }
+              },
+              "queryRef": "_Measures.Forecast chart actual",
+              "nativeQueryRef": "Forecast chart actual"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_Measures"
+                    }
+                  },
+                  "Property": "Forecast chart forecast"
+                }
+              },
+              "queryRef": "_Measures.Forecast chart forecast",
+              "nativeQueryRef": "Forecast chart forecast"
+            }
+          ]
         }
       }
+    },
+    "objects": {
+      "lineStyles": [
+        {
+          "properties": {
+            "showMarker": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "markerShape": {
+              "expr": {
+                "Literal": {
+                  "Value": "'circle'"
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "visualContainerObjects": {
       "title": [

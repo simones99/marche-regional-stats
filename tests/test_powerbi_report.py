@@ -37,7 +37,8 @@ def read(path: Path):
 def _points(value) -> float:
     if isinstance(value, dict):
         value = value["expr"]["Literal"]["Value"]
-    return float(str(value).removesuffix("pt").removesuffix("D"))
+    # Desktop writes some sizes as quoted text, for example the line chart labels ('12').
+    return float(str(value).strip("'").removesuffix("pt").removesuffix("D"))
 
 
 def font_sizes(node):
