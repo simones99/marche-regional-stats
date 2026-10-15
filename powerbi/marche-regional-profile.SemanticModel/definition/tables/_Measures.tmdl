@@ -527,54 +527,6 @@ table _Measures
 		displayFolder: Report visuals
 		lineageTag: bd55f5d8-21f6-4cdb-953d-c172cbad2ad0
 
-	/// Men in the age bands aged 65 and over (accent bars of the pyramid).
-	measure 'Population (men aged 65+, negative)' = CALCULATE ( [Population (men, negative)], KEEPFILTERS ( AgeGroup[BroadGroup] = "65+" ) )
-		formatString: #,0;#,0
-		displayFolder: Report visuals
-		lineageTag: 4e21dd0a-70f4-40ab-bd8e-f10e964521e2
-
-	/// Men in the age bands under 65 (grey bars of the pyramid).
-	measure 'Population (men under 65, negative)' = CALCULATE ( [Population (men, negative)], KEEPFILTERS ( AgeGroup[BroadGroup] <> "65+" ) )
-		formatString: #,0;#,0
-		displayFolder: Report visuals
-		lineageTag: b18dad97-9229-4225-a7a0-e0f93d19f366
-
-	/// Women in the age bands aged 65 and over (accent bars of the pyramid).
-	measure 'Population (women aged 65+)' = CALCULATE ( [Population (women)], KEEPFILTERS ( AgeGroup[BroadGroup] = "65+" ) )
-		formatString: #,0
-		displayFolder: Report visuals
-		lineageTag: 80f9a5c9-662f-4502-98e6-fcb724e5951c
-
-	/// Women in the age bands under 65 (grey bars of the pyramid).
-	measure 'Population (women under 65)' = CALCULATE ( [Population (women)], KEEPFILTERS ( AgeGroup[BroadGroup] <> "65+" ) )
-		formatString: #,0
-		displayFolder: Report visuals
-		lineageTag: d2e4caf0-f630-4be8-960c-cf4fefa5bf2c
-
-	/// Women enrolled at the tertiary levels (accent bars of the butterfly chart).
-	measure 'Students (women, tertiary, negative)' = CALCULATE ( [Students (women, negative)], KEEPFILTERS ( ISCED[Group] = "ISCED 5-8" ) )
-		formatString: #,0;#,0
-		displayFolder: Report visuals
-		lineageTag: 1a82e21b-5ee1-4c1c-9375-065ad9559352
-
-	/// Women enrolled below the tertiary levels (grey bars of the butterfly chart).
-	measure 'Students (women, other levels, negative)' = CALCULATE ( [Students (women, negative)], KEEPFILTERS ( ISCED[Group] <> "ISCED 5-8" ) )
-		formatString: #,0;#,0
-		displayFolder: Report visuals
-		lineageTag: 4c6881f5-427a-4f15-9f41-edd49bc998fc
-
-	/// Men enrolled at the tertiary levels (accent bars of the butterfly chart).
-	measure 'Students (men, tertiary)' = CALCULATE ( [Students (men)], KEEPFILTERS ( ISCED[Group] = "ISCED 5-8" ) )
-		formatString: #,0
-		displayFolder: Report visuals
-		lineageTag: 4cc8eab3-9871-4394-a435-812ee1c48577
-
-	/// Men enrolled below the tertiary levels (grey bars of the butterfly chart).
-	measure 'Students (men, other levels)' = CALCULATE ( [Students (men)], KEEPFILTERS ( ISCED[Group] <> "ISCED 5-8" ) )
-		formatString: #,0
-		displayFolder: Report visuals
-		lineageTag: dfab47a5-f9c1-4d25-b811-12256c68ddbb
-
 	/// Bar colour by area role: accent for the focus region, text colour for the country and the
 	/// EU (the fallback when a bar outline cannot be set per bar), grey for the peer regions.
 	measure 'Area colour' = SWITCH ( SELECTEDVALUE ( Geo[Role] ), "Focus", "#00753A", "Country", "#15201A", "EU", "#15201A", "#6B746E" )
@@ -1369,6 +1321,54 @@ table _Measures
 		lineageTag: 3a1c8f28-8d83-498b-92d8-a19770549ad6
 
 		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Men in the age bands aged 65 and over (accent bars of the pyramid).
+	measure 'Population (men aged 65+, negative)' = CALCULATE ( [Population (men, negative)], KEEPFILTERS ( AgeGroup[BroadGroup] = "65+" ) )
+		formatString: #,0;#,0
+		displayFolder: Report visuals
+		lineageTag: 4e21dd0a-70f4-40ab-bd8e-f10e964521e2
+
+	/// Men in the age bands under 65 (grey bars of the pyramid).
+	measure 'Population (men under 65, negative)' = CALCULATE ( [Population (men, negative)], KEEPFILTERS ( AgeGroup[BroadGroup] <> "65+" ) )
+		formatString: #,0;#,0
+		displayFolder: Report visuals
+		lineageTag: b18dad97-9229-4225-a7a0-e0f93d19f366
+
+	/// Women in the age bands aged 65 and over (accent bars of the pyramid).
+	measure 'Population (women aged 65+)' = CALCULATE ( [Population (women)], KEEPFILTERS ( AgeGroup[BroadGroup] = "65+" ) )
+		formatString: #,0
+		displayFolder: Report visuals
+		lineageTag: 80f9a5c9-662f-4502-98e6-fcb724e5951c
+
+	/// Women in the age bands under 65 (grey bars of the pyramid).
+	measure 'Population (women under 65)' = CALCULATE ( [Population (women)], KEEPFILTERS ( AgeGroup[BroadGroup] <> "65+" ) )
+		formatString: #,0
+		displayFolder: Report visuals
+		lineageTag: d2e4caf0-f630-4be8-960c-cf4fefa5bf2c
+
+	/// Women enrolled at the tertiary levels (accent bars of the butterfly chart).
+	measure 'Students (women, tertiary, negative)' = CALCULATE ( [Students (women, negative)], KEEPFILTERS ( ISCED[Group] = "ISCED 5-8" ) )
+		formatString: #,0;#,0
+		displayFolder: Report visuals
+		lineageTag: 1a82e21b-5ee1-4c1c-9375-065ad9559352
+
+	/// Women enrolled below the tertiary levels (grey bars of the butterfly chart).
+	measure 'Students (women, other levels, negative)' = CALCULATE ( [Students (women, negative)], KEEPFILTERS ( ISCED[Group] <> "ISCED 5-8" ) )
+		formatString: #,0;#,0
+		displayFolder: Report visuals
+		lineageTag: 4c6881f5-427a-4f15-9f41-edd49bc998fc
+
+	/// Men enrolled at the tertiary levels (accent bars of the butterfly chart).
+	measure 'Students (men, tertiary)' = CALCULATE ( [Students (men)], KEEPFILTERS ( ISCED[Group] = "ISCED 5-8" ) )
+		formatString: #,0
+		displayFolder: Report visuals
+		lineageTag: 4cc8eab3-9871-4394-a435-812ee1c48577
+
+	/// Men enrolled below the tertiary levels (grey bars of the butterfly chart).
+	measure 'Students (men, other levels)' = CALCULATE ( [Students (men)], KEEPFILTERS ( ISCED[Group] <> "ISCED 5-8" ) )
+		formatString: #,0
+		displayFolder: Report visuals
+		lineageTag: dfab47a5-f9c1-4d25-b811-12256c68ddbb
 
 	column Placeholder
 		dataType: string
