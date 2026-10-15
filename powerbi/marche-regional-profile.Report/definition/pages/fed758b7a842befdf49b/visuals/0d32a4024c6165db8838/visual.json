@@ -111,6 +111,13 @@
       "visualTooltip": [
         {
           "properties": {
+            "type": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Canvas'"
+                }
+              }
+            },
             "section": {
               "expr": {
                 "Literal": {

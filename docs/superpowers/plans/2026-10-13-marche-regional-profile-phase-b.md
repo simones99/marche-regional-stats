@@ -3937,7 +3937,7 @@ git commit -m "Scaffold the province detail and tooltip pages"
 
 Only the user can run this task. Open the report and the design canvas side by side; for each page, compare with its artboard ("D · Story + dashboard" for Overview, "2 · …" to "8 · …" for the others) and apply the steps below. Save often; close Desktop at the end.
 
-- [ ] **Step 1: Line charts (all pages).** In *Format → Lines* and *Markers*, per series:
+- [x] **Step 1: Line charts (all pages).** In *Format → Lines* and *Markers*, per series:
   - focus region: accent `#00753A`, solid, 3 px, filled circle;
   - country: `#6B746E`, dashed, hollow square;
   - EU: `#6B746E`, dotted, filled triangle;
@@ -3945,7 +3945,7 @@ Only the user can run this task. Open the report and the design canvas side by s
 
   Turn on *Series labels* at the line end. Turn the legend off where series labels name the lines.
 
-- [ ] **Step 2: Bar charts.**
+- [x] **Step 2: Bar charts.**
   - Ranked bars (Population, Economy, Education): *Bars → Color → fx → Field value → `Area colour`*. If *Bars → Border* can be set per bar, outline the country and EU bars in `#6B746E` instead of the dark fill.
   - Pyramid: *fx → `Pyramid colour`* on both series; overlap 100 %; gap 20 %; legend off.
   - Butterfly: *fx → `Education level colour`*.
@@ -3954,17 +3954,18 @@ Only the user can run this task. Open the report and the design canvas side by s
 
 - [ ] **Step 3: Forecast chart (Business).** Actual: `#15201A`, solid, filled circles. Forecast: `#15201A`, dashed, hollow circles. *Analytics → Error bars* on *Forecast chart forecast*: upper `Forecast upper 95`, lower `Forecast lower 95`, *Bar* off, *Band* on, `#6B746E` at 80 % transparency.
 
-- [ ] **Step 4: Slicers and interactions.**
+- [x] **Step 4: Slicers and interactions.**
   - Set every button slicer to *Style: Tile*, single select, and the Overview benchmark to its first value (the country).
   - *Format → Edit interactions*:
     - the Population year slicer filters only the pyramid;
     - the Benchmark *Compare to* slicer filters only the matrix (none on the ranks table, the dot plot and the text cards);
     - the ISCED slicer filters only the butterfly chart.
 
-- [ ] **Step 5: Provinces.** Map image: scaling *Fit*. Table: *Cell elements → Background color → fx → Field value* for each indicator column with its `Highlight …` measure.
+- [x] **Step 5: Provinces.** Map image: scaling *Fit*. Table: *Cell elements → Background color → fx → Field value* for each indicator column with its `Highlight …` measure.
 
-- [ ] **Step 6: Drill-through and tooltips.**
+- [x] **Step 6: Drill-through and tooltips.**
   - Province detail: *Page information → Drill through → Add* `Geo[Name]`. Keep the back button Desktop adds and move it to x 576, y 32, 32 × 24.
+    Done 2026-10-15: kept at x 576, y 0, because y 32 overlaps the eyebrow (x 224–608, y 24–56).
   - Area tooltip and Province tooltip: *Page information → Allow use as tooltip*; canvas 320 × 240.
   - Point the ranked bars and the line charts to *Area tooltip* (*Format → Tooltips → Report page*), and the Provinces table to *Province tooltip*.
 

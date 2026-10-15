@@ -4,5 +4,87 @@
   "displayName": "Education",
   "displayOption": "FitToPage",
   "height": 720,
-  "width": 1280
+  "width": 1280,
+  "visualInteractions": [
+    {
+      "source": "93ac4151ddb002c7179f",
+      "target": "5daed28c0e0d816d99e3",
+      "type": "NoFilter"
+    },
+    {
+      "source": "93ac4151ddb002c7179f",
+      "target": "5e1c67d1dfcef99c5038",
+      "type": "NoFilter"
+    },
+    {
+      "source": "93ac4151ddb002c7179f",
+      "target": "633a84f58212ff1dea22",
+      "type": "NoFilter"
+    },
+    {
+      "source": "93ac4151ddb002c7179f",
+      "target": "6c1fc778e90ed3331809",
+      "type": "NoFilter"
+    },
+    {
+      "source": "93ac4151ddb002c7179f",
+      "target": "868ab11f4293b530e8a6",
+      "type": "NoFilter"
+    },
+    {
+      "source": "93ac4151ddb002c7179f",
+      "target": "88051251f621d5d08f14",
+      "type": "NoFilter"
+    },
+    {
+      "source": "93ac4151ddb002c7179f",
+      "target": "8ff235d93b7412612672",
+      "type": "NoFilter"
+    },
+    {
+      "source": "93ac4151ddb002c7179f",
+      "target": "9d3d1dc5a656e0857149",
+      "type": "DataFilter"
+    },
+    {
+      "source": "93ac4151ddb002c7179f",
+      "target": "a10b304c30e7f44a6a13",
+      "type": "NoFilter"
+    },
+    {
+      "source": "93ac4151ddb002c7179f",
+      "target": "a4793def36e3bddeb039",
+      "type": "NoFilter"
+    },
+    {
+      "source": "93ac4151ddb002c7179f",
+      "target": "a737713b210576f09202",
+      "type": "NoFilter"
+    },
+    {
+      "source": "93ac4151ddb002c7179f",
+      "target": "afdbae76ed25649c1a0a",
+      "type": "NoFilter"
+    },
+    {
+      "source": "93ac4151ddb002c7179f",
+      "target": "ba48e6c5ece33de18a2c",
+      "type": "NoFilter"
+    },
+    {
+      "source": "93ac4151ddb002c7179f",
+      "target": "dac856075f2d9f6c9d3b",
+      "type": "NoFilter"
+    },
+    {
+      "source": "93ac4151ddb002c7179f",
+      "target": "dbeb2bfd30a28ab2117e",
+      "type": "NoFilter"
+    },
+    {
+      "source": "93ac4151ddb002c7179f",
+      "target": "eb6c2db637c5a72efc88",
+      "type": "NoFilter"
+    }
+  ]
 }

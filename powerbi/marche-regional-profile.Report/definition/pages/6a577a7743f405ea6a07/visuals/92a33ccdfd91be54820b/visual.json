@@ -71,17 +71,24 @@
       }
     },
     "objects": {
-      "dataPoint": [
+      "lineStyles": [
         {
           "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#6B746E'"
-                    }
-                  }
+            "showMarker": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        },
+        {
+          "properties": {
+            "markerShape": {
+              "expr": {
+                "Literal": {
+                  "Value": "'circle'"
                 }
               }
             }
@@ -115,14 +122,10 @@
         },
         {
           "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#6B746E'"
-                    }
-                  }
+            "markerShape": {
+              "expr": {
+                "Literal": {
+                  "Value": "'square'"
                 }
               }
             }
@@ -156,14 +159,10 @@
         },
         {
           "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#6B746E'"
-                    }
-                  }
+            "markerShape": {
+              "expr": {
+                "Literal": {
+                  "Value": "'triangle'"
                 }
               }
             }
@@ -197,14 +196,10 @@
         },
         {
           "properties": {
-            "fill": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#6B746E'"
-                    }
-                  }
+            "markerShape": {
+              "expr": {
+                "Literal": {
+                  "Value": "'diamond'"
                 }
               }
             }
@@ -228,6 +223,43 @@
                     "Right": {
                       "Literal": {
                         "Value": "'Macerata'"
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "properties": {
+            "markerShape": {
+              "expr": {
+                "Literal": {
+                  "Value": "'x'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "data": [
+              {
+                "scopeId": {
+                  "Comparison": {
+                    "ComparisonKind": 0,
+                    "Left": {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Entity": "Geo"
+                          }
+                        },
+                        "Property": "Name"
+                      }
+                    },
+                    "Right": {
+                      "Literal": {
+                        "Value": "'Pesaro e Urbino'"
                       }
                     }
                   }
@@ -266,6 +298,26 @@
               "expr": {
                 "Literal": {
                   "Value": "'Line chart of active companies by province as an index, first December = 100; one marker shape per province'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualTooltip": [
+        {
+          "properties": {
+            "type": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Canvas'"
+                }
+              }
+            },
+            "section": {
+              "expr": {
+                "Literal": {
+                  "Value": "'ccd8fb919ff1f4fdfa04'"
                 }
               }
             }
