@@ -197,7 +197,7 @@ New data from `marche-stats export-powerbi`, read through `RepoRawBase` like the
 ## Risks to check in the plan
 
 - Card visuals: whether a text measure wraps over several lines in the story column. Fallback: a text box with static text and the numbers as dynamic values.
-- Dot plot: a table with one row per indicator and an SVG strip per row (`Dot plot SVG`), plus an SVG legend. A scatter chart with one series per area role was tried first (2026-10-16): it could not keep each row next to its label.
+- Dot plot: one SVG image (`Dot plot SVG`) in an image visual, like the province map: a row per indicator with its label, a strip and the focus region's value, then a legend. Tried first on 2026-10-16: a scatter chart (rows could not be kept next to their labels) and a table of SVG strips (a table cell shows the data URI of its image on hover).
 - Image visual with a measure-driven SVG: size limit of the URL and rendering in the PDF export.
 - Page navigator: whether its states can be styled to the navigation mockup. Fallback: buttons with page navigation actions.
 

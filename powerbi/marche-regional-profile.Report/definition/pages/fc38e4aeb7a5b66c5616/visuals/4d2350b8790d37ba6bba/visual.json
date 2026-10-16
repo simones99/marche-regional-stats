@@ -3,11 +3,11 @@
   "name": "4d2350b8790d37ba6bba",
   "position": {
     "x": 224,
-    "y": 608,
-    "z": 12500,
-    "height": 40,
+    "y": 344,
+    "z": 12000,
+    "height": 304,
     "width": 384,
-    "tabOrder": 12500
+    "tabOrder": 12000
   },
   "visual": {
     "visualType": "image",
@@ -23,7 +23,7 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Dot plot legend SVG"
+                  "Property": "Dot plot SVG"
                 }
               }
             }
@@ -51,7 +51,7 @@
             "altText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Legend of the dot plot: green dot the focus region, hollow circles the neighbouring regions, hollow square the country, triangle the EU'"
+                  "Value": "'Dot plot of six indicators: for each, the focus region, its neighbouring regions, the country and the EU from the lowest area on the left to the highest on the right, with the focus region''s value'"
                 }
               }
             }
@@ -86,6 +86,26 @@
               "expr": {
                 "Literal": {
                   "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Where the Focus Region Sits, Lowest to Highest'"
                 }
               }
             }

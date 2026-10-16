@@ -272,26 +272,15 @@ def test_tooltips_list_the_indicators_in_a_fixed_height_table():
         assert f'"Property": "{flag}"' in json.dumps(tables[0]["filterConfig"]), name
 
 
-def test_benchmark_dot_plot_is_a_table_of_strips():
-    # One row per indicator keeps each strip next to its label; a scatter chart cannot.
+def test_benchmark_dot_plot_is_one_image():
+    # One SVG image keeps each strip next to its label and shows no text on hover; a scatter
+    # chart cannot align the rows, and a table cell shows the data URI of its image.
     _, visuals = _page("Benchmark")
-    assert "scatterChart" not in {v["visual"]["visualType"] for v in visuals}
-    strips = [v for v in visuals if "_Measures.Dot plot SVG" in _fields(v)]
-    assert len(strips) == 1
-    assert _fields(strips[0]) == [
-        "Benchmark point.Indicator",
-        "_Measures.Dot plot SVG",
-        "_Measures.Dot focus value",
-    ]
-    assert any("Dot plot legend SVG" in json.dumps(v["visual"].get("objects", {})) for v in visuals)
-
-
-def test_dot_plot_strips_have_no_tooltip():
-    # The default tooltip of a table shows the SVG data URI of the strip as text.
-    _, visuals = _page("Benchmark")
-    strips = next(v for v in visuals if "_Measures.Dot plot SVG" in _fields(v))
-    tooltip = strips["visual"]["visualContainerObjects"]["visualTooltip"][0]["properties"]
-    assert tooltip["show"]["expr"]["Literal"]["Value"] == "false"
+    kinds = {v["visual"]["visualType"] for v in visuals}
+    assert "scatterChart" not in kinds
+    assert not any("_Measures.Dot plot SVG" in _fields(v) for v in visuals)
+    images = [v for v in visuals if "'Dot plot SVG'" in json.dumps(v["visual"].get("objects", {})).replace('"', "'")]
+    assert len(images) == 1 and images[0]["visual"]["visualType"] == "image"
 
 
 def test_province_legend_uses_the_short_names():

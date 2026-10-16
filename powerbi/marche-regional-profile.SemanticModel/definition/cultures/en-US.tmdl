@@ -204,7 +204,7 @@ cultureInfo en-US
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "Focus region": {
+			          "Value": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",

@@ -340,8 +340,9 @@ def test_tooltip_and_dot_plot_objects():
         "Tooltip value",
         "Dot plot SVG",
         "Dot focus value",
-        "Dot plot legend SVG",
+        "_Dot strip marks",
     } <= tables["_Measures"]["measures"]
+    assert "Dot plot legend SVG" not in tables["_Measures"]["measures"]
 
 
 def test_geo_short_names_and_peer_note():
