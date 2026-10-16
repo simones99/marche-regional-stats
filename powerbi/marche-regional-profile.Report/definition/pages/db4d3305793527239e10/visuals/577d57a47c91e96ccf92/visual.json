@@ -156,7 +156,7 @@
             "altText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Bar chart of the share aged 65 and over for the focus region, peers, country and EU'"
+                  "Value": "'Bar chart of the share aged 65 and over for the focus region, its neighbouring regions, the country and the EU'"
                 }
               }
             }

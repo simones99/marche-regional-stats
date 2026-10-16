@@ -6,7 +6,7 @@ expression FocusRegion = "ITI3" meta [IsParameterQuery=true, Type="Text", IsPara
 	annotation PBI_ResultType = Text
 
 /// NUTS 2 regions compared with the focus region: the regions that border it. For the Marche:
-/// Toscana, Umbria, Emilia-Romagna, Lazio, Abruzzo. The Benchmark subtitle calls them bordering.
+/// Toscana, Umbria, Emilia-Romagna, Lazio, Abruzzo. The report calls them neighbouring regions.
 expression PeerRegions = "ITI1,ITI2,ITH5,ITI4,ITF1" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
 	lineageTag: aea6e035-a5bd-4c82-9368-666b3ad2b1b7
 	queryGroup: Parameters

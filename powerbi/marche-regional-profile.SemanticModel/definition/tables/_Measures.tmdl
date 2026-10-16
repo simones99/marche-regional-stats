@@ -887,11 +887,11 @@ table _Measures
 		displayFolder: Report visuals
 		lineageTag: 90645b5f-aa33-4eeb-9054-4a461594c6aa
 
-	/// Benchmark matrix subtitle: the peer regions, which are the regions bordering the focus region.
+	/// Benchmark matrix subtitle: the neighbouring regions (role Peer), the regions bordering the focus region.
 	measure 'Peer regions note' =
 			VAR Peers = CALCULATETABLE ( SUMMARIZE ( Geo, Geo[Name], Geo[SortOrder] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Peer" )
 			RETURN
-			    "Peers: the " & COUNTROWS ( Peers ) & " regions bordering the " & [Focus region name] & " – "
+			    "Neighbouring regions: "
 			        & CONCATENATEX ( Peers, Geo[Name], ", ", Geo[SortOrder], ASC )
 		displayFolder: Report text
 		lineageTag: b3849916-cf57-4a6a-ba32-cf303d2205d6
@@ -918,7 +918,7 @@ table _Measures
 			RETURN
 			    "Years: population change " & yp - 5 & "–" & yp & " · aged 65+ " & yo & " · deaths " & yd & " · GDP " & yg
 			        & " · unemployment " & yu & " · tertiary " & ye & ". Rank 1 = highest value among the "
-			        & [Focus region name] & " and its peers."
+			        & [Focus region name] & " and its neighbouring regions."
 		displayFolder: Report text
 		lineageTag: 5f4fe24a-7adf-4631-b1cc-b1f7ea92d14e
 
@@ -931,37 +931,37 @@ table _Measures
 		lineageTag: fd34ae21-5dd7-41f0-a17c-7fb4a2ef8576
 
 	/// Rank of the focus region among its peers (1 = highest) for the five-year population change.
-	measure '_Rank population change' = CALCULATE ( [Population change 5y %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among peers" )
+	measure '_Rank population change' = CALCULATE ( [Population change 5y %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among neighbours" )
 		isHidden
 		displayFolder: _Helpers
 		lineageTag: d763f909-0644-4e2b-b77b-3e6ddb41eb58
 
 	/// Rank of the focus region among its peers (1 = highest) for the share aged 65+.
-	measure '_Rank aged 65+' = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among peers" )
+	measure '_Rank aged 65+' = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among neighbours" )
 		isHidden
 		displayFolder: _Helpers
 		lineageTag: 3fce5ba2-2a13-4211-b1d3-ec132016fe41
 
 	/// Rank of the focus region among its peers (1 = highest) for the crude death rate.
-	measure '_Rank death rate' = CALCULATE ( [Crude death rate per 1,000], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among peers" )
+	measure '_Rank death rate' = CALCULATE ( [Crude death rate per 1,000], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among neighbours" )
 		isHidden
 		displayFolder: _Helpers
 		lineageTag: b4d9566e-e12d-4f2a-80d1-a0b7d18a341e
 
 	/// Rank of the focus region among its peers (1 = highest) for GDP per inhabitant.
-	measure '_Rank GDP' = CALCULATE ( [GDP per inhabitant (EUR)], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among peers" )
+	measure '_Rank GDP' = CALCULATE ( [GDP per inhabitant (EUR)], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among neighbours" )
 		isHidden
 		displayFolder: _Helpers
 		lineageTag: 3b3592ea-d710-4525-b88a-d8676854e383
 
 	/// Rank of the focus region among its peers (1 = highest) for the unemployment rate.
-	measure '_Rank unemployment' = CALCULATE ( [Unemployment rate], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among peers" )
+	measure '_Rank unemployment' = CALCULATE ( [Unemployment rate], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among neighbours" )
 		isHidden
 		displayFolder: _Helpers
 		lineageTag: 2478ecce-6df3-4bbf-a82e-679cf1b40223
 
 	/// Rank of the focus region among its peers (1 = highest) for tertiary students per 1,000 residents.
-	measure '_Rank tertiary' = CALCULATE ( [Tertiary students per 1,000 residents], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among peers" )
+	measure '_Rank tertiary' = CALCULATE ( [Tertiary students per 1,000 residents], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among neighbours" )
 		isHidden
 		displayFolder: _Helpers
 		lineageTag: e4fb4d66-bbf7-4c05-9fca-90c515ab739e
@@ -1119,7 +1119,7 @@ table _Measures
 	measure 'Education headline accent' =
 			VAR r = [_Rank tertiary]
 			VAR n = [_Peer count]
-			RETURN SWITCH ( TRUE (), ISBLANK ( r ), "per 1,000 residents", r = n || r = 1, "every peer region", "rank " & r & " of " & n )
+			RETURN SWITCH ( TRUE (), ISBLANK ( r ), "per 1,000 residents", r = n || r = 1, "every neighbouring region", "rank " & r & " of " & n )
 		displayFolder: Report text
 		lineageTag: 00a46f42-203d-408d-a722-ccca9c63b940
 
@@ -1219,7 +1219,7 @@ table _Measures
 			VAR R = { [_Rank population change], [_Rank aged 65+], [_Rank death rate], [_Rank GDP], [_Rank unemployment], [_Rank tertiary] }
 			VAR MidCount = COUNTROWS ( FILTER ( R, [Value] > 1 && [Value] < n ) )
 			VAR Extremes = COUNTROWS ( FILTER ( R, [Value] = 1 || [Value] = n ) )
-			RETURN IF ( Extremes > 0 && MidCount >= 3, "Mid-table, but", "Among its peers," )
+			RETURN IF ( Extremes > 0 && MidCount >= 3, "Mid-table, but", "Among its neighbours," )
 		displayFolder: Report text
 		lineageTag: e962c6dc-7c07-4d89-8545-b1561f1ace01
 
@@ -1254,7 +1254,7 @@ table _Measures
 
 	/// Benchmark paragraph: the focus region's rank for each indicator.
 	measure 'Benchmark paragraph' =
-			"Ranks among the " & [Focus region name] & " and its " & [_Peer count] - 1 & " peers, 1 = highest: population change " & [_Rank population change]
+			"Ranks among the " & [Focus region name] & " and its " & [_Peer count] - 1 & " neighbouring regions, 1 = highest: population change " & [_Rank population change]
 			    & ", aged 65+ " & [_Rank aged 65+] & ", deaths per 1,000 " & [_Rank death rate] & ", GDP per inhabitant " & [_Rank GDP]
 			    & ", unemployment " & [_Rank unemployment] & ", tertiary students " & [_Rank tertiary] & "."
 		displayFolder: Report text
@@ -1461,7 +1461,7 @@ table _Measures
 			    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 24' font-family='Segoe UI, sans-serif' font-size='14' fill='#4F5A53'>"
 			        & "<text y='17'>"
 			        & "<tspan x='4' fill='#00753A'>●</tspan><tspan dx='6'>" & [Focus region name] & "</tspan>"
-			        & "<tspan dx='20' fill='#6B746E'>○</tspan><tspan dx='6'>Peer regions</tspan>"
+			        & "<tspan dx='20' fill='#6B746E'>○</tspan><tspan dx='6'>Neighbouring regions</tspan>"
 			        & "<tspan dx='20' fill='#6B746E'>□</tspan><tspan dx='6'>" & [Country name] & "</tspan>"
 			        & "<tspan dx='20' fill='#6B746E'>▲</tspan><tspan dx='6'>" & EU & "</tspan>"
 			        & "</text></svg>"

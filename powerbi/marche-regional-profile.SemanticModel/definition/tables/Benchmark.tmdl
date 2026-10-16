@@ -1,4 +1,4 @@
-/// Benchmark chosen with the Overview buttons: the country, the EU or the peer average.
+/// Benchmark chosen with the Overview buttons: the country, the EU or the average of the neighbouring regions.
 /// Item and ValueItem name the Compare to items that the KPI gap measures apply.
 table Benchmark
 	lineageTag: 9cfa1ed0-32b0-4285-bd66-d6c273639076
@@ -38,7 +38,7 @@ table Benchmark
 				VAR CountryName = CALCULATE ( SELECTEDVALUE ( Geo[Name] ), Geo[Role] = "Country" )
 				RETURN
 				    SELECTCOLUMNS (
-				        { ( CountryName, "vs Country", "Country", 1 ), ( "EU", "vs EU", "EU", 2 ), ( "Peers", "vs Peers avg", "Peers avg", 3 ) },
+				        { ( CountryName, "vs Country", "Country", 1 ), ( "EU", "vs EU", "EU", 2 ), ( "Neighbours", "vs Neighbours avg", "Neighbours avg", 3 ) },
 				        "Benchmark", [Value1], "Item", [Value2], "ValueItem", [Value3], "Order", [Value4]
 				    )
 

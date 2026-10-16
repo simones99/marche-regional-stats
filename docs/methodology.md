@@ -17,7 +17,7 @@ All inputs are downloaded by `marche-stats download`: the Eurostat data through 
 
 ## Comparison set (Power BI report)
 
-The report compares the Marche with Italy, the EU-27 and five peer regions: Toscana, Umbria, Emilia-Romagna, Lazio and Abruzzo (parameter `PeerRegions`). The peers are the Italian regions that share a border with the Marche. The Marche is a strip of land between the Apennines and the Adriatic, so its neighbours cover both sides of the ridge: Emilia-Romagna to the north and Abruzzo to the south along the coast, and Toscana, Umbria and Lazio across the Apennines to the west. A choice based on geography keeps the set fixed and easy to explain; it does not pick the peers by how similar their indicators are. The Benchmark page names the peers under the matrix title, and the About page repeats them.
+The report compares the Marche with Italy, the EU-27 and its five neighbouring regions: Toscana, Umbria, Emilia-Romagna, Lazio and Abruzzo (parameter `PeerRegions`). They are the Italian regions that share a border with the Marche; the model keeps the role name `Peer` for them. The Marche is a strip of land between the Apennines and the Adriatic, so its neighbours cover both sides of the ridge: Emilia-Romagna to the north and Abruzzo to the south along the coast, and Toscana, Umbria and Lazio across the Apennines to the west. A choice based on geography keeps the set fixed and easy to explain; it does not pick the regions by how similar their indicators are. The Benchmark page names them under the matrix title, and the About page repeats them.
 
 ## Processing of the business register file
 

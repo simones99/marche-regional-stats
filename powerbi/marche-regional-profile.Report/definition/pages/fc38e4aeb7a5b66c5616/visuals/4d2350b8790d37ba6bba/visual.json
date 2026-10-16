@@ -51,7 +51,7 @@
             "altText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Legend of the dot plot: green dot the focus region, hollow circles the peer regions, hollow square the country, triangle the EU'"
+                  "Value": "'Legend of the dot plot: green dot the focus region, hollow circles the neighbouring regions, hollow square the country, triangle the EU'"
                 }
               }
             }

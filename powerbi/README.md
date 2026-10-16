@@ -8,7 +8,7 @@ Phase A (this version) contains the semantic model and one model check page. The
 
 - A star schema keyed on NUTS codes. Dimensions: `Geo`, `Calendar` (daily, the date table), `Sex`, `AgeGroup`, `ISCED`, `Sector`. Facts: `Population`, `Deaths`, `GDP`, `Unemployment`, `Enrolment`, `Companies`, `Forecast`, plus the unrelated check tables `ForecastAccuracy` and `Reconciliation`.
 - Power Query parameters choose the areas: `FocusRegion`, `PeerRegions`, `ProvinceRegions`, `Country`, `StartYear`. Every Eurostat query goes through one function, `fnEurostat`.
-- The calculation group `Compare to` adds Country, EU, peer average, differences and rank to any indicator.
+- The calculation group `Compare to` adds Country, EU, the average of the neighbouring regions, differences and rank to any indicator.
 - Province rows are compared among provinces only: provincial GDP lags the regional series by a year, so Compare to is not used on province rows.
 - `Companies` is cleaned in Power Query with the rules of `src/marche_stats/companies.py`.
 - The model check page shows the reconciliation of `Companies` with the totals that Python writes to `data/reconciliation.csv`, the indicators by area and the Compare to matrix.

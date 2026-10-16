@@ -19,7 +19,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Eurostat · peers set by the PeerRegions parameter",
+                    "value": "Eurostat · neighbouring regions set by the PeerRegions parameter",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "10.5pt",

@@ -131,7 +131,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Rank among Peers (1 = Highest)'"
+                  "Value": "'Rank among Neighbours (1 = Highest)'"
                 }
               }
             }
@@ -144,7 +144,7 @@
             "altText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Rank of the focus region among its peers for each indicator'"
+                  "Value": "'Rank of the focus region among its neighbouring regions for each indicator'"
                 }
               }
             }
@@ -251,7 +251,7 @@
                     [
                       {
                         "Literal": {
-                          "Value": "'Rank among peers'"
+                          "Value": "'Rank among neighbours'"
                         }
                       }
                     ]

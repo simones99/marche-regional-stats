@@ -314,7 +314,7 @@ def two_sided_bars(left: tuple[str, str], right: tuple[str, str]) -> tuple[list,
 def ranked_bars(
     key: str, x: int, y: int, w: int, h: int, title: str, measure: str, alt: str
 ) -> Visual:
-    """Bars of the focus region, peers, country and EU, highest first."""
+    """Bars of the focus region, neighbouring regions, country and EU, highest first."""
     return chart(
         key,
         "clusteredBarChart",
@@ -481,7 +481,7 @@ def overview() -> Page:
             HALF_W,
             40,
             C("Benchmark", "Benchmark"),
-            "Benchmark for the KPI gaps: country, EU or peer average",
+            "Benchmark for the KPI gaps: country, EU or neighbouring regions average",
             horizontal=True,
         )
     )
@@ -680,7 +680,7 @@ def economy() -> Page:
             SLOT_H,
             "GDP per inhabitant, euro",
             "GDP per inhabitant (EUR)",
-            "Bar chart of GDP per inhabitant for the focus region, peers, country and EU",
+            "Bar chart of GDP per inhabitant for the focus region, its neighbouring regions, the country and the EU",
         )
     )
     v.append(source("Eurostat nama_10r_2gdp, lfst_r_lfu3rt"))
@@ -790,7 +790,7 @@ def education() -> Page:
             "Tertiary students per 1,000 residents",
             "Tertiary students per 1,000 residents",
             "Bar chart of tertiary students per 1,000 residents"
-            " for the focus region, peers, country and EU",
+            " for the focus region, its neighbouring regions, the country and the EU",
         )
     )
     return Page("education", "Education", v)
@@ -987,12 +987,12 @@ def benchmark() -> Page:
             },
             title="Where the focus region sits, lowest to highest",
             alt=(
-                "Dot plot of the focus region, its peers, the country and the EU for six"
+                "Dot plot of the focus region, its neighbouring regions, the country and the EU for six"
                 " indicators, from the lowest value on the left to the highest on the right"
             ),
         )
     )
-    v.append(source("Eurostat · peers set by the PeerRegions parameter"))
+    v.append(source("Eurostat · neighbouring regions set by the PeerRegions parameter"))
     v.append(textbox("show-label", DASH_X, 40, 120, 24, "Show"))
     v.append(
         slicer(
@@ -1005,7 +1005,7 @@ def benchmark() -> Page:
             "Show values or differences from a benchmark",
             filters=(
                 in_filter(
-                    C("Compare to", "Comparison"), ["Value", "vs Country", "vs EU", "vs Peers avg"]
+                    C("Compare to", "Comparison"), ["Value", "vs Country", "vs EU", "vs Neighbours avg"]
                 ),
             ),
             horizontal=True,
@@ -1021,7 +1021,7 @@ def benchmark() -> Page:
             432,
             roles={"Rows": [C("Geo", "Name")], "Values": [M(m) for m in BENCHMARK_MEASURES]},
             title="Indicators by area",
-            alt="Matrix of six indicators for the focus region, its peers, the country and the EU",
+            alt="Matrix of six indicators for the focus region, its neighbouring regions, the country and the EU",
             filters=[AREAS],
         )
     )
@@ -1032,10 +1032,10 @@ def benchmark() -> Page:
             544,
             DASH_W,
             64,
-            "Rank among peers (1 = highest)",
+            "Rank among Neighbours (1 = Highest)",
             [M("Rank row label"), *[M(m) for m in BENCHMARK_MEASURES]],
-            "Rank of the focus region among its peers for each indicator",
-            filters=(FOCUS, in_filter(C("Compare to", "Comparison"), ["Rank among peers"])),
+            "Rank of the focus region among its neighbouring regions for each indicator",
+            filters=(FOCUS, in_filter(C("Compare to", "Comparison"), ["Rank among neighbours"])),
         )
     )
     v.append(

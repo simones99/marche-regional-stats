@@ -149,7 +149,7 @@
             "altText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Matrix of six indicators for the focus region, its peers, the country and the EU'"
+                  "Value": "'Matrix of six indicators for the focus region, its neighbouring regions, the country and the EU'"
                 }
               }
             }

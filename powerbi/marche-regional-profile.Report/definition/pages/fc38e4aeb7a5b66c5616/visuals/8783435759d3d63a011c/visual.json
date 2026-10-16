@@ -266,7 +266,7 @@
             "altText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Dot plot of the focus region, its peers, the country and the EU for six indicators, from the lowest area on the left to the highest on the right, with the focus region''s value'"
+                  "Value": "'Dot plot of the focus region, its neighbouring regions, the country and the EU for six indicators, from the lowest area on the left to the highest on the right, with the focus region''s value'"
                 }
               }
             }

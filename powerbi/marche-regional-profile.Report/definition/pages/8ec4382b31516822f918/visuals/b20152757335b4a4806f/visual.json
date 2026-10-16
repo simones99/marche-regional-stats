@@ -96,7 +96,7 @@
             "altText": {
               "expr": {
                 "Literal": {
-                  "Value": "'Bar chart of GDP per inhabitant for the focus region, peers, country and EU'"
+                  "Value": "'Bar chart of GDP per inhabitant for the focus region, its neighbouring regions, the country and the EU'"
                 }
               }
             }
