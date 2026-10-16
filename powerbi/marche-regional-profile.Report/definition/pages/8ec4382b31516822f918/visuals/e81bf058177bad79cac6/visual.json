@@ -1,11 +1,11 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "e81bf058177bad79cac6",
   "position": {
     "x": 672,
-    "y": 32,
+    "y": 24,
     "z": 13000,
-    "height": 24,
+    "height": 32,
     "width": 576,
     "tabOrder": 13000
   },
@@ -19,11 +19,11 @@
               {
                 "textRuns": [
                   {
-                    "value": "●  Focus region, solid      □  Country, dashed      ▲  EU-27, dotted",
+                    "value": "●  Marche, solid      □  Italy, dashed      ▲  EU-27, dotted",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "10.5pt",
-                      "color": "#4F5A53"
+                      "color": "#4f5a53"
                     }
                   }
                 ]

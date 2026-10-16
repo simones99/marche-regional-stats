@@ -484,6 +484,34 @@ table _Measures
 
 		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
 
+	/// Value of the Tooltip indicator row as text. A dash when the indicator has no value; for
+	/// the five-year population change before the data allow it, also the first year it has.
+	measure 'Tooltip value' =
+			VAR r = SELECTEDVALUE ( 'Tooltip indicator'[Row] )
+			VAR v =
+			    SWITCH (
+			        r,
+			        1, [Population change 5y %],
+			        2, [Share aged 65+],
+			        3, [Crude death rate per 1,000],
+			        4, [Companies per 1,000 residents],
+			        5, [GDP per inhabitant (EUR)],
+			        6, [Unemployment rate],
+			        7, [Tertiary students per 1,000 residents]
+			    )
+			VAR Fmt = SWITCH ( r, 1, "+0.0%;-0.0%;0.0%", 2, "0.0%", 3, "0.0", 4, "0.0", 5, "#,0", 6, "0.0%", "0.0" )
+			VAR FirstYear = YEAR ( CALCULATE ( MIN ( Population[Date] ), REMOVEFILTERS ( Calendar ) ) ) + 5
+			VAR TooEarly = r = 1 && NOT ISBLANK ( [Population] ) && YEAR ( [_Ref date Population] ) < FirstYear
+			RETURN
+			    IF (
+			        NOT ISBLANK ( r ),
+			        IF ( NOT ISBLANK ( v ), FORMAT ( v, Fmt ), IF ( TooEarly, "– (from " & FirstYear & ")", "–" ) )
+			    )
+		displayFolder: Report text
+		lineageTag: 4a0be898-d118-4d23-8d46-c504053787fa
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
 	/// Latest period of the source on the row of the About freshness table.
 	measure 'Latest period' =
 			SWITCH (
@@ -886,6 +914,69 @@ table _Measures
 		formatString: 0
 		displayFolder: Report visuals
 		lineageTag: 90645b5f-aa33-4eeb-9054-4a461594c6aa
+
+	/// Dot plot strip of one Benchmark indicator, from the lowest area (left) to the highest
+	/// (right): peers as hollow circles, the country as a hollow square, the EU as a filled
+	/// triangle and the focus region as a green dot, drawn last so it stays on top.
+	measure 'Dot plot SVG' =
+			VAR Pts =
+			    FILTER (
+			        ADDCOLUMNS ( SUMMARIZE ( 'Benchmark point', 'Benchmark point'[Code], 'Benchmark point'[Role] ), "@p", [Dot position] ),
+			        NOT ISBLANK ( [@p] )
+			    )
+			VAR Marks =
+			    CONCATENATEX (
+			        Pts,
+			        VAR x = 8 + 144 * [@p]
+			        RETURN
+			            SWITCH (
+			                'Benchmark point'[Role],
+			                "Focus", "<circle cx='" & FORMAT ( x, "0.0" ) & "' cy='14' r='6' fill='#00753A'/>",
+			                "Country", "<rect x='" & FORMAT ( x - 4.5, "0.0" ) & "' y='9.5' width='9' height='9' fill='#F5F6F3' stroke='#6B746E' stroke-width='1.5'/>",
+			                "EU", "<polygon points='" & FORMAT ( x, "0.0" ) & ",8 " & FORMAT ( x + 5.5, "0.0" ) & ",18 " & FORMAT ( x - 5.5, "0.0" ) & ",18' fill='#6B746E'/>",
+			                "<circle cx='" & FORMAT ( x, "0.0" ) & "' cy='14' r='4' fill='#F5F6F3' stroke='#6B746E' stroke-width='1.5'/>"
+			            ),
+			        "",
+			        SWITCH ( 'Benchmark point'[Role], "Peer", 1, "Country", 2, "EU", 3, 4 ), ASC
+			    )
+			VAR Svg =
+			    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 28'>"
+			        & "<line x1='8' y1='14' x2='152' y2='14' stroke='#C9CEC9' stroke-width='1'/>"
+			        & Marks & "</svg>"
+			RETURN IF ( COUNTROWS ( Pts ) > 0, "data:image/svg+xml;utf8," & SUBSTITUTE ( SUBSTITUTE ( Svg, "%", "%25" ), "#", "%23" ) )
+		displayFolder: Report visuals
+		lineageTag: 9e16b09c-b7f9-4db9-88b4-4517abd32dcc
+		dataCategory: ImageUrl
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Value of the focus region for the Benchmark point indicator, as text in the indicator's format.
+	measure 'Dot focus value' =
+			VAR r = SELECTEDVALUE ( 'Benchmark point'[Row] )
+			VAR v = CALCULATE ( [Dot value], 'Benchmark point'[Role] = "Focus" )
+			RETURN IF ( NOT ISBLANK ( v ), FORMAT ( v, SWITCH ( r, 1, "+0.0%;-0.0%;0.0%", 2, "0.0%", 3, "0.0", 4, "#,0", 5, "0.0%", "0.0" ) ) )
+		displayFolder: Report visuals
+		lineageTag: 0f8d8149-8896-4606-8ff1-61b93f99f6ae
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Legend of the Benchmark dot plot, with the names of the focus region, the country and the EU.
+	measure 'Dot plot legend SVG' =
+			VAR EU = CALCULATE ( SELECTEDVALUE ( Geo[Name] ), REMOVEFILTERS ( Geo ), Geo[Role] = "EU" )
+			VAR Svg =
+			    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 24' font-family='Segoe UI, sans-serif' font-size='14' fill='#4F5A53'>"
+			        & "<text y='17'>"
+			        & "<tspan x='4' fill='#00753A'>●</tspan><tspan dx='6'>" & [Focus region name] & "</tspan>"
+			        & "<tspan dx='20' fill='#6B746E'>○</tspan><tspan dx='6'>Peer regions</tspan>"
+			        & "<tspan dx='20' fill='#6B746E'>□</tspan><tspan dx='6'>" & [Country name] & "</tspan>"
+			        & "<tspan dx='20' fill='#6B746E'>▲</tspan><tspan dx='6'>" & EU & "</tspan>"
+			        & "</text></svg>"
+			RETURN "data:image/svg+xml;utf8," & SUBSTITUTE ( SUBSTITUTE ( Svg, "%", "%25" ), "#", "%23" )
+		displayFolder: Report visuals
+		lineageTag: e9c68bb2-5254-4871-a20d-2e42c6e273ca
+		dataCategory: ImageUrl
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
 
 	/// Label of the Benchmark rank row, e.g. "Marche rank of 6".
 	measure 'Rank row label' =

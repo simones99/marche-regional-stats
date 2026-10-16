@@ -322,3 +322,23 @@ def test_report_text_measures():
     for prefix in REPORT_TEXT_PREFIXES:
         for part in ("headline lead", "headline accent", "paragraph"):
             assert f"{prefix} {part}" in measures
+
+
+def test_compare_to_items_pass_text_measures_through():
+    # The Benchmark rank table has a text row label: an item that returns BLANK for text empties it.
+    text = (MODEL / "tables" / "Compare to.tmdl").read_text(encoding="utf-8")
+    for item in re.split(r"^		calculationItem ", text, flags=re.M)[1:]:
+        name = _name(item.split("=")[0])
+        if name != "Value":
+            assert "ISTEXT ( v ), v" in item, name
+
+
+def test_tooltip_and_dot_plot_objects():
+    tables = model_tables()
+    assert {"Row", "Indicator", "InArea", "InProvince"} <= tables["Tooltip indicator"]["columns"]
+    assert {
+        "Tooltip value",
+        "Dot plot SVG",
+        "Dot focus value",
+        "Dot plot legend SVG",
+    } <= tables["_Measures"]["measures"]

@@ -56,8 +56,11 @@ table 'Compare to'
 				    )
 				RETURN
 				    IF (
-				        Comparable && SELECTEDVALUE ( Geo[Role] ) IN { "Focus", "Peer" } && NOT ISBLANK ( v ),
-				        RANKX ( Areas, VAR c = Geo[Code] RETURN CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Code] = c, 'Compare to'[Comparison] = "Value" ), v, DESC, DENSE )
+				        ISTEXT ( v ), v,
+				        IF (
+				            Comparable && SELECTEDVALUE ( Geo[Role] ) IN { "Focus", "Peer" } && NOT ISBLANK ( v ),
+				            RANKX ( Areas, VAR c = Geo[Code] RETURN CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Code] = c, 'Compare to'[Comparison] = "Value" ), v, DESC, DENSE )
+				        )
 				    )
 
 			formatStringDefinition = "0"

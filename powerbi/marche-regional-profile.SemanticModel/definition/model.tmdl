@@ -43,6 +43,7 @@ ref table ProvinceShape
 ref table Seasonality
 ref table Benchmark
 ref table 'Benchmark point'
+ref table 'Tooltip indicator'
 ref table 'Data source'
 
 ref cultureInfo en-US

@@ -44,7 +44,7 @@ def _points(value) -> float:
 def font_sizes(node):
     if isinstance(node, dict):
         for key, value in node.items():
-            if key == "fontSize":
+            if key in ("fontSize", "textSize"):
                 yield _points(value)
             else:
                 yield from font_sizes(value)
@@ -250,3 +250,37 @@ def test_spike_page_is_hidden_and_outside_the_layout():
     assert spike.hidden and spike.key == "spike"
     assert spike.key not in {p.key for p in report_layout.pages()}
     assert all(v.alt for v in spike.visuals)
+
+
+def _page(name):
+    return next((p, v) for p, v in written_pages() if p["displayName"] == name)
+
+
+def _fields(visual) -> list[str]:
+    state = visual["visual"].get("query", {}).get("queryState", {})
+    return [p["queryRef"] for role in state.values() for p in role["projections"]]
+
+
+def test_tooltips_list_the_indicators_in_a_fixed_height_table():
+    # A multi-row card wraps its values by text length and scrolls when they do not fit.
+    for name, flag in (("Area tooltip", "InArea"), ("Province tooltip", "InProvince")):
+        _, visuals = _page(name)
+        assert "multiRowCard" not in {v["visual"]["visualType"] for v in visuals}, name
+        tables = [v for v in visuals if v["visual"]["visualType"] == "tableEx"]
+        assert len(tables) == 1, name
+        assert _fields(tables[0]) == ["Tooltip indicator.Indicator", "_Measures.Tooltip value"]
+        assert f'"Property": "{flag}"' in json.dumps(tables[0]["filterConfig"]), name
+
+
+def test_benchmark_dot_plot_is_a_table_of_strips():
+    # One row per indicator keeps each strip next to its label; a scatter chart cannot.
+    _, visuals = _page("Benchmark")
+    assert "scatterChart" not in {v["visual"]["visualType"] for v in visuals}
+    strips = [v for v in visuals if "_Measures.Dot plot SVG" in _fields(v)]
+    assert len(strips) == 1
+    assert _fields(strips[0]) == [
+        "Benchmark point.Indicator",
+        "_Measures.Dot plot SVG",
+        "_Measures.Dot focus value",
+    ]
+    assert any("Dot plot legend SVG" in json.dumps(v["visual"].get("objects", {})) for v in visuals)
