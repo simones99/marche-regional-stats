@@ -23,11 +23,11 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Area name"
+                  "Property": "Tooltip title"
                 }
               },
-              "queryRef": "_Measures.Area name",
-              "nativeQueryRef": "Area name"
+              "queryRef": "_Measures.Tooltip title",
+              "nativeQueryRef": "Tooltip title"
             }
           ]
         }

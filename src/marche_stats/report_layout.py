@@ -1243,7 +1243,7 @@ def area_tooltip() -> Page:
         ],
         hidden=True,
         width=320,
-        height=240,
+        height=280,
     )
 
 

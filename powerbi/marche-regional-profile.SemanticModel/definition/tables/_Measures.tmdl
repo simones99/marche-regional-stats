@@ -887,17 +887,6 @@ table _Measures
 		displayFolder: Report visuals
 		lineageTag: 90645b5f-aa33-4eeb-9054-4a461594c6aa
 
-	/// Benchmark matrix subtitle: the neighbouring regions (role Peer), the regions bordering the focus region.
-	measure 'Peer regions note' =
-			VAR Peers = CALCULATETABLE ( SUMMARIZE ( Geo, Geo[Name], Geo[SortOrder] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Peer" )
-			RETURN
-			    "Neighbouring regions: "
-			        & CONCATENATEX ( Peers, Geo[Name], ", ", Geo[SortOrder], ASC )
-		displayFolder: Report text
-		lineageTag: b3849916-cf57-4a6a-ba32-cf303d2205d6
-
-		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
-
 	/// Label of the Benchmark rank row, e.g. "Marche rank of 6".
 	measure 'Rank row label' =
 			[Focus region name] & " rank of "
@@ -1383,7 +1372,7 @@ table _Measures
 
 	/// Value of the Tooltip indicator row as text. A dash when the indicator has no value; for
 	/// the five-year population change before the data allow it, also the first year it has.
-	measure 'Tooltip value' =
+	measure '_Tooltip value' =
 			VAR r = SELECTEDVALUE ( 'Tooltip indicator'[Row] )
 			VAR v =
 			    SWITCH (
@@ -1404,8 +1393,56 @@ table _Measures
 			        NOT ISBLANK ( r ),
 			        IF ( NOT ISBLANK ( v ), FORMAT ( v, Fmt ), IF ( TooEarly, "– (from " & FirstYear & ")", "–" ) )
 			    )
-		displayFolder: Report text
+		isHidden
+		displayFolder: _Helpers
 		lineageTag: 4a0be898-d118-4d23-8d46-c504053787fa
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Tooltip value for the area of the tooltip, or for the focus region when the tooltip gets
+	/// several areas: a line chart hovered between its points passes only the year.
+	measure 'Tooltip value' =
+			IF ( HASONEVALUE ( Geo[Code] ), [_Tooltip value], CALCULATE ( [_Tooltip value], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" ) )
+		displayFolder: Report text
+		lineageTag: 38299eba-1e09-4807-9077-ec5927248650
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Area tooltip title: the area, or the focus region when there are several, and the year.
+	measure 'Tooltip title' =
+			VAR Area = IF ( HASONEVALUE ( Geo[Code] ), SELECTEDVALUE ( Geo[Name] ), [Focus region name] )
+			RETURN Area & IF ( HASONEVALUE ( Calendar[Year] ), " · " & SELECTEDVALUE ( Calendar[Year] ) )
+		displayFolder: Report text
+		lineageTag: ab5dacce-345d-49b9-bf3c-be1886bd57c3
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Eurostat flags for the area of the tooltip, or for the focus region when there are several.
+	measure 'Tooltip flags' =
+			IF ( HASONEVALUE ( Geo[Code] ), [Flags text], CALCULATE ( [Flags text], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" ) )
+		displayFolder: Report text
+		lineageTag: cb629f81-53e4-4f70-b009-f0708a8bdd27
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Text of one dot plot strip, for screen readers and as the alt text of the strip image.
+	measure 'Dot plot alt text' =
+			VAR r = SELECTEDVALUE ( 'Benchmark point'[Row] )
+			VAR Fmt = SWITCH ( r, 1, "+0.0%;-0.0%;0.0%", 2, "0.0%", 3, "0.0", 4, "#,0", 5, "0.0%", "0.0" )
+			VAR Focus = CALCULATE ( [Dot value], 'Benchmark point'[Role] = "Focus" )
+			VAR Country = CALCULATE ( [Dot value], 'Benchmark point'[Role] = "Country" )
+			VAR EU = CALCULATE ( [Dot value], 'Benchmark point'[Role] = "EU" )
+			VAR EUName = CALCULATE ( SELECTEDVALUE ( Geo[Name] ), REMOVEFILTERS ( Geo ), Geo[Role] = "EU" )
+			VAR Peers = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( 'Benchmark point'[Code] ), "@v", [Dot value] ), 'Benchmark point'[Role] = "Peer" )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( r ),
+			        [Focus region name] & " " & FORMAT ( Focus, Fmt )
+			            & "; neighbouring regions " & FORMAT ( MINX ( Peers, [@v] ), Fmt ) & " to " & FORMAT ( MAXX ( Peers, [@v] ), Fmt )
+			            & "; " & [Country name] & " " & FORMAT ( Country, Fmt ) & "; " & EUName & " " & FORMAT ( EU, Fmt )
+			    )
+		displayFolder: Report visuals
+		lineageTag: f41fc005-7a2b-4591-b251-0144ef7797fa
 
 		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
 
@@ -1458,17 +1495,27 @@ table _Measures
 	measure 'Dot plot legend SVG' =
 			VAR EU = CALCULATE ( SELECTEDVALUE ( Geo[Name] ), REMOVEFILTERS ( Geo ), Geo[Role] = "EU" )
 			VAR Svg =
-			    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 24' font-family='Segoe UI, sans-serif' font-size='14' fill='#4F5A53'>"
-			        & "<text y='17'>"
-			        & "<tspan x='4' fill='#00753A'>●</tspan><tspan dx='6'>" & [Focus region name] & "</tspan>"
-			        & "<tspan dx='20' fill='#6B746E'>○</tspan><tspan dx='6'>Neighbouring regions</tspan>"
-			        & "<tspan dx='20' fill='#6B746E'>□</tspan><tspan dx='6'>" & [Country name] & "</tspan>"
-			        & "<tspan dx='20' fill='#6B746E'>▲</tspan><tspan dx='6'>" & EU & "</tspan>"
-			        & "</text></svg>"
+			    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 40' font-family='Segoe UI, sans-serif' font-size='14' fill='#4F5A53'>"
+			        & "<text y='15'><tspan x='2' fill='#00753A'>●</tspan><tspan dx='5'>" & [Focus region name] & "</tspan>"
+			        & "<tspan dx='16' fill='#6B746E'>○</tspan><tspan dx='5'>Neighbouring regions</tspan></text>"
+			        & "<text y='35'><tspan x='2' fill='#6B746E'>□</tspan><tspan dx='5'>" & [Country name] & "</tspan>"
+			        & "<tspan dx='16' fill='#6B746E'>▲</tspan><tspan dx='5'>" & EU & "</tspan></text>"
+			        & "</svg>"
 			RETURN "data:image/svg+xml;utf8," & SUBSTITUTE ( SUBSTITUTE ( Svg, "%", "%25" ), "#", "%23" )
 		displayFolder: Report visuals
 		lineageTag: e9c68bb2-5254-4871-a20d-2e42c6e273ca
 		dataCategory: ImageUrl
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Benchmark matrix subtitle: the neighbouring regions (role Peer), the regions bordering the focus region.
+	measure 'Peer regions note' =
+			VAR Peers = CALCULATETABLE ( SUMMARIZE ( Geo, Geo[Name], Geo[SortOrder] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Peer" )
+			RETURN
+			    "Neighbouring regions: "
+			        & CONCATENATEX ( Peers, Geo[Name], ", ", Geo[SortOrder], ASC )
+		displayFolder: Report text
+		lineageTag: b3849916-cf57-4a6a-ba32-cf303d2205d6
 
 		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
 

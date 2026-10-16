@@ -155,7 +155,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "176D"
+                  "Value": "168D"
                 }
               }
             }
@@ -192,6 +192,19 @@
           },
           "selector": {
             "metadata": "_Measures.Tooltip value"
+          }
+        }
+      ],
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
           }
         }
       ]

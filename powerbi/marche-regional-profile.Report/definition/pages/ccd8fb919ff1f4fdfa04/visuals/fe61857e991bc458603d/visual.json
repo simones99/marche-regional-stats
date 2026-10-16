@@ -3,9 +3,9 @@
   "name": "fe61857e991bc458603d",
   "position": {
     "x": 16,
-    "y": 208,
+    "y": 232,
     "z": 2000,
-    "height": 24,
+    "height": 40,
     "width": 288,
     "tabOrder": 2000
   },
@@ -23,11 +23,11 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Flags text"
+                  "Property": "Tooltip flags"
                 }
               },
-              "queryRef": "_Measures.Flags text",
-              "nativeQueryRef": "Flags text"
+              "queryRef": "_Measures.Tooltip flags",
+              "nativeQueryRef": "Tooltip flags"
             }
           ]
         }
@@ -65,6 +65,19 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "wordWrap": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
                 }
               }
             }

@@ -5,7 +5,7 @@
     "x": 224,
     "y": 344,
     "z": 12000,
-    "height": 272,
+    "height": 256,
     "width": 384,
     "tabOrder": 12000
   },
@@ -58,7 +58,7 @@
               },
               "queryRef": "_Measures.Dot focus value",
               "nativeQueryRef": "Dot focus value",
-              "displayName": "Focus region"
+              "displayName": "Value"
             }
           ]
         }
@@ -109,14 +109,14 @@
             "imageWidth": {
               "expr": {
                 "Literal": {
-                  "Value": "160D"
+                  "Value": "152D"
                 }
               }
             },
             "imageHeight": {
               "expr": {
                 "Literal": {
-                  "Value": "28D"
+                  "Value": "24D"
                 }
               }
             }
@@ -198,7 +198,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "168D"
+                  "Value": "160D"
                 }
               }
             }
@@ -235,6 +235,19 @@
           },
           "selector": {
             "metadata": "_Measures.Dot focus value"
+          }
+        }
+      ],
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
           }
         }
       ]

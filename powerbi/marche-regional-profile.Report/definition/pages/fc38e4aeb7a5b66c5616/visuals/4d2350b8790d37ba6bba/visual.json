@@ -3,9 +3,9 @@
   "name": "4d2350b8790d37ba6bba",
   "position": {
     "x": 224,
-    "y": 624,
+    "y": 608,
     "z": 12500,
-    "height": 24,
+    "height": 40,
     "width": 384,
     "tabOrder": 12500
   },
@@ -52,6 +52,40 @@
               "expr": {
                 "Literal": {
                   "Value": "'Legend of the dot plot: green dot the focus region, hollow circles the neighbouring regions, hollow square the country, triangle the EU'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
                 }
               }
             }

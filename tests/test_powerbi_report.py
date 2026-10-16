@@ -307,3 +307,23 @@ def test_benchmark_matrix_names_the_peer_regions():
     matrix = next(v for v in visuals if v["visual"]["visualType"] == "pivotTable")
     subtitle = matrix["visual"]["visualContainerObjects"]["subTitle"][0]["properties"]
     assert subtitle["text"]["expr"]["Measure"]["Property"] == "Peer regions note"
+
+
+def test_tables_and_matrices_have_no_total_row():
+    # The measures are rates and shares: a total row is empty and takes the space of a row.
+    off = {"expr": {"Literal": {"Value": "false"}}}
+    for page, visuals in written_pages():
+        for v in visuals:
+            kind, objects = v["visual"]["visualType"], v["visual"].get("objects", {})
+            where = f"{page['displayName']}: {v['name']}"
+            if kind == "tableEx":
+                assert objects["total"][0]["properties"]["totals"] == off, where
+            elif kind == "pivotTable":
+                assert objects["subTotals"][0]["properties"]["rowSubtotals"] == off, where
+
+
+def test_area_tooltip_falls_back_to_the_focus_region():
+    # A line chart hovered between points passes only the year, so the tooltip gets several areas.
+    _, visuals = _page("Area tooltip")
+    fields = {f for v in visuals for f in _fields(v)}
+    assert {"_Measures.Tooltip title", "_Measures.Tooltip value", "_Measures.Tooltip flags"} <= fields

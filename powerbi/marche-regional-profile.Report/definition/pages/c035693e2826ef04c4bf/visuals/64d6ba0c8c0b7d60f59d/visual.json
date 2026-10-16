@@ -311,6 +311,19 @@
             "metadata": "_Measures.GDP per inhabitant (EUR)"
           }
         }
+      ],
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
       ]
     }
   },

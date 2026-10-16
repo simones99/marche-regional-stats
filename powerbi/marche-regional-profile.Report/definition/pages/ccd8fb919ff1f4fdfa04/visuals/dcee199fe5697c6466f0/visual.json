@@ -5,7 +5,7 @@
     "x": 16,
     "y": 56,
     "z": 1000,
-    "height": 152,
+    "height": 168,
     "width": 288,
     "tabOrder": 1000
   },
@@ -155,7 +155,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "176D"
+                  "Value": "168D"
                 }
               }
             }
@@ -192,6 +192,19 @@
           },
           "selector": {
             "metadata": "_Measures.Tooltip value"
+          }
+        }
+      ],
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
           }
         }
       ]
