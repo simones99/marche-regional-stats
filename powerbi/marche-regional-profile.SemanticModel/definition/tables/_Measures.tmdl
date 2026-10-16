@@ -469,13 +469,32 @@ table _Measures
 			        ( "Enrolment", [Enrolment flag] )
 			    }
 			VAR Named = FILTER ( Flags, [Value2] <> "" )
+			// Eurostat flag codes; a cell can carry several, for example "bep".
+			VAR Codes =
+			    DATATABLE (
+			        "Code", STRING, "Word", STRING,
+			        {
+			            { "b", "break in series" },
+			            { "c", "confidential" },
+			            { "d", "definition differs" },
+			            { "e", "estimated" },
+			            { "f", "forecast" },
+			            { "n", "not significant" },
+			            { "p", "provisional" },
+			            { "r", "revised" },
+			            { "s", "Eurostat estimate" },
+			            { "u", "low reliability" },
+			            { "z", "not applicable" }
+			        }
+			    )
 			RETURN
 			    IF (
 			        COUNTROWS ( Named ) > 0,
 			        "Eurostat flags: "
 			            & CONCATENATEX (
 			                Named,
-			                [Value1] & " " & TRIM ( SUBSTITUTE ( SUBSTITUTE ( SUBSTITUTE ( [Value2], "p", " provisional" ), "e", " estimated" ), "b", " break in series" ) ),
+			                VAR f = [Value2]
+			                RETURN [Value1] & ": " & CONCATENATEX ( FILTER ( Codes, CONTAINSSTRING ( f, [Code] ) ), [Word], ", ", [Code], ASC ),
 			                "; "
 			            )
 			    )
@@ -1392,8 +1411,8 @@ table _Measures
 			        IndicatorRows,
 			        VAR cy = 8 + 32 * 'Benchmark point'[Row]
 			        VAR L = SUBSTITUTE ( 'Benchmark point'[Indicator], "&", "&amp;" )
-			        // Labels longer than 20 characters break at the last space within the first 21.
-			        VAR Cut = IF ( LEN ( L ) > 20, MAXX ( FILTER ( GENERATESERIES ( 1, 21 ), MID ( L, [Value], 1 ) = " " ), [Value] ) )
+			        // Labels longer than 20 characters break at the last space within the first 19.
+			        VAR Cut = IF ( LEN ( L ) > 20, MAXX ( FILTER ( GENERATESERIES ( 1, 19 ), MID ( L, [Value], 1 ) = " " ), [Value] ) )
 			        VAR Label =
 			            IF (
 			                ISBLANK ( Cut ),
@@ -1426,38 +1445,6 @@ table _Measures
 		displayFolder: Report visuals
 		lineageTag: 9e16b09c-b7f9-4db9-88b4-4517abd32dcc
 		dataCategory: ImageUrl
-
-		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
-
-	/// Marks of one dot plot row, on the row's line (y = 8 + 32 x row): neighbouring regions as
-	/// hollow circles, the country as a hollow square, the EU as a filled triangle and the focus
-	/// region as a green dot, drawn last. x runs from 158 (lowest area) to 318 (highest) by
-	/// Dot position; an area without a value for the indicator gets no mark.
-	measure '_Dot strip marks' =
-			VAR cy = 8 + 32 * SELECTEDVALUE ( 'Benchmark point'[Row] )
-			VAR Pts =
-			    FILTER (
-			        ADDCOLUMNS ( SUMMARIZE ( 'Benchmark point', 'Benchmark point'[Code], 'Benchmark point'[Role] ), "@p", [Dot position] ),
-			        NOT ISBLANK ( [@p] )
-			    )
-			RETURN
-			    CONCATENATEX (
-			        Pts,
-			        VAR x = 158 + 160 * [@p]
-			        RETURN
-			            SWITCH (
-			                'Benchmark point'[Role],
-			                "Focus", "<circle cx='" & FORMAT ( x, "0.0" ) & "' cy='" & cy & "' r='6' fill='#00753A'/>",
-			                "Country", "<rect x='" & FORMAT ( x - 4.5, "0.0" ) & "' y='" & cy - 4.5 & "' width='9' height='9' fill='#F5F6F3' stroke='#6B746E' stroke-width='1.5'/>",
-			                "EU", "<polygon points='" & FORMAT ( x, "0.0" ) & "," & cy - 6 & " " & FORMAT ( x + 5.5, "0.0" ) & "," & cy + 4 & " " & FORMAT ( x - 5.5, "0.0" ) & "," & cy + 4 & "' fill='#6B746E'/>",
-			                "<circle cx='" & FORMAT ( x, "0.0" ) & "' cy='" & cy & "' r='4' fill='#F5F6F3' stroke='#6B746E' stroke-width='1.5'/>"
-			            ),
-			        "",
-			        SWITCH ( 'Benchmark point'[Role], "Peer", 1, "Country", 2, "EU", 3, 4 ), ASC
-			    )
-		isHidden
-		displayFolder: _Helpers
-		lineageTag: 777195d7-b518-4f44-963a-8760d7b1f883
 
 		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
 
@@ -1524,6 +1511,38 @@ table _Measures
 	measure 'Tooltip flags' = IF ( HASONEVALUE ( Geo[Code] ), [Flags text], CALCULATE ( [Flags text], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" ) )
 		displayFolder: Report text
 		lineageTag: cb629f81-53e4-4f70-b009-f0708a8bdd27
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Marks of one dot plot row, on the row's line (y = 8 + 32 x row): neighbouring regions as
+	/// hollow circles, the country as a hollow square, the EU as a filled triangle and the focus
+	/// region as a green dot, drawn last. x runs from 158 (lowest area) to 318 (highest) by
+	/// Dot position; an area without a value for the indicator gets no mark.
+	measure '_Dot strip marks' =
+			VAR cy = 8 + 32 * SELECTEDVALUE ( 'Benchmark point'[Row] )
+			VAR Pts =
+			    FILTER (
+			        ADDCOLUMNS ( SUMMARIZE ( 'Benchmark point', 'Benchmark point'[Code], 'Benchmark point'[Role] ), "@p", [Dot position] ),
+			        NOT ISBLANK ( [@p] )
+			    )
+			RETURN
+			    CONCATENATEX (
+			        Pts,
+			        VAR x = 158 + 160 * [@p]
+			        RETURN
+			            SWITCH (
+			                'Benchmark point'[Role],
+			                "Focus", "<circle cx='" & FORMAT ( x, "0.0" ) & "' cy='" & cy & "' r='6' fill='#00753A'/>",
+			                "Country", "<rect x='" & FORMAT ( x - 4.5, "0.0" ) & "' y='" & cy - 4.5 & "' width='9' height='9' fill='#F5F6F3' stroke='#6B746E' stroke-width='1.5'/>",
+			                "EU", "<polygon points='" & FORMAT ( x, "0.0" ) & "," & cy - 6 & " " & FORMAT ( x + 5.5, "0.0" ) & "," & cy + 4 & " " & FORMAT ( x - 5.5, "0.0" ) & "," & cy + 4 & "' fill='#6B746E'/>",
+			                "<circle cx='" & FORMAT ( x, "0.0" ) & "' cy='" & cy & "' r='4' fill='#F5F6F3' stroke='#6B746E' stroke-width='1.5'/>"
+			            ),
+			        "",
+			        SWITCH ( 'Benchmark point'[Role], "Peer", 1, "Country", 2, "EU", 3, 4 ), ASC
+			    )
+		isHidden
+		displayFolder: _Helpers
+		lineageTag: 777195d7-b518-4f44-963a-8760d7b1f883
 
 		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
 

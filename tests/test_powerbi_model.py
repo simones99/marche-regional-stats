@@ -349,3 +349,11 @@ def test_geo_short_names_and_peer_note():
     tables = model_tables()
     assert "LegendName" in tables["Geo"]["columns"]
     assert "Peer regions note" in tables["_Measures"]["measures"]
+
+
+def test_flags_text_names_every_eurostat_flag_in_the_data():
+    # Flags seen in the data: b, e, p and their combinations, and d on enrolment.
+    text = (MODEL / "tables" / "_Measures.tmdl").read_text(encoding="utf-8")
+    body = text[text.index("measure 'Flags text' =") :].split("\tmeasure ", 1)[0]
+    for code, word in (("b", "break in series"), ("d", "definition differs"), ("e", "estimated"), ("p", "provisional")):
+        assert f'{{ "{code}", "{word}"' in body, code

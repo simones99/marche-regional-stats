@@ -180,19 +180,7 @@ cultureInfo en-US
 			          "ConceptualProperty": "Dot plot SVG"
 			        }
 			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "Lowest → Highest": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
+			      "State": "Generated"
 			    },
 			    "table_measures.dot_focus_value": {
 			      "Definition": {
@@ -201,19 +189,7 @@ cultureInfo en-US
 			          "ConceptualProperty": "Dot focus value"
 			        }
 			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "Value": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
+			      "State": "Generated"
 			    },
 			    "table_measures.tooltip_value": {
 			      "Definition": {
@@ -243,19 +219,7 @@ cultureInfo en-US
 			          "ConceptualProperty": "Indicator"
 			        }
 			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "Indicator": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
+			      "State": "Generated"
 			    },
 			    "tooltip_indicator.indicator": {
 			      "Definition": {

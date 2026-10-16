@@ -19,7 +19,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Tooltips mark Eurostat flags: p provisional, e estimated, b break in series.",
+                    "value": "Tooltips name the Eurostat flags in words: b break in series, d definition differs, e estimated, p provisional.",
                     "textStyle": {
                       "fontFamily": "Segoe UI",
                       "fontSize": "10.5pt",
