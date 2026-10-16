@@ -67,7 +67,7 @@ table Geo
 				    Benchmarks = #table(
 				        type table [Code = text, Name = text, Level = text, ParentCode = nullable text, Role = text],
 				        {
-				            {"EU27_2020", "European Union (27)", "EU", null, "EU"},
+				            {"EU27_2020", "EU-27", "EU", null, "EU"},
 				            {Country, if Country = "IT" then "Italy" else Country, "Country", "EU27_2020", "Country"}
 				        }
 				    ),
