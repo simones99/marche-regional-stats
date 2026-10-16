@@ -42,11 +42,11 @@
                       "Entity": "Geo"
                     }
                   },
-                  "Property": "Name"
+                  "Property": "LegendName"
                 }
               },
-              "queryRef": "Geo.Name",
-              "nativeQueryRef": "Name"
+              "queryRef": "Geo.LegendName",
+              "nativeQueryRef": "LegendName"
             }
           ]
         },
@@ -106,7 +106,7 @@
                             "Entity": "Geo"
                           }
                         },
-                        "Property": "Name"
+                        "Property": "LegendName"
                       }
                     },
                     "Right": {
@@ -143,12 +143,12 @@
                             "Entity": "Geo"
                           }
                         },
-                        "Property": "Name"
+                        "Property": "LegendName"
                       }
                     },
                     "Right": {
                       "Literal": {
-                        "Value": "'Ascoli Piceno'"
+                        "Value": "'AP'"
                       }
                     }
                   }
@@ -180,7 +180,7 @@
                             "Entity": "Geo"
                           }
                         },
-                        "Property": "Name"
+                        "Property": "LegendName"
                       }
                     },
                     "Right": {
@@ -217,7 +217,7 @@
                             "Entity": "Geo"
                           }
                         },
-                        "Property": "Name"
+                        "Property": "LegendName"
                       }
                     },
                     "Right": {
@@ -254,12 +254,12 @@
                             "Entity": "Geo"
                           }
                         },
-                        "Property": "Name"
+                        "Property": "LegendName"
                       }
                     },
                     "Right": {
                       "Literal": {
-                        "Value": "'Pesaro e Urbino'"
+                        "Value": "'PU'"
                       }
                     }
                   }

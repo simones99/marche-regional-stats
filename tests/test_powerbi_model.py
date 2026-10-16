@@ -342,3 +342,9 @@ def test_tooltip_and_dot_plot_objects():
         "Dot focus value",
         "Dot plot legend SVG",
     } <= tables["_Measures"]["measures"]
+
+
+def test_geo_short_names_and_peer_note():
+    tables = model_tables()
+    assert "LegendName" in tables["Geo"]["columns"]
+    assert "Peer regions note" in tables["_Measures"]["measures"]

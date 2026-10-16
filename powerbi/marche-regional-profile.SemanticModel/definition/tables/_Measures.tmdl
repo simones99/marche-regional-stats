@@ -887,6 +887,17 @@ table _Measures
 		displayFolder: Report visuals
 		lineageTag: 90645b5f-aa33-4eeb-9054-4a461594c6aa
 
+	/// Benchmark matrix subtitle: the peer regions, which are the regions bordering the focus region.
+	measure 'Peer regions note' =
+			VAR Peers = CALCULATETABLE ( SUMMARIZE ( Geo, Geo[Name], Geo[SortOrder] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Peer" )
+			RETURN
+			    "Peers: the " & COUNTROWS ( Peers ) & " regions bordering the " & [Focus region name] & " – "
+			        & CONCATENATEX ( Peers, Geo[Name], ", ", Geo[SortOrder], ASC )
+		displayFolder: Report text
+		lineageTag: b3849916-cf57-4a6a-ba32-cf303d2205d6
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
 	/// Label of the Benchmark rank row, e.g. "Marche rank of 6".
 	measure 'Rank row label' =
 			[Focus region name] & " rank of "

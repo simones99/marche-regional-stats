@@ -43,6 +43,14 @@ table Geo
 		summarizeBy: none
 		sourceColumn: SortOrder
 
+	/// Name for crowded legends: the two-word provinces by their code letters (PU, AP).
+	column LegendName
+		dataType: string
+		lineageTag: ae8b81a0-e1df-46f0-bea5-a26947c32190
+		summarizeBy: none
+		sourceColumn: LegendName
+		sortByColumn: SortOrder
+
 	partition Geo = m
 		mode: import
 		source =
@@ -79,7 +87,9 @@ table Geo
 				    RoleRank = Table.AddColumn(Checked, "RoleRank", each List.PositionOf({"Focus", "Peer", "Country", "EU", "Province"}, [Role]), Int64.Type),
 				    Sorted = Table.Sort(RoleRank, {{"RoleRank", Order.Ascending}, {"Name", Order.Ascending}}),
 				    Indexed = Table.AddIndexColumn(Sorted, "SortOrder", 1, 1, Int64.Type),
-				    Result = Table.RemoveColumns(Indexed, {"RoleRank"})
+				    ShortNames = [ITI31 = "PU", ITI34 = "AP"],
+				    WithLegend = Table.AddColumn(Indexed, "LegendName", each Record.FieldOrDefault(ShortNames, [Code], [Name]), type text),
+				    Result = Table.RemoveColumns(WithLegend, {"RoleRank"})
 				in
 				    Result
 

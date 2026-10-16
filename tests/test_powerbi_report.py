@@ -284,3 +284,26 @@ def test_benchmark_dot_plot_is_a_table_of_strips():
         "_Measures.Dot focus value",
     ]
     assert any("Dot plot legend SVG" in json.dumps(v["visual"].get("objects", {})) for v in visuals)
+
+
+def test_dot_plot_strips_have_no_tooltip():
+    # The default tooltip of a table shows the SVG data URI of the strip as text.
+    _, visuals = _page("Benchmark")
+    strips = next(v for v in visuals if "_Measures.Dot plot SVG" in _fields(v))
+    tooltip = strips["visual"]["visualContainerObjects"]["visualTooltip"][0]["properties"]
+    assert tooltip["show"]["expr"]["Literal"]["Value"] == "false"
+
+
+def test_province_legend_uses_the_short_names():
+    _, visuals = _page("Business deep dive")
+    index = next(v for v in visuals if "_Measures.Active companies index" in _fields(v))
+    assert "Geo.LegendName" in _fields(index)
+    styles = json.dumps(index["visual"]["objects"])
+    assert "'PU'" in styles and "'AP'" in styles and "Pesaro e Urbino" not in styles
+
+
+def test_benchmark_matrix_names_the_peer_regions():
+    _, visuals = _page("Benchmark")
+    matrix = next(v for v in visuals if v["visual"]["visualType"] == "pivotTable")
+    subtitle = matrix["visual"]["visualContainerObjects"]["subTitle"][0]["properties"]
+    assert subtitle["text"]["expr"]["Measure"]["Property"] == "Peer regions note"

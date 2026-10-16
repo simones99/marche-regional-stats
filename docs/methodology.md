@@ -15,6 +15,10 @@ This project describes the business and demographic structure of the Marche regi
 
 All inputs are downloaded by `marche-stats download`: the Eurostat data through the SDMX 2.1 API, and the business register file from the [Chamber of Commerce open data portal](https://opendata.marche.camcom.it/data/Stock-Imprese-Attive-Marche-2009-2025.csv). That file is the archive of the ATECO 2007 series. From April 2025 the portal publishes the series in ATECO 2025, which is not directly comparable by sector. Older downloads of the file label the unclassified records of Pesaro e Urbino `PS`, current ones `PU`. Both are handled.
 
+## Comparison set (Power BI report)
+
+The report compares the Marche with Italy, the EU-27 and five peer regions: Toscana, Umbria, Emilia-Romagna, Lazio and Abruzzo (parameter `PeerRegions`). The peers are the Italian regions that share a border with the Marche. The Marche is a strip of land between the Apennines and the Adriatic, so its neighbours cover both sides of the ridge: Emilia-Romagna to the north and Abruzzo to the south along the coast, and Toscana, Umbria and Lazio across the Apennines to the west. A choice based on geography keeps the set fixed and easy to explain; it does not pick the peers by how similar their indicators are. The Benchmark page names the peers under the matrix title, and the About page repeats them.
+
 ## Processing of the business register file
 
 1. **Structure checks.** The file is checked for the following, and every check is reported in [results.md](results.md):

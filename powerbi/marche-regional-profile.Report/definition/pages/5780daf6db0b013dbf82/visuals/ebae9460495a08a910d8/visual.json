@@ -115,6 +115,30 @@
               {
                 "textRuns": [
                   {
+                    "value": "Peer regions",
+                    "textStyle": {
+                      "fontFamily": "Segoe UI Semibold",
+                      "fontSize": "10.5pt",
+                      "color": "#15201A"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
+                    "value": "Toscana, Umbria, Emilia-Romagna, Lazio, Abruzzo: the five regions that border the Marche",
+                    "textStyle": {
+                      "fontFamily": "Segoe UI",
+                      "fontSize": "10.5pt",
+                      "color": "#4F5A53"
+                    }
+                  }
+                ]
+              },
+              {
+                "textRuns": [
+                  {
                     "value": "Refresh",
                     "textStyle": {
                       "fontFamily": "Segoe UI Semibold",
