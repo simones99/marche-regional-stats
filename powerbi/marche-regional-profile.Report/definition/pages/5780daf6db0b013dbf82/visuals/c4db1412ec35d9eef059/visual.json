@@ -5,7 +5,7 @@
     "x": 672,
     "y": 32,
     "z": 13000,
-    "height": 256,
+    "height": 232,
     "width": 280,
     "tabOrder": 13000
   },
@@ -41,7 +41,8 @@
                 }
               },
               "queryRef": "_Measures.Reconciliation in model",
-              "nativeQueryRef": "Reconciliation in model"
+              "nativeQueryRef": "Reconciliation in model",
+              "displayName": "In model"
             },
             {
               "field": {
@@ -55,7 +56,8 @@
                 }
               },
               "queryRef": "_Measures.Reconciliation status",
-              "nativeQueryRef": "Reconciliation status"
+              "nativeQueryRef": "Reconciliation status",
+              "displayName": "Status"
             }
           ]
         }
@@ -105,6 +107,63 @@
               "expr": {
                 "Literal": {
                   "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "128D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Reconciliation.Checkpoint"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "64D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Measures.Reconciliation in model"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "72D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Measures.Reconciliation status"
+          }
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "wordWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
                 }
               }
             }

@@ -279,7 +279,11 @@ def test_benchmark_dot_plot_is_one_image():
     kinds = {v["visual"]["visualType"] for v in visuals}
     assert "scatterChart" not in kinds
     assert not any("_Measures.Dot plot SVG" in _fields(v) for v in visuals)
-    images = [v for v in visuals if "'Dot plot SVG'" in json.dumps(v["visual"].get("objects", {})).replace('"', "'")]
+    images = [
+        v
+        for v in visuals
+        if "'Dot plot SVG'" in json.dumps(v["visual"].get("objects", {})).replace('"', "'")
+    ]
     assert len(images) == 1 and images[0]["visual"]["visualType"] == "image"
 
 
@@ -311,8 +315,32 @@ def test_tables_and_matrices_have_no_total_row():
                 assert objects["subTotals"][0]["properties"]["rowSubtotals"] == off, where
 
 
+def test_report_formats_numbers_as_en_us():
+    # Without it Desktop formats the visuals with the Windows locale ("26,6%", "lug 2023"),
+    # while the text measures use the model's en-US culture.
+    assert read(DEFINITION / "report.json")["settings"]["locale"] == "en-US"
+
+
+def test_fixed_column_widths_fit_the_table():
+    # The PDF export prints only what a visual shows: a table wider than its box loses columns.
+    for page, visuals in written_pages():
+        for v in visuals:
+            widths = v["visual"].get("objects", {}).get("columnWidth", [])
+            if not widths:
+                continue
+            total = sum(
+                float(w["properties"]["value"]["expr"]["Literal"]["Value"][:-1]) for w in widths
+            )
+            where = f"{page['displayName']}: {v['name']} is {total} px wide"
+            assert total <= v["position"]["width"] - 8, where
+
+
 def test_area_tooltip_falls_back_to_the_focus_region():
     # A line chart hovered between points passes only the year, so the tooltip gets several areas.
     _, visuals = _page("Area tooltip")
     fields = {f for v in visuals for f in _fields(v)}
-    assert {"_Measures.Tooltip title", "_Measures.Tooltip value", "_Measures.Tooltip flags"} <= fields
+    assert {
+        "_Measures.Tooltip title",
+        "_Measures.Tooltip value",
+        "_Measures.Tooltip flags",
+    } <= fields

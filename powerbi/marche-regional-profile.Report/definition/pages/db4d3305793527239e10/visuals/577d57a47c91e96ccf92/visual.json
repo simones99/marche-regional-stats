@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
   "name": "577d57a47c91e96ccf92",
   "position": {
-    "x": 672,
-    "y": 408,
-    "z": 15000,
-    "height": 280,
-    "width": 576,
-    "tabOrder": 15000
+    "x": 224,
+    "y": 416,
+    "z": 12000,
+    "height": 232,
+    "width": 384,
+    "tabOrder": 12000
   },
   "visual": {
     "visualType": "clusteredBarChart",
@@ -122,6 +122,32 @@
               "expr": {
                 "Literal": {
                   "Value": "'OutsideEnd'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "categoryAxis": [
+        {
+          "properties": {
+            "maxMarginFactor": {
+              "expr": {
+                "Literal": {
+                  "Value": "30L"
                 }
               }
             }

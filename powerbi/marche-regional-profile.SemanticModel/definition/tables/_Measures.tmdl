@@ -915,7 +915,8 @@ table _Measures
 
 		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
 
-	/// Years compared on the Benchmark page (the latest year common to the areas) and the rank direction.
+	/// Years compared on the Benchmark page (the latest year common to the areas); the rank
+	/// direction is in the rank table's title.
 	measure 'Benchmark years' =
 			VAR yp = YEAR ( CALCULATE ( [_Ref date Population], REMOVEFILTERS ( Geo ), REMOVEFILTERS ( Calendar ) ) )
 			VAR yo = YEAR ( CALCULATE ( [_Ref date Population], REMOVEFILTERS ( Geo ), REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "65+" ) )
@@ -925,8 +926,7 @@ table _Measures
 			VAR ye = YEAR ( CALCULATE ( [_Ref date Enrolment], REMOVEFILTERS ( Geo ), REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( ISCED ), ISCED[Group] = "ISCED 5-8" ) )
 			RETURN
 			    "Years: population change " & yp - 5 & "–" & yp & " · aged 65+ " & yo & " · deaths " & yd & " · GDP " & yg
-			        & " · unemployment " & yu & " · tertiary " & ye & ". Rank 1 = highest value among the "
-			        & [Focus region name] & " and its neighbouring regions."
+			        & " · unemployment " & yu & " · tertiary " & ye & "."
 		displayFolder: Report text
 		lineageTag: 5f4fe24a-7adf-4631-b1cc-b1f7ea92d14e
 
@@ -1262,8 +1262,8 @@ table _Measures
 
 	/// Benchmark paragraph: the focus region's rank for each indicator.
 	measure 'Benchmark paragraph' =
-			"Ranks among the " & [Focus region name] & " and its " & [_Peer count] - 1 & " neighbouring regions, 1 = highest: population change " & [_Rank population change]
-			    & ", aged 65+ " & [_Rank aged 65+] & ", deaths per 1,000 " & [_Rank death rate] & ", GDP per inhabitant " & [_Rank GDP]
+			"Rank among the " & [_Peer count] & " regions, 1 = highest: population change " & [_Rank population change]
+			    & ", aged 65+ " & [_Rank aged 65+] & ", deaths " & [_Rank death rate] & ", GDP " & [_Rank GDP]
 			    & ", unemployment " & [_Rank unemployment] & ", tertiary students " & [_Rank tertiary] & "."
 		displayFolder: Report text
 		lineageTag: 8cee9d09-a949-4555-81d0-d4fca9579636
@@ -1286,8 +1286,7 @@ table _Measures
 
 	/// About paragraph, with the reconciliation result.
 	measure 'About paragraph' =
-			"Public data from Eurostat, GISCO and the Chamber of Commerce of the " & [Focus region name]
-			    & ", refreshed in Power BI Desktop. A Python pipeline adds the SARIMA forecast and the totals the report must match: "
+			"Public data from Eurostat, GISCO and the Chamber of Commerce. A Python pipeline adds the SARIMA forecast and the totals to check: "
 			    & CALCULATE ( [Reconciliation status], REMOVEFILTERS ( Reconciliation ) ) & "."
 		displayFolder: Report text
 		lineageTag: 0a3affca-24dc-4237-a5f7-62a1f2637d6c

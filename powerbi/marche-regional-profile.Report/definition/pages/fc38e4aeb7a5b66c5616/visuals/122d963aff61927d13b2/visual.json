@@ -5,7 +5,7 @@
     "x": 672,
     "y": 96,
     "z": 16000,
-    "height": 432,
+    "height": 336,
     "width": 576,
     "tabOrder": 16000
   },
@@ -149,41 +149,13 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "92D"
+                  "Value": "116D"
                 }
               }
             }
           },
           "selector": {
-            "metadata": "_Measures.Population change 5y %"
-          }
-        },
-        {
-          "properties": {
-            "value": {
-              "expr": {
-                "Literal": {
-                  "Value": "65D"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "_Measures.Share aged 65+"
-          }
-        },
-        {
-          "properties": {
-            "value": {
-              "expr": {
-                "Literal": {
-                  "Value": "74D"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "_Measures.Crude death rate per 1,000"
+            "metadata": "Geo.Name"
           }
         },
         {
@@ -197,6 +169,48 @@
             }
           },
           "selector": {
+            "metadata": "_Measures.Population change 5y %"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "56D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Measures.Share aged 65+"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "64D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Measures.Crude death rate per 1,000"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "72D"
+                }
+              }
+            }
+          },
+          "selector": {
             "metadata": "_Measures.GDP per inhabitant (EUR)"
           }
         },
@@ -205,7 +219,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "52D"
+                  "Value": "108D"
                 }
               }
             }
@@ -219,7 +233,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "89D"
+                  "Value": "72D"
                 }
               }
             }

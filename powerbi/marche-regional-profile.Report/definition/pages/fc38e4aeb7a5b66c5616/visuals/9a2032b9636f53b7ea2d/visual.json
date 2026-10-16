@@ -3,9 +3,9 @@
   "name": "9a2032b9636f53b7ea2d",
   "position": {
     "x": 672,
-    "y": 544,
+    "y": 448,
     "z": 17000,
-    "height": 112,
+    "height": 184,
     "width": 576,
     "tabOrder": 17000
   },
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "_Measures.Rank row label",
-              "nativeQueryRef": "Rank row label"
+              "nativeQueryRef": "Rank row label",
+              "displayName": "Region"
             },
             {
               "field": {
@@ -137,7 +138,21 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "94D"
+                  "Value": "116D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Measures.Rank row label"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "76D"
                 }
               }
             }
@@ -151,21 +166,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "116D"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "_Measures.GDP per inhabitant (EUR)"
-          }
-        },
-        {
-          "properties": {
-            "value": {
-              "expr": {
-                "Literal": {
-                  "Value": "71D"
+                  "Value": "56D"
                 }
               }
             }
@@ -179,7 +180,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "102D"
+                  "Value": "64D"
                 }
               }
             }
@@ -193,7 +194,21 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "106D"
+                  "Value": "72D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "_Measures.GDP per inhabitant (EUR)"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "108D"
                 }
               }
             }
@@ -207,7 +222,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "135D"
+                  "Value": "72D"
                 }
               }
             }
