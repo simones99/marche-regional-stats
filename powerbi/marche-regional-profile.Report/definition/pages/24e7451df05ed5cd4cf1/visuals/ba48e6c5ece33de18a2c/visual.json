@@ -83,7 +83,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Tertiary students per 1,000 residents'"
+                  "Value": "'Tertiary Students per 1,000 Residents'"
                 }
               }
             }

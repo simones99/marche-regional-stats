@@ -131,7 +131,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Rank among peers (1 = highest)'"
+                  "Value": "'Rank among Peers (1 = Highest)'"
                 }
               }
             }

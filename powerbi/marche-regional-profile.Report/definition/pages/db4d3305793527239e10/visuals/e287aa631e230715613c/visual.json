@@ -390,7 +390,7 @@
             "textSize": {
               "expr": {
                 "Literal": {
-                  "Value": "8D"
+                  "Value": "10.5D"
                 }
               }
             },
@@ -453,7 +453,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Deaths per 1,000 residents'"
+                  "Value": "'Deaths per 1,000 Residents'"
                 }
               }
             }

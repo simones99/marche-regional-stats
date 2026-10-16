@@ -86,7 +86,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Population change 5y %'"
+                  "Value": "'Population Change 5y %'"
                 }
               }
             }

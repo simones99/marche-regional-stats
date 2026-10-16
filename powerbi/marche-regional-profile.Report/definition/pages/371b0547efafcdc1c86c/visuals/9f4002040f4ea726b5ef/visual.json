@@ -81,7 +81,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Active companies, December 2009 = 100'"
+                  "Value": "'Active Companies, December 2009 = 100'"
                 }
               }
             }

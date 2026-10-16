@@ -312,7 +312,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Residents by age and sex, 1 January (Men Left, Women Right)'"
+                  "Value": "'Residents by Age and Sex, 1 January (Men Left, Women Right)'"
                 }
               }
             }

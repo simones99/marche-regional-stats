@@ -3952,7 +3952,8 @@ Only the user can run this task. Open the report and the design canvas side by s
   - Sectors (Business, Province detail): *fx → `Change colour`*.
   - Data labels on, 10.5 pt, position *Outside end*, on the ranked bars and the sectors only. Leave them off on the pyramid and the butterfly: stacked bars put labels inside the fill, where the theme's dark label colour fails contrast.
 
-- [ ] **Step 3: Forecast chart (Business).** Actual: `#15201A`, solid, filled circles. Forecast: `#15201A`, dashed, hollow circles. *Analytics → Error bars* on *Forecast chart forecast*: upper `Forecast upper 95`, lower `Forecast lower 95`, *Bar* off, *Band* on, `#6B746E` at 80 % transparency.
+- [x] **Step 3: Forecast chart (Business).** Actual: `#15201A`, solid, filled circles. Forecast: `#15201A`, dashed, hollow circles. *Analytics → Error bars* on *Forecast chart forecast*: upper `Forecast upper 95`, lower `Forecast lower 95`, *Bar* off, *Band* on, `#6B746E` at 80 % transparency.
+  Done 2026-10-16 under *Format → Visual → Error bars* (Desktop has no Analytics pane any more); the user kept the band at 60 % transparency.
 
 - [x] **Step 4: Slicers and interactions.**
   - Set every button slicer to *Style: Tile*, single select, and the Overview benchmark to its first value (the country).
@@ -3969,13 +3970,14 @@ Only the user can run this task. Open the report and the design canvas side by s
   - Area tooltip and Province tooltip: *Page information → Allow use as tooltip*; canvas 320 × 240.
   - Point the ranked bars and the line charts to *Area tooltip* (*Format → Tooltips → Report page*), and the Provinces table to *Province tooltip*.
 
-- [ ] **Step 7: Accessibility pass.**
+- [x] **Step 7: Accessibility pass.**
   - *View → Selection → Tab order*: matches reading order (navigation, story, controls, visuals).
   - Every visual's alt text is set (*General → Alt text*).
   - Text cards: wrap on, label off.
   - Headline 30 pt; nothing under 10.5 pt.
+  Done 2026-10-16 in the PBIR files: Overview sidebar eyebrow first in the tab order, Province detail back button after the navigation, the Unemployment alt text corrected, the hidden series labels on the death-rate chart raised from 8 to 10.5 pt, and every visual title in Title Case. Shapes were already out of the tab order and every card already had its label off. Headlines stay at 27 pt (`HEADLINE_PT`: 30 pt did not fit the Overview headline).
 
-- [ ] **Step 8: Save, close, and hand back.** Select the Overview page before the last save: the published report opens on the page that was active when it was saved. The executor runs:
+- [x] **Step 8: Save, close, and hand back.** Select the Overview page before the last save: the published report opens on the page that was active when it was saved. The executor runs:
 
 ```bash
 pytest -q

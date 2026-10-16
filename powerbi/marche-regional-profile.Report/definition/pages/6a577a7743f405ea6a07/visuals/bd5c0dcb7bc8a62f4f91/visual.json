@@ -83,7 +83,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Seasonal effect by month'"
+                  "Value": "'Seasonal Effect by Month'"
                 }
               }
             }

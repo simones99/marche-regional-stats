@@ -233,7 +233,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Indicators by area (latest year common to the areas)'"
+                  "Value": "'Indicators by Area (Latest Year Common to the Areas)'"
                 }
               }
             }

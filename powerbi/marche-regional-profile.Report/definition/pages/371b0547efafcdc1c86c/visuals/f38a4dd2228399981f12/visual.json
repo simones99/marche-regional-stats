@@ -86,7 +86,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Crude death rate per 1,000'"
+                  "Value": "'Crude Death Rate per 1,000'"
                 }
               }
             }

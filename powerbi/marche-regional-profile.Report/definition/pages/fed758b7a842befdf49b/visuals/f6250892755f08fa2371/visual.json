@@ -86,7 +86,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'GDP per inhabitant'"
+                  "Value": "'GDP per Inhabitant'"
                 }
               }
             }

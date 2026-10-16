@@ -61,7 +61,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Latest period per source'"
+                  "Value": "'Latest Period per Source'"
                 }
               }
             }

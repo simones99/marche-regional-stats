@@ -129,7 +129,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Students enrolled by level and sex (women left, men right)'"
+                  "Value": "'Students Enrolled by Level and Sex (Women Left, Men Right)'"
                 }
               }
             }

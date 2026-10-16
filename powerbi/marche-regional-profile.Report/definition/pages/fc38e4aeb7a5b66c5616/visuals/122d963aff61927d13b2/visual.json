@@ -136,7 +136,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Indicators by area'"
+                  "Value": "'Indicators by Area'"
                 }
               }
             }

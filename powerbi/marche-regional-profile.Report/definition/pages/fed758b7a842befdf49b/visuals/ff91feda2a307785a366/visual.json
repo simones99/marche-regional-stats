@@ -86,7 +86,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Active companies'"
+                  "Value": "'Active Companies'"
                 }
               }
             }

@@ -83,7 +83,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Forecast error on the 24-month test (MAPE)'"
+                  "Value": "'Forecast Error on the 24-Month Test (MAPE)'"
                 }
               }
             }

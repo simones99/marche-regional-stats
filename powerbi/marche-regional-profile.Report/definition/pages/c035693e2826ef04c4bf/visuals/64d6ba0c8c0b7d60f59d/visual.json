@@ -117,7 +117,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'All indicators by province'"
+                  "Value": "'All Indicators by Province'"
                 }
               }
             }
