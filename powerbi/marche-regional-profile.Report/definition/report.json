@@ -70,8 +70,8 @@
           "type": "CustomTheme"
         },
         {
-          "name": "photo-overview-valadier.jpg",
-          "path": "photo-overview-valadier.jpg",
+          "name": "photo-about-due-sorelle.jpg",
+          "path": "photo-about-due-sorelle.jpg",
           "type": "Image"
         },
         {
@@ -80,8 +80,8 @@
           "type": "Image"
         },
         {
-          "name": "photo-about-due-sorelle.jpg",
-          "path": "photo-about-due-sorelle.jpg",
+          "name": "photo-overview-valadier.jpg",
+          "path": "photo-overview-valadier.jpg",
           "type": "Image"
         }
       ]
