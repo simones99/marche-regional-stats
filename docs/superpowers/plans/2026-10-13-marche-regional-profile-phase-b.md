@@ -4033,7 +4033,7 @@ git commit -m "Export the report to PDF and one PNG per page"
 **Files:**
 - Modify: `powerbi/README.md`, `powerbi/sources.md`, `README.md`
 
-- [ ] **Step 1: Rewrite `powerbi/README.md`.** Keep the "Refresh" section as it is. Replace the paragraph starting "Phase A (this version)" and add sections, in this order:
+- [x] **Step 1: Rewrite `powerbi/README.md`.** Keep the "Refresh" section as it is. Replace the paragraph starting "Phase A (this version)" and add sections, in this order:
   - **Pages:** a table with page, what it shows, and a link to its PNG in `exports/png/`.
   - **Visual system:** the grid (navigation 192, story 448, dashboard 640, split at the centre, 8 px), the three colours with their contrast ratios, Segoe UI and the sizes. Taken from the spec.
   - **Accessibility:** the nine rules of the spec.
@@ -4041,7 +4041,7 @@ git commit -m "Export the report to PDF and one PNG per page"
   - **How the pages are built:** `marche-stats scaffold-report` writes each page once from `src/marche_stats/report_layout.py`; formatting is done in Desktop.
   - **Model:** keep the Phase A bullets; add the five new tables in one bullet.
 
-- [ ] **Step 2: Extend `powerbi/sources.md`.** Change the row `Forecast, ForecastAccuracy, Reconciliation` to `Forecast, ForecastAccuracy, Reconciliation, Seasonality, ProvinceShape`. Then add:
+- [x] **Step 2: Extend `powerbi/sources.md`.** Change the row `Forecast, ForecastAccuracy, Reconciliation` to `Forecast, ForecastAccuracy, Reconciliation, Seasonality, ProvinceShape`. Then add:
 
 ```markdown
 ## Photos
@@ -4055,12 +4055,12 @@ git commit -m "Export the report to PDF and one PNG per page"
 The photos are cropped to their slots and compressed; no other change.
 ```
 
-- [ ] **Step 3: Update the root `README.md`.** Add (or replace, if one exists) a section `## Power BI report` after "Main results", containing:
+- [x] **Step 3: Update the root `README.md`.** Add (or replace, if one exists) a section `## Power BI report` after "Main results", containing:
   - `![Overview page](powerbi/exports/png/01-overview.png)`;
   - a link to `powerbi/exports/marche-regional-profile.pdf`;
   - **What this demonstrates:** a reusable M function for Eurostat; a star schema keyed on NUTS codes; a calculation group with dynamic format strings; a field parameter; an SVG map drawn in DAX; data-driven headlines; Python → Power BI integration; in-report reconciliation; an accessible three-colour design.
 
-- [ ] **Step 4: Commit.**
+- [x] **Step 4: Commit.**
 
 ```bash
 git add README.md powerbi/README.md powerbi/sources.md
