@@ -4089,7 +4089,7 @@ Expected: all pass. `grep -n "RepoRawBase =" powerbi/marche-regional-profile.Sem
 
   Commit with "Record the Phase B outcome".
 
-- [ ] **Step 3: Open the pull request (ask the user first).** Push the branch and open a PR to `main`. In the description, list the pages, the checks and the outcome, and say that `marche-stats check-sources` reports `province_shapes.csv` and `seasonality.csv` as OK only after the merge (they are read from `main`). End the description with:
+- [x] **Step 3: Open the pull request (ask the user first).** Push the branch and open a PR to `main`. In the description, list the pages, the checks and the outcome, and say that `marche-stats check-sources` reports `province_shapes.csv` and `seasonality.csv` as OK only after the merge (they are read from `main`). End the description with:
 
 ```
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
@@ -4106,7 +4106,7 @@ Expected: all pass. `grep -n "RepoRawBase =" powerbi/marche-regional-profile.Sem
 
 ## Outcome (recorded 2026-10-20)
 
-Tasks 1–22 are done, as are Steps 1 and 2 of Task 23. The pull request (Task 23, Step 3) is not open yet.
+Tasks 1–23 are done; the pull request is #2.
 
 Final checks (Task 23, Step 1): `pytest -q` passes 104 tests, `ruff check src tests` and `ruff format --check src tests` pass, and `RepoRawBase` points at `…/main`. Two fixes were needed first:
 - three alt texts in `report_layout.py` and one line in `tests/test_powerbi_model.py`, committed after Task 19, were over 100 characters: the alt texts are split into adjacent literals (same text, so the PBIR files do not change) and `ruff format` wrapped the rest;
