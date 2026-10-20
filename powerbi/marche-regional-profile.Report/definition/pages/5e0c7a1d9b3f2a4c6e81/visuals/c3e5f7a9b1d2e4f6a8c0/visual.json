@@ -104,7 +104,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Reconciliation with the Python pipeline'"
+                  "Value": "'Reconciliation with the Python Pipeline'"
                 }
               }
             }

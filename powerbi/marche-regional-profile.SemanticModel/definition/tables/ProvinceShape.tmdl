@@ -1,0 +1,49 @@
+/// SVG outline and label point of each province, projected by marche-stats export-powerbi
+/// into a 400 x 400 box (powerbi/data/province_shapes.csv). Read by the Map SVG measure.
+table ProvinceShape
+	isHidden
+	lineageTag: 9a13c292-b3be-4ed9-a49e-3b442c555ae7
+
+	column GeoCode
+		dataType: string
+		isHidden
+		lineageTag: 40a33934-f981-4e11-ba48-f3147a2bdea0
+		summarizeBy: none
+		sourceColumn: GeoCode
+
+	column Path
+		dataType: string
+		isHidden
+		lineageTag: 53523276-8df8-4fb4-a309-ab36342d59bd
+		summarizeBy: none
+		sourceColumn: Path
+
+	column LabelX
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: d402a12b-e781-4ab3-890d-3010a17f5245
+		summarizeBy: none
+		sourceColumn: LabelX
+
+	column LabelY
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ed5634f6-b786-48eb-9cea-8265bb3ce584
+		summarizeBy: none
+		sourceColumn: LabelY
+
+	partition ProvinceShape = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(Web.Contents(RepoRawBase & "/powerbi/data/province_shapes.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Renamed = Table.RenameColumns(Promoted, {{"geo", "GeoCode"}, {"path", "Path"}, {"label_x", "LabelX"}, {"label_y", "LabelY"}}),
+				    Typed = Table.TransformColumnTypes(Renamed, {{"GeoCode", type text}, {"Path", type text}, {"LabelX", Int64.Type}, {"LabelY", Int64.Type}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

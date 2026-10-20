@@ -20,6 +20,23 @@ The latest figures and every check are in [docs/results.md](docs/results.md).
 
 ![Test period and forecast](docs/figures/forecast.png)
 
+## Power BI report
+
+![Overview page](powerbi/exports/png/01-overview.png)
+
+Eight pages on the region's demography, health, economy, education, provinces and businesses: [PDF](powerbi/exports/marche-regional-profile.pdf), [pages and design](powerbi/README.md).
+
+**What this demonstrates:**
+- a reusable M function for the Eurostat API;
+- a star schema keyed on NUTS codes;
+- a calculation group with dynamic format strings;
+- a field parameter;
+- an SVG map drawn in DAX;
+- data-driven headlines;
+- Python → Power BI integration;
+- in-report reconciliation;
+- an accessible three-colour design.
+
 ## What the analysis takes care of
 
 The source file has several traps, and each one is handled explicitly. See the [methodology note](docs/methodology.md).

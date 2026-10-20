@@ -1,5 +1,5 @@
 /// Benchmark comparisons for any indicator measure: the value, the country, the EU, the
-/// unweighted mean of the peer regions, the differences from them and the rank among peers.
+/// unweighted mean of the neighbouring regions, the differences from them and the rank among them.
 /// Every item evaluates the measure under the Value item, so the result does not depend on
 /// how the engine applies items to measures referenced inside the selected measure.
 table 'Compare to'
@@ -32,12 +32,12 @@ table 'Compare to'
 
 			formatStringDefinition = SELECTEDMEASUREFORMATSTRING ()
 
-		calculationItem 'Peers avg' =
+		calculationItem 'Neighbours avg' =
 				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
 				VAR Peers = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Peer" )
 				RETURN IF ( ISTEXT ( v ), v, AVERAGEX ( Peers, VAR c = Geo[Code] RETURN CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Code] = c, 'Compare to'[Comparison] = "Value" ) ) )
 
-		calculationItem 'vs Peers avg' =
+		calculationItem 'vs Neighbours avg' =
 				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
 				VAR Peers = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Peer" )
 				VAR p = AVERAGEX ( Peers, VAR c = Geo[Code] RETURN CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Code] = c, 'Compare to'[Comparison] = "Value" ) )
@@ -45,7 +45,7 @@ table 'Compare to'
 
 			formatStringDefinition = SELECTEDMEASUREFORMATSTRING ()
 
-		calculationItem 'Rank among peers' =
+		calculationItem 'Rank among neighbours' =
 				VAR v = CALCULATE ( SELECTEDMEASURE (), 'Compare to'[Comparison] = "Value" )
 				VAR Areas = CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] IN { "Focus", "Peer" } )
 				VAR Comparable =
@@ -56,8 +56,11 @@ table 'Compare to'
 				    )
 				RETURN
 				    IF (
-				        Comparable && SELECTEDVALUE ( Geo[Role] ) IN { "Focus", "Peer" } && NOT ISBLANK ( v ),
-				        RANKX ( Areas, VAR c = Geo[Code] RETURN CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Code] = c, 'Compare to'[Comparison] = "Value" ), v, DESC, DENSE )
+				        ISTEXT ( v ), v,
+				        IF (
+				            Comparable && SELECTEDVALUE ( Geo[Role] ) IN { "Focus", "Peer" } && NOT ISBLANK ( v ),
+				            RANKX ( Areas, VAR c = Geo[Code] RETURN CALCULATE ( SELECTEDMEASURE (), REMOVEFILTERS ( Geo ), Geo[Code] = c, 'Compare to'[Comparison] = "Value" ), v, DESC, DENSE )
+				        )
 				    )
 
 			formatStringDefinition = "0"

@@ -1,4 +1,4 @@
-"""Tables for the Power BI report: SARIMA forecast, its accuracy and reconciliation totals.
+"""Tables for the Power BI report: forecast, accuracy, reconciliation, seasonality, map.
 
 Power BI cleans the business register itself, in Power Query. These files carry what the
 report cannot compute well (the SARIMA model validated in Python) and the totals that its
@@ -7,6 +7,8 @@ own cleaning must reproduce exactly.
 
 from __future__ import annotations
 
+import json
+import math
 from pathlib import Path
 
 import pandas as pd
@@ -66,8 +68,77 @@ def reconciliation_table(wide: pd.DataFrame, series: pd.Series) -> pd.DataFrame:
     return table
 
 
-def build(companies_csv: Path, out_dir: Path, holdout: int = 24) -> dict[str, Path]:
-    """Fit the model and write forecast.csv, forecast_accuracy.csv and reconciliation.csv."""
+MAP_BOX = 400
+
+
+def _polygons(geometry: dict) -> list:
+    if geometry["type"] == "Polygon":
+        return [geometry["coordinates"]]
+    return geometry["coordinates"]
+
+
+def _ring_centroid(ring: list[tuple[float, float]]) -> tuple[float, float, float]:
+    """Area and centroid of a closed ring (shoelace formula)."""
+    area = cx = cy = 0.0
+    for (x0, y0), (x1, y1) in zip(ring, ring[1:] + ring[:1], strict=True):
+        cross = x0 * y1 - x1 * y0
+        area += cross
+        cx += (x0 + x1) * cross
+        cy += (y0 + y1) * cross
+    area /= 2
+    if area == 0:
+        return 0.0, ring[0][0], ring[0][1]
+    return abs(area), cx / (6 * area), cy / (6 * area)
+
+
+def province_shapes_table(geojson_path: Path, box: int = MAP_BOX) -> pd.DataFrame:
+    """SVG path and label point of each NUTS 3 province, in a box x box square.
+
+    Equirectangular projection scaled by the cosine of the mean latitude, north up. The
+    label point is the centroid of the province's largest ring. The report's Map SVG
+    measure draws these paths, so the map needs no map service.
+    """
+    features = json.loads(geojson_path.read_text(encoding="utf-8"))["features"]
+    rings = {
+        f["properties"]["NUTS_ID"]: [ring for poly in _polygons(f["geometry"]) for ring in poly]
+        for f in features
+    }
+    points = [p for geo_rings in rings.values() for ring in geo_rings for p in ring]
+    lon0, lon1 = min(p[0] for p in points), max(p[0] for p in points)
+    lat0, lat1 = min(p[1] for p in points), max(p[1] for p in points)
+    k = math.cos(math.radians((lat0 + lat1) / 2))
+    scale = box / max((lon1 - lon0) * k, lat1 - lat0)
+
+    rows = []
+    for geo in sorted(rings):
+        projected = [
+            [((p[0] - lon0) * k * scale, (lat1 - p[1]) * scale) for p in ring]
+            for ring in rings[geo]
+        ]
+        path = "".join(
+            "M" + " ".join(f"{x:.0f},{y:.0f}" for x, y in ring) + "Z" for ring in projected
+        )
+        _, label_x, label_y = max((_ring_centroid(ring) for ring in projected), key=lambda c: c[0])
+        rows.append((geo, path, round(label_x), round(label_y)))
+    return pd.DataFrame(rows, columns=["geo", "path", "label_x", "label_y"])
+
+
+def seasonality_table(series: pd.Series) -> pd.DataFrame:
+    """Average STL seasonal effect by calendar month, as in docs/results.md (section 3)."""
+    seasonal = timeseries.decompose(series)["seasonal"]
+    profile = seasonal.groupby(seasonal.index.month).mean().round(0)
+    return pd.DataFrame(
+        {
+            "month": profile.index.astype(int),
+            "month_name": [pd.Timestamp(2000, m, 1).strftime("%b") for m in profile.index],
+            "effect": profile.to_numpy(),
+        }
+    )
+
+
+def build(companies_csv: Path, out_dir: Path, geojson: Path, holdout: int = 24) -> dict[str, Path]:
+    """Fit the model and write the five CSV files the report reads from powerbi/data/."""
+    shapes = province_shapes_table(geojson)  # before the slow fit: a missing file fails fast
     wide = companies.read_wide(companies_csv)
     series = companies.modelling_series(wide)
     evaluation = timeseries.evaluate(series, holdout=holdout)
@@ -76,6 +147,8 @@ def build(companies_csv: Path, out_dir: Path, holdout: int = 24) -> dict[str, Pa
         "forecast.csv": forecast_table(series, evaluation, future),
         "forecast_accuracy.csv": accuracy_table(evaluation),
         "reconciliation.csv": reconciliation_table(wide, series),
+        "seasonality.csv": seasonality_table(series),
+        "province_shapes.csv": shapes,
     }
     out_dir.mkdir(parents=True, exist_ok=True)
     paths = {}

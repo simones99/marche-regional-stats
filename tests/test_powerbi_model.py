@@ -56,6 +56,20 @@ def test_tmdl_lines_are_tab_indented():
             assert not line.startswith(" "), f"{path.name}:{number} starts with a space"
 
 
+def test_measure_properties_come_before_child_objects():
+    # formatStringDefinition and annotation are child objects: TMDL rejects a property
+    # (displayFolder: …) after them with "Invalid indentation".
+    for path in MODEL.rglob("*.tmdl"):
+        child = None
+        for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if re.match(r"\t\S", line):  # a new object: measure, column, partition…
+                child = None
+            elif re.match(r"\t\t(formatStringDefinition|annotation) ", line):
+                child = number
+            elif child and re.match(r"\t\t\w+:", line):
+                pytest.fail(f"{path.name}:{number} is a property after the child object on {child}")
+
+
 def test_relationships_use_existing_columns():
     path = MODEL / "relationships.tmdl"
     if not path.exists():
@@ -140,6 +154,49 @@ def dax_expressions(text: str) -> list[str]:
     return expressions
 
 
+# Names that Power BI Desktop's engine rejects as DAX variables ("The syntax for 'Item' is
+# incorrect"): a measure that declares one is saved as a syntax error and its visuals fail.
+# Each name failed `EVALUATE VAR <name> = 1 RETURN ROW ( "x", <name> )` in October 2026.
+DAX_VARIABLE_REJECTED = {
+    "asc", "at", "blank", "boolean", "by", "cell", "column", "columns", "count",
+    "date", "dax", "define", "dense", "desc", "double", "evaluate", "false", "filter", "group",
+    "hierarchy", "in", "item", "key", "level", "max", "measure", "min", "name", "not", "order",
+    "return", "row", "rows", "select", "skip", "start", "sum", "table", "text", "top", "true",
+    "union", "value", "values", "var",
+}  # fmt: skip
+
+
+def test_dax_variables_are_not_rejected_names():
+    for path in sorted((MODEL / "tables").glob("*.tmdl")):
+        for expression in dax_expressions(path.read_text(encoding="utf-8")):
+            code = DAX_IGNORED.sub("", expression)
+            for name in re.findall(r"\bVAR\s+([A-Za-z_]\w*)", code):
+                assert name.lower() not in DAX_VARIABLE_REJECTED, f"{path.name}: VAR {name}"
+
+
+GROUPED_COLUMN = re.compile(rf"^\tcolumn {NAME}\n(?:\t\t.*\n|\n)*?\t\trelatedColumnDetails", re.M)
+
+
+def test_measures_do_not_read_a_field_parameter_name_alone():
+    # The name column of a field parameter is grouped by its hidden Fields column: passing it
+    # to a function, as in SELECTEDVALUE ( 'Province indicator'[Province indicator] ), or
+    # filtering on it fails with "part of a composite key". Read the Order column instead;
+    # an iterator over the whole table may still return the name.
+    columns = []
+    for path in (MODEL / "tables").glob("*.tmdl"):
+        text = path.read_text(encoding="utf-8")
+        table = _name(re.search(r"^table (.+)$", text, re.M).group(1))
+        columns += [(table, _name(column)) for column in GROUPED_COLUMN.findall(text)]
+    assert columns, "no field parameter found"
+    for path in sorted((MODEL / "tables").glob("*.tmdl")):
+        for expression in dax_expressions(path.read_text(encoding="utf-8")):
+            code = DAX_IGNORED.sub("", expression)
+            for table, name in columns:
+                ref = rf"(?:'{re.escape(table)}'|\b{re.escape(table)})\[{re.escape(name)}\]"
+                alone = re.search(rf"\(\s*{ref}|{ref}\s*(?:=|<>|\bIN\b)", code)
+                assert not alone, f"{path.name}: {alone.group(0)}"
+
+
 def test_measure_column_references_exist():
     tables = model_tables()
     for path in sorted((MODEL / "tables").glob("*.tmdl")):
@@ -172,3 +229,136 @@ def test_measure_table_has_the_spec_indicators():
         "Companies per 1,000 residents",
         "Reconciliation status",
     } <= measures
+
+
+def test_phase_b_tables_and_columns():
+    tables = model_tables()
+    for name in ("ProvinceShape", "Seasonality", "Benchmark", "Benchmark point", "Data source"):
+        assert name in tables, name
+    assert {"GeoCode", "Path", "LabelX", "LabelY"} <= tables["ProvinceShape"]["columns"]
+    assert {"Month", "MonthName", "Effect"} <= tables["Seasonality"]["columns"]
+    assert {"Benchmark", "Item", "ValueItem", "Order"} <= tables["Benchmark"]["columns"]
+    assert {"Code", "Area", "Role", "Row", "Indicator", "Point"} <= tables["Benchmark point"][
+        "columns"
+    ]
+    assert {"Source", "Order"} <= tables["Data source"]["columns"]
+    assert "ShortName" in tables["ISCED"]["columns"]
+    assert "ShortName" in tables["Sector"]["columns"]
+
+
+def test_report_visual_measures():
+    assert {
+        "Focus region name",
+        "Country name",
+        "Data up to",
+        "Population (men, negative)",
+        "Population (women)",
+        "Students (women, negative)",
+        "Students (men)",
+        "Population (men aged 65+, negative)",
+        "Population (men under 65, negative)",
+        "Population (women aged 65+)",
+        "Population (women under 65)",
+        "Students (women, tertiary, negative)",
+        "Students (women, other levels, negative)",
+        "Students (men, tertiary)",
+        "Students (men, other levels)",
+        "Area colour",
+        "Change colour",
+        "Active companies at month-end",
+        "Active companies, December",
+        "Active companies index",
+        "Sector change, ten largest",
+        "Seasonal effect",
+        "Forecast MAPE",
+        "Forecast chart actual",
+        "Forecast chart forecast",
+        "Latest period",
+        "Area name",
+        "Flags text",
+    } <= model_tables()["_Measures"]["measures"]
+
+
+def test_kpi_province_map_and_dot_measures():
+    assert {
+        "KPI gap Population",
+        "KPI gap Share aged 65+",
+        "KPI gap Crude death rate",
+        "KPI gap Unemployment rate",
+        "KPI gap GDP per inhabitant",
+        "KPI gap Active companies",
+        "Province indicator value",
+        "Province indicator label",
+        "Province gap to region",
+        "Highlight population change",
+        "Highlight aged 65+",
+        "Highlight death rate",
+        "Highlight companies",
+        "Highlight GDP",
+        "Map SVG",
+        "Dot value",
+        "Dot position",
+        "Dot row",
+        "Rank row label",
+        "Benchmark years",
+    } <= model_tables()["_Measures"]["measures"]
+
+
+REPORT_TEXT_PREFIXES = (
+    "Overview",
+    "Population",
+    "Economy",
+    "Education",
+    "Provinces",
+    "Business",
+    "Benchmark",
+    "About",
+    "Province detail",
+)
+
+
+def test_report_text_measures():
+    measures = model_tables()["_Measures"]["measures"]
+    for prefix in REPORT_TEXT_PREFIXES:
+        for part in ("headline lead", "headline accent", "paragraph"):
+            assert f"{prefix} {part}" in measures
+
+
+def test_compare_to_items_pass_text_measures_through():
+    # The Benchmark rank table has a text row label: an item that returns BLANK for text empties it.
+    text = (MODEL / "tables" / "Compare to.tmdl").read_text(encoding="utf-8")
+    for item in re.split(r"^		calculationItem ", text, flags=re.M)[1:]:
+        name = _name(item.split("=")[0])
+        if name != "Value":
+            assert "ISTEXT ( v ), v" in item, name
+
+
+def test_tooltip_and_dot_plot_objects():
+    tables = model_tables()
+    assert {"Row", "Indicator", "InArea", "InProvince"} <= tables["Tooltip indicator"]["columns"]
+    assert {
+        "Tooltip value",
+        "Dot plot SVG",
+        "Dot focus value",
+        "_Dot strip marks",
+    } <= tables["_Measures"]["measures"]
+    assert "Dot plot legend SVG" not in tables["_Measures"]["measures"]
+
+
+def test_geo_short_names_and_peer_note():
+    tables = model_tables()
+    assert "LegendName" in tables["Geo"]["columns"]
+    assert "Peer regions note" in tables["_Measures"]["measures"]
+
+
+def test_flags_text_names_every_eurostat_flag_in_the_data():
+    # Flags seen in the data: b, e, p and their combinations, and d on enrolment.
+    text = (MODEL / "tables" / "_Measures.tmdl").read_text(encoding="utf-8")
+    body = text[text.index("measure 'Flags text' =") :].split("\tmeasure ", 1)[0]
+    for code, word in (
+        ("b", "break in series"),
+        ("d", "definition differs"),
+        ("e", "estimated"),
+        ("p", "provisional"),
+    ):
+        assert f'{{ "{code}", "{word}"' in body, code

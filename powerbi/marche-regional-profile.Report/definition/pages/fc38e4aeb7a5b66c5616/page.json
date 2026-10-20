@@ -1,0 +1,90 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "fc38e4aeb7a5b66c5616",
+  "displayName": "Benchmark",
+  "displayOption": "FitToPage",
+  "height": 720,
+  "width": 1280,
+  "visualInteractions": [
+    {
+      "source": "a32822c7748490825b67",
+      "target": "0d5a7fb42bdbfee72588",
+      "type": "NoFilter"
+    },
+    {
+      "source": "a32822c7748490825b67",
+      "target": "115cb6a52b20f9a261f6",
+      "type": "NoFilter"
+    },
+    {
+      "source": "a32822c7748490825b67",
+      "target": "122d963aff61927d13b2",
+      "type": "DataFilter"
+    },
+    {
+      "source": "a32822c7748490825b67",
+      "target": "2d6f44b49944829f8c4f",
+      "type": "NoFilter"
+    },
+    {
+      "source": "a32822c7748490825b67",
+      "target": "2d72b4d80ee2e634649c",
+      "type": "NoFilter"
+    },
+    {
+      "source": "a32822c7748490825b67",
+      "target": "4c699c5f8d9baedb2ce4",
+      "type": "NoFilter"
+    },
+    {
+      "source": "a32822c7748490825b67",
+      "target": "4d2350b8790d37ba6bba",
+      "type": "NoFilter"
+    },
+    {
+      "source": "a32822c7748490825b67",
+      "target": "888408e9d1a587f6aafb",
+      "type": "NoFilter"
+    },
+    {
+      "source": "a32822c7748490825b67",
+      "target": "8e5ae6b7dee227a169f6",
+      "type": "NoFilter"
+    },
+    {
+      "source": "a32822c7748490825b67",
+      "target": "97a87133c7fc16b2970b",
+      "type": "NoFilter"
+    },
+    {
+      "source": "a32822c7748490825b67",
+      "target": "9a2032b9636f53b7ea2d",
+      "type": "NoFilter"
+    },
+    {
+      "source": "a32822c7748490825b67",
+      "target": "a2dba697ac5d780634dc",
+      "type": "NoFilter"
+    },
+    {
+      "source": "a32822c7748490825b67",
+      "target": "a76656a742cc56763dbf",
+      "type": "NoFilter"
+    },
+    {
+      "source": "a32822c7748490825b67",
+      "target": "ddb1eb5e39b0eb913a3e",
+      "type": "NoFilter"
+    },
+    {
+      "source": "a32822c7748490825b67",
+      "target": "de1f0f63a5465ccbcd9a",
+      "type": "NoFilter"
+    },
+    {
+      "source": "a32822c7748490825b67",
+      "target": "f49c761b01e2b2679d89",
+      "type": "NoFilter"
+    }
+  ]
+}

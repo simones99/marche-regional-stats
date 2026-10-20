@@ -1,8 +1,13 @@
+import re
+from pathlib import Path
+
 import pandas as pd
 import pytest
 from conftest import synthetic_wide
 
 from marche_stats import cli, companies, powerbi_export, timeseries
+
+FIXTURES = Path(__file__).parent / "fixtures"
 
 
 @pytest.fixture(scope="module")
@@ -88,12 +93,14 @@ def test_reconciliation_matches_series_and_section_sums(fitted):
     assert first["active_companies"] == pesaro[month].sum()
 
 
-def test_cli_export_powerbi_writes_three_files(companies_csv, tmp_path):
+def test_cli_export_powerbi_writes_five_files(companies_csv, tmp_path):
     code = cli.main(
         [
             "export-powerbi",
             "--companies",
             str(companies_csv),
+            "--eurostat-dir",
+            str(FIXTURES),
             "--powerbi",
             str(tmp_path),
             "--holdout",
@@ -102,7 +109,17 @@ def test_cli_export_powerbi_writes_three_files(companies_csv, tmp_path):
     )
     assert code == 0
     names = sorted(p.name for p in (tmp_path / "data").iterdir())
-    assert names == ["forecast.csv", "forecast_accuracy.csv", "reconciliation.csv"]
+    assert names == [
+        "forecast.csv",
+        "forecast_accuracy.csv",
+        "province_shapes.csv",
+        "reconciliation.csv",
+        "seasonality.csv",
+    ]
+    shapes = pd.read_csv(tmp_path / "data" / "province_shapes.csv")
+    assert len(shapes) == 5
+    seasonality = pd.read_csv(tmp_path / "data" / "seasonality.csv")
+    assert list(seasonality["month"]) == list(range(1, 13))
     forecast = pd.read_csv(tmp_path / "data" / "forecast.csv")
     assert forecast["date"].iloc[0] == "2009-03-31"
 
@@ -123,3 +140,41 @@ def test_cli_export_powerbi_writes_three_files(companies_csv, tmp_path):
     assert (coverage[~sarima] == "").all()
     assert (coverage[sarima] != "").all()
     assert reconciliation_raw["active_companies"].str.match(r"^\d+$").all()
+
+
+def test_province_shapes_fit_the_box():
+    table = powerbi_export.province_shapes_table(FIXTURES / "marche_nuts3.geojson")
+    assert list(table.columns) == ["geo", "path", "label_x", "label_y"]
+    assert list(table["geo"]) == ["ITI31", "ITI32", "ITI33", "ITI34", "ITI35"]
+    for row in table.itertuples():
+        assert re.fullmatch(r"(M[\d ,]+Z)+", row.path), row.geo
+        numbers = [int(n) for n in re.findall(r"\d+", row.path)]
+        assert max(numbers) <= 400, row.geo
+        assert 0 <= row.label_x <= 400 and 0 <= row.label_y <= 400, row.geo
+    labels = table.set_index("geo")
+    # North up: Pesaro e Urbino lies north of Ascoli Piceno.
+    assert labels.loc["ITI31", "label_y"] < labels.loc["ITI34", "label_y"]
+
+
+def test_seasonality_table_has_twelve_months(fitted):
+    _, series, _, _ = fitted
+    table = powerbi_export.seasonality_table(series)
+    assert list(table.columns) == ["month", "month_name", "effect"]
+    assert list(table["month"]) == list(range(1, 13))
+    assert list(table["month_name"]) == [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+    ]
+    # The synthetic register dips in January and February (conftest.py).
+    assert table.loc[0, "effect"] < 0
+    assert abs(table["effect"].sum()) < 0.02 * series.mean()

@@ -3300,13 +3300,15 @@ git commit -m "Retire the two earlier Power BI projects and document the merged 
 
 The spec leaves this open. Timebox it to 30 minutes and record the outcome either way.
 
-- [ ] **Step 1: Try Tabular Editor 2 on the TMDL folder.** Download `TabularEditor.Portable.zip` 2.27.2 from `https://github.com/TabularEditor/TabularEditor/releases/tag/2.27.2` and extract it to a new empty folder outside the repository, for example `$env:TEMP\te2`, then (PowerShell):
+**Done in Phase B, Task 20** (`docs/superpowers/plans/2026-10-13-marche-regional-profile-phase-b.md`): Tabular Editor 2.27.2 loads the TMDL folder, and the `bpa` job in `ci.yml` (e368bad) runs the analyzer on every push to `main` and on every pull request. The outcome is recorded there.
+
+- [x] **Step 1: Try Tabular Editor 2 on the TMDL folder.** Download `TabularEditor.Portable.zip` 2.27.2 from `https://github.com/TabularEditor/TabularEditor/releases/tag/2.27.2` and extract it to a new empty folder outside the repository, for example `$env:TEMP\te2`, then (PowerShell):
 
 ```powershell
 & "$env:TEMP\te2\TabularEditor.exe" "powerbi\marche-regional-profile.SemanticModel\definition" -A "https://raw.githubusercontent.com/microsoft/Analysis-Services/master/BestPracticeRules/BPARules.json"
 ```
 
-- [ ] **Step 2: Decide.**
+- [x] **Step 2: Decide.**
   - **If it loads the model and lists rule results:** add a job `bpa` on `windows-latest` to `.github/workflows/ci.yml` that downloads the same zip and runs the same command with `-V` (fail on errors). Commit with "Run the Best Practice Analyzer on the semantic model in CI".
   - **If it cannot load a TMDL folder:** add one sentence under "Model" in `powerbi/README.md`: "Tabular Editor 2.27.2 cannot load the TMDL folder, so the Best Practice Analyzer does not run in CI." Commit with "Note why the Best Practice Analyzer is not in CI".
 

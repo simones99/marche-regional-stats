@@ -27,4 +27,14 @@ Other sources:
 |---|---|
 | Geo | GISCO, NUTS 2024 attributes: `https://gisco-services.ec.europa.eu/distribution/v2/nuts/csv/NUTS_AT_2024.csv` (© EuroGeographics) |
 | Companies | Camera di Commercio delle Marche, active companies by municipality and ATECO 2007 section, monthly, 2009–2025 (CC BY 4.0): parameter `CompaniesSourceUrl` |
-| Forecast, ForecastAccuracy, Reconciliation | `powerbi/data/*.csv` in this repository, read from `RepoRawBase` (GitHub raw URL) |
+| Forecast, ForecastAccuracy, Reconciliation, Seasonality, ProvinceShape | `powerbi/data/*.csv` in this repository, read from `RepoRawBase` (GitHub raw URL) |
+
+## Photos
+
+| Page | Photo | Author | Licence |
+|---|---|---|---|
+| Overview | [Tempio del Valadier dall'eremo](https://commons.wikimedia.org/wiki/File:Tempio_del_Valadier_dall%27eremo.jpg) | Kimahri88 | CC0 1.0 |
+| Education | [Panorama (Urbino)](https://commons.wikimedia.org/wiki/File:Panorama_(Urbino)_-_panoramio.jpg) | Fabio Poggi | CC BY 3.0 |
+| About | [Spiaggia due sorelle](https://commons.wikimedia.org/wiki/File:Spiaggia_due_sorelle.jpg) | Gaspa | CC BY 2.0 |
+
+The photos are cropped to their slots and compressed; no other change.

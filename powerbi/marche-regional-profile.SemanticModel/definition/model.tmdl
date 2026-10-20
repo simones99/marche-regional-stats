@@ -19,7 +19,7 @@ annotation __PBI_TimeIntelligenceEnabled = 0
 
 annotation PBI_ProTooling = ["DevMode"]
 
-annotation PBI_QueryOrder = ["Geo","Calendar","Sex","AgeGroup","ISCED","Sector","_Measures","Population","Deaths","GDP","Unemployment","Enrolment","Companies","Forecast","ForecastAccuracy","Reconciliation","FocusRegion","PeerRegions","ProvinceRegions","Country","StartYear","RepoRawBase","CompaniesSourceUrl","fnEurostat"]
+annotation PBI_QueryOrder = ["Geo","Calendar","Sex","AgeGroup","ISCED","Sector","_Measures","Population","Deaths","GDP","Unemployment","Enrolment","Companies","Forecast","ForecastAccuracy","Reconciliation","ProvinceShape","Seasonality","Data source","FocusRegion","PeerRegions","ProvinceRegions","Country","StartYear","RepoRawBase","CompaniesSourceUrl","fnEurostat"]
 
 ref table Geo
 ref table Calendar
@@ -39,4 +39,12 @@ ref table ForecastAccuracy
 ref table Reconciliation
 ref table 'Compare to'
 ref table 'Province indicator'
+ref table ProvinceShape
+ref table Seasonality
+ref table Benchmark
+ref table 'Benchmark point'
+ref table 'Data source'
+ref table 'Tooltip indicator'
+
+ref cultureInfo en-US
 

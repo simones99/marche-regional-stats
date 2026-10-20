@@ -14,3 +14,10 @@ data/
 
 # Files exported by marche-stats for the Power BI report are committed.
 !powerbi/data/
+
+# Build output of the TMDL validator
+tools/tmdl-check/bin/
+tools/tmdl-check/obj/
+
+# Local screenshots taken while refining the report
+.screenshots/

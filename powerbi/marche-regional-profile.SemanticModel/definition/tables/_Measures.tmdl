@@ -229,8 +229,8 @@ table _Measures
 	measure 'Active companies' =
 			VAR Areas = VALUES ( Geo[Code] )
 			VAR WithProvinces = UNION ( Areas, CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), TREATAS ( Areas, Geo[ParentCode] ) ) )
-			VAR LastDate = CALCULATE ( MAX ( Companies[Date] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ) )
-			RETURN CALCULATE ( SUM ( Companies[Companies] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ), Companies[Date] = LastDate )
+			VAR LastMonthEnd = CALCULATE ( MAX ( Companies[Date] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ) )
+			RETURN CALCULATE ( SUM ( Companies[Companies] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ), Companies[Date] = LastMonthEnd )
 		formatString: #,0
 		displayFolder: Business
 		lineageTag: a6d5e70f-0a28-43de-8a7a-726b06f690a6
@@ -275,6 +275,8 @@ table _Measures
 		displayFolder: Flags
 		lineageTag: db37355f-635e-4382-b2c6-fa9769bc2ff1
 
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
 	/// Eurostat flags of the deaths, both sexes and all ages, at the reference date, for tooltips
 	/// (p provisional, e estimated, b break in series). Blank when there are none.
 	measure 'Deaths flag' =
@@ -288,6 +290,8 @@ table _Measures
 			    )
 		displayFolder: Flags
 		lineageTag: 8ab43930-e8e7-4552-a447-6660600aac0a
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
 
 	/// Eurostat flags of GDP per inhabitant (the unit in context, otherwise EUR_HAB) at the reference date, for tooltips
 	/// (p provisional, e estimated, b break in series). Blank when there are none.
@@ -303,6 +307,8 @@ table _Measures
 		displayFolder: Flags
 		lineageTag: e0b761b2-f3d1-4e48-83df-00b788116f71
 
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
 	/// Eurostat flags of the unemployment rate at the reference date, for tooltips
 	/// (p provisional, e estimated, b break in series). Blank when there are none.
 	measure 'Unemployment flag' =
@@ -314,6 +320,8 @@ table _Measures
 			    )
 		displayFolder: Flags
 		lineageTag: 53a3a262-f3ec-4a02-85e0-14ca11e03b92
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
 
 	/// Eurostat flags of the students enrolled, both sexes and all levels, at the reference date, for tooltips
 	/// (p provisional, e estimated, b break in series). Blank when there are none.
@@ -328,6 +336,8 @@ table _Measures
 			    )
 		displayFolder: Flags
 		lineageTag: e3be87fe-ddf2-45ad-bd7b-ffd880e5828e
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
 
 	/// Regional active companies in the series the SARIMA model is fitted on.
 	measure 'Modelled companies' = SUM ( Forecast[Actual] )
@@ -393,19 +403,1147 @@ table _Measures
 		displayFolder: Checks
 		lineageTag: 735be2b3-b78a-4081-962c-1341b25f877c
 
-	/// ✓ when Power BI matches the Python pipeline, otherwise ✗ and the difference. Over several
-	/// checkpoints (the total row), ✓ all or ✗ and the number of checkpoints that fail.
+	/// "✓ Match" when Power BI matches the Python pipeline, otherwise "✗ Differs by" and the
+	/// difference. Over several checkpoints: "✓ all N match" or "✗ K of N differ".
 	measure 'Reconciliation status' =
 			IF (
 			    HASONEVALUE ( Reconciliation[Checkpoint] ),
 			    VAR Expected = [Reconciliation expected]
 			    VAR Diff = [Reconciliation in model] - Expected
-			    RETURN IF ( NOT ISBLANK ( Expected ), IF ( Diff = 0, "✓", "✗ " & FORMAT ( Diff, "+#,0;-#,0" ) ) ),
+			    RETURN IF ( NOT ISBLANK ( Expected ), IF ( Diff = 0, "✓ Match", "✗ Differs by " & FORMAT ( Diff, "+#,0;-#,0" ) ) ),
+			    VAR Points = COUNTROWS ( VALUES ( Reconciliation[Checkpoint] ) )
 			    VAR Failed = COUNTROWS ( FILTER ( VALUES ( Reconciliation[Checkpoint] ), [Reconciliation in model] <> [Reconciliation expected] ) )
-			    RETURN IF ( COUNTROWS ( VALUES ( Reconciliation[Checkpoint] ) ) > 0, IF ( Failed = 0, "✓ all", "✗ " & Failed & " failed" ) )
+			    RETURN IF ( Points > 0, IF ( Failed = 0, "✓ all " & Points & " match", "✗ " & Failed & " of " & Points & " differ" ) )
 			)
 		displayFolder: Checks
 		lineageTag: 2e156d26-2e99-482c-9c40-abb8dd9510ff
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Name of the focus region (FocusRegion parameter), as GISCO spells it.
+	measure 'Focus region name' = CALCULATE ( SELECTEDVALUE ( Geo[Name] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
+		displayFolder: Report text
+		lineageTag: f6ad83aa-6c00-4bbc-8553-2d1a0bb6a03c
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Name of the national benchmark (Country parameter).
+	measure 'Country name' = CALCULATE ( SELECTEDVALUE ( Geo[Name] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Country" )
+		displayFolder: Report text
+		lineageTag: 8e7a4586-aa32-4df8-aa34-33a00be4ca75
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// "Data up to <month year>": the latest date of any fact table, for the navigation bar.
+	measure 'Data up to' =
+			VAR Latest =
+			    MAXX (
+			        {
+			            CALCULATE ( MAX ( Companies[Date] ), REMOVEFILTERS () ),
+			            CALCULATE ( MAX ( Population[Date] ), REMOVEFILTERS () ),
+			            CALCULATE ( MAX ( Unemployment[Date] ), REMOVEFILTERS () )
+			        },
+			        [Value]
+			    )
+			RETURN "Data up to " & FORMAT ( Latest, "mmm yyyy" )
+		displayFolder: Report text
+		lineageTag: 47d12ca8-d4f9-4a04-a238-8a671bb662ba
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Name of the area in context, for the tooltip pages.
+	measure 'Area name' = SELECTEDVALUE ( Geo[Name] )
+		displayFolder: Report text
+		lineageTag: 9f131e8d-ff0b-458e-9da9-64e6fd15124b
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Eurostat flags of the area in context, in words, for the tooltip pages. Blank when none.
+	measure 'Flags text' =
+			VAR Flags =
+			    {
+			        ( "Population", [Population flag] ),
+			        ( "Deaths", [Deaths flag] ),
+			        ( "GDP", [GDP flag] ),
+			        ( "Unemployment", [Unemployment flag] ),
+			        ( "Enrolment", [Enrolment flag] )
+			    }
+			VAR Named = FILTER ( Flags, [Value2] <> "" )
+			// Eurostat flag codes; a cell can carry several, for example "bep".
+			VAR Codes =
+			    DATATABLE (
+			        "Code", STRING, "Word", STRING,
+			        {
+			            { "b", "break in series" },
+			            { "c", "confidential" },
+			            { "d", "definition differs" },
+			            { "e", "estimated" },
+			            { "f", "forecast" },
+			            { "n", "not significant" },
+			            { "p", "provisional" },
+			            { "r", "revised" },
+			            { "s", "Eurostat estimate" },
+			            { "u", "low reliability" },
+			            { "z", "not applicable" }
+			        }
+			    )
+			RETURN
+			    IF (
+			        COUNTROWS ( Named ) > 0,
+			        "Eurostat flags: "
+			            & CONCATENATEX (
+			                Named,
+			                VAR f = [Value2]
+			                RETURN [Value1] & ": " & CONCATENATEX ( FILTER ( Codes, CONTAINSSTRING ( f, [Code] ) ), [Word], ", ", [Code], ASC ),
+			                "; "
+			            )
+			    )
+		displayFolder: Report text
+		lineageTag: 25f56587-4de7-4943-b844-61a7b9ebcabb
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Latest period of the source on the row of the About freshness table.
+	measure 'Latest period' =
+			SWITCH (
+			    SELECTEDVALUE ( 'Data source'[Order] ),
+			    1, "1 Jan " & FORMAT ( YEAR ( CALCULATE ( MAX ( Population[Date] ), REMOVEFILTERS () ) ), "0" ),
+			    2, FORMAT ( YEAR ( CALCULATE ( MAX ( Deaths[Date] ), REMOVEFILTERS () ) ), "0" ),
+			    3, FORMAT ( YEAR ( CALCULATE ( MAX ( GDP[Date] ), REMOVEFILTERS (), Geo[Level] <> "NUTS3" ) ), "0" ),
+			    4, FORMAT ( YEAR ( CALCULATE ( MAX ( GDP[Date] ), REMOVEFILTERS (), Geo[Level] = "NUTS3" ) ), "0" ),
+			    5, FORMAT ( YEAR ( CALCULATE ( MAX ( Unemployment[Date] ), REMOVEFILTERS () ) ), "0" ),
+			    6, FORMAT ( YEAR ( CALCULATE ( MAX ( Enrolment[Date] ), REMOVEFILTERS () ) ), "0" ),
+			    7, FORMAT ( CALCULATE ( MAX ( Companies[Date] ), REMOVEFILTERS () ), "mmm yyyy" ),
+			    8, "to " & FORMAT ( CALCULATE ( MAX ( Forecast[Date] ), REMOVEFILTERS () ), "mmm yyyy" )
+			)
+		displayFolder: Report text
+		lineageTag: 0d43bfb7-722c-4479-8a27-bb2b6558ba3b
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Men in each age band as negative numbers, so they draw to the left of the pyramid.
+	/// The format string hides the sign.
+	measure 'Population (men, negative)' = - CALCULATE ( [Population], Sex[Code] = "M" )
+		formatString: #,0;#,0
+		displayFolder: Report visuals
+		lineageTag: 9c9eeb6d-f489-4b50-9ed4-6ff08f15d36f
+
+	/// Women in each age band, the right side of the pyramid.
+	measure 'Population (women)' = CALCULATE ( [Population], Sex[Code] = "F" )
+		formatString: #,0
+		displayFolder: Report visuals
+		lineageTag: 8a9561ea-483f-41cf-aaca-e1c50c98eb27
+
+	/// Women enrolled at each level as negative numbers (left side of the butterfly chart).
+	measure 'Students (women, negative)' = - CALCULATE ( [Students enrolled], Sex[Code] = "F" )
+		formatString: #,0;#,0
+		displayFolder: Report visuals
+		lineageTag: f41bc97d-b16c-4f01-a70b-ed7f0cbc2497
+
+	/// Men enrolled at each level (right side of the butterfly chart).
+	measure 'Students (men)' = CALCULATE ( [Students enrolled], Sex[Code] = "M" )
+		formatString: #,0
+		displayFolder: Report visuals
+		lineageTag: bd55f5d8-21f6-4cdb-953d-c172cbad2ad0
+
+	/// Bar colour by area role: accent for the focus region, text colour for the country and the
+	/// EU (the fallback when a bar outline cannot be set per bar), grey for the peer regions.
+	measure 'Area colour' = SWITCH ( SELECTEDVALUE ( Geo[Role] ), "Focus", "#00753A", "Country", "#15201A", "EU", "#15201A", "#6B746E" )
+		displayFolder: Report visuals
+		lineageTag: 5387015e-c51d-4bf8-9022-626fa1c005b1
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Active companies at the month-ends in context; for the focus region, the sum of its provinces.
+	measure 'Active companies at month-end' =
+			VAR Areas = VALUES ( Geo[Code] )
+			VAR WithProvinces = UNION ( Areas, CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), TREATAS ( Areas, Geo[ParentCode] ) ) )
+			RETURN CALCULATE ( SUM ( Companies[Companies] ), REMOVEFILTERS ( Geo ), TREATAS ( WithProvinces, Geo[Code] ) )
+		formatString: #,0
+		displayFolder: Report visuals
+		lineageTag: d46919fa-1a3c-49f6-81ab-9d357d337886
+
+	/// Active companies on 31 December of each year in context.
+	measure 'Active companies, December' = CALCULATE ( [Active companies at month-end], Calendar[MonthNumber] = 12 )
+		formatString: #,0
+		displayFolder: Report visuals
+		lineageTag: 1f385306-7e9b-4f13-8373-8605637698e2
+
+	/// Active companies in December as an index: the first full-year December = 100.
+	measure 'Active companies index' =
+			VAR FirstDec = CALCULATE ( MIN ( Companies[Date] ), REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Calendar[MonthNumber] = 12 )
+			VAR Base = CALCULATE ( [Active companies at month-end], REMOVEFILTERS ( Calendar ), Calendar[Date] = FirstDec )
+			RETURN DIVIDE ( 100 * [Active companies, December], Base )
+		formatString: 0.0
+		displayFolder: Report visuals
+		lineageTag: ae7a4cf7-0ea3-4137-ab8d-5232906aa651
+
+	/// Change since the first full-year December for the ten sections with most active
+	/// companies. Blank for the other sections and for X (not classified).
+	measure 'Sector change, ten largest' =
+			VAR Size = RANKX ( FILTER ( ALL ( Sector ), Sector[Code] <> "X" ), [Active companies], , DESC )
+			RETURN IF ( SELECTEDVALUE ( Sector[Code] ) <> "X" && Size <= 10, [Active companies change %] )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: Report visuals
+		lineageTag: 2bbd2c51-300f-4fd1-be1d-9297e2921bcf
+
+	/// Bar colour of the sector chart: accent for the growing sections.
+	measure 'Change colour' = IF ( [Sector change, ten largest] > 0, "#00753A", "#6B746E" )
+		displayFolder: Report visuals
+		lineageTag: 55bba8e4-4663-43c3-b418-7dbe9557ed85
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Average seasonal effect of the calendar month, in active companies.
+	measure 'Seasonal effect' = SUM ( Seasonality[Effect] )
+		formatString: +#,0;-#,0;0
+		displayFolder: Report visuals
+		lineageTag: 7a2a9517-aa25-4c2b-a84a-135b76f0f76b
+
+	/// Mean absolute percentage error of the method in context on the holdout months.
+	measure 'Forecast MAPE' = DIVIDE ( SUM ( ForecastAccuracy[MAPE] ), 100 )
+		formatString: 0.00%
+		displayFolder: Report visuals
+		lineageTag: 0dcb31a2-1bd6-48ca-843c-4fb26e1645b0
+
+	/// Modelled companies in the last 24 months of the series, for the forecast chart.
+	measure 'Forecast chart actual' =
+			VAR LastActual = CALCULATE ( MAX ( Forecast[Date] ), REMOVEFILTERS (), NOT ISBLANK ( Forecast[Actual] ) )
+			RETURN IF ( MAX ( Calendar[Date] ) > EOMONTH ( LastActual, -24 ), [Modelled companies] )
+		formatString: #,0
+		displayFolder: Report visuals
+		lineageTag: 1b3cb478-c5cd-49fd-8294-d231229a5e85
+
+	/// SARIMA forecast, starting from the last actual month so the two lines join.
+	measure 'Forecast chart forecast' =
+			VAR LastActual = CALCULATE ( MAX ( Forecast[Date] ), REMOVEFILTERS (), NOT ISBLANK ( Forecast[Actual] ) )
+			RETURN IF ( MAX ( Calendar[Date] ) = LastActual, [Modelled companies], [SARIMA forecast] )
+		formatString: #,0
+		displayFolder: Report visuals
+		lineageTag: 92e50520-5b1f-4cec-ad45-e7d28bb630b7
+
+	/// Five-year population change of the focus region and of the benchmark chosen on Overview.
+	measure 'KPI gap Population' =
+			VAR Label = SELECTEDVALUE ( Benchmark[Benchmark], [Country name] )
+			VAR CompareItem = SELECTEDVALUE ( Benchmark[ValueItem], "Country" )
+			VAR Own = [Population change 5y %]
+			VAR Other = CALCULATE ( [Population change 5y %], 'Compare to'[Comparison] = CompareItem )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( Own ),
+			        IF ( Own < 0, "−", "+" ) & FORMAT ( ABS ( Own ) * 100, "0.0" ) & " % in 5 years"
+			            & IF ( NOT ISBLANK ( Other ), " · " & Label & " " & IF ( Other < 0, "−", "+" ) & FORMAT ( ABS ( Other ) * 100, "0.0" ) & " %" )
+			    )
+		displayFolder: Report text
+		lineageTag: 2ecbd63b-1bfc-4461-aac2-1bfcbc6c23ad
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Gap in the share aged 65+ to the benchmark chosen on Overview, in percentage points.
+	measure 'KPI gap Share aged 65+' =
+			VAR Label = SELECTEDVALUE ( Benchmark[Benchmark], [Country name] )
+			VAR CompareItem = SELECTEDVALUE ( Benchmark[Item], "vs Country" )
+			VAR Gap = CALCULATE ( [Share aged 65+], 'Compare to'[Comparison] = CompareItem )
+			VAR RefYear = YEAR ( CALCULATE ( [_Ref date Population], REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "65+" ) )
+			RETURN IF ( NOT ISBLANK ( Gap ), IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ) * 100, "0.0" ) & " pp vs " & Label & " · " & RefYear )
+		displayFolder: Report text
+		lineageTag: b6e88b89-0d6d-4980-bbcf-0a434b82882a
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Gap in the crude death rate to the benchmark chosen on Overview.
+	measure 'KPI gap Crude death rate' =
+			VAR Label = SELECTEDVALUE ( Benchmark[Benchmark], [Country name] )
+			VAR CompareItem = SELECTEDVALUE ( Benchmark[Item], "vs Country" )
+			VAR Gap = CALCULATE ( [Crude death rate per 1,000], 'Compare to'[Comparison] = CompareItem )
+			RETURN IF ( NOT ISBLANK ( Gap ), IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ), "0.0" ) & " vs " & Label & " · " & YEAR ( [_Ref date Deaths] ) )
+		displayFolder: Report text
+		lineageTag: ac4f138b-623f-4980-b46a-e1fcdf077e69
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Gap in the unemployment rate to the benchmark chosen on Overview, in percentage points.
+	measure 'KPI gap Unemployment rate' =
+			VAR Label = SELECTEDVALUE ( Benchmark[Benchmark], [Country name] )
+			VAR CompareItem = SELECTEDVALUE ( Benchmark[Item], "vs Country" )
+			VAR Gap = CALCULATE ( [Unemployment rate], 'Compare to'[Comparison] = CompareItem )
+			RETURN IF ( NOT ISBLANK ( Gap ), IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ) * 100, "0.0" ) & " pp vs " & Label & " · " & YEAR ( [_Ref date Unemployment] ) )
+		displayFolder: Report text
+		lineageTag: 527fac47-2383-4db1-b049-3d7c3704a279
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Gap in GDP per inhabitant to the benchmark chosen on Overview, in euro.
+	measure 'KPI gap GDP per inhabitant' =
+			VAR Label = SELECTEDVALUE ( Benchmark[Benchmark], [Country name] )
+			VAR CompareItem = SELECTEDVALUE ( Benchmark[Item], "vs Country" )
+			VAR Gap = CALCULATE ( [GDP per inhabitant (EUR)], 'Compare to'[Comparison] = CompareItem )
+			RETURN IF ( NOT ISBLANK ( Gap ), IF ( Gap < 0, "−€", "+€" ) & FORMAT ( ABS ( Gap ), "#,0" ) & " vs " & Label & " · " & YEAR ( [_Ref date GDP] ) )
+		displayFolder: Report text
+		lineageTag: 84c3ef87-0162-48df-ab96-5bdd6f99a403
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Change in active companies since the first full-year December (no benchmark: the
+	/// register covers the focus region only).
+	measure 'KPI gap Active companies' =
+			VAR Change = [Active companies change %]
+			VAR FirstYear = YEAR ( CALCULATE ( MIN ( Companies[Date] ), REMOVEFILTERS (), Calendar[MonthNumber] = 12 ) )
+			RETURN IF ( NOT ISBLANK ( Change ), IF ( Change < 0, "−", "+" ) & FORMAT ( ABS ( Change ) * 100, "0.0" ) & " % since December " & FirstYear )
+		displayFolder: Report text
+		lineageTag: e2b3865e-ba1f-46d1-81c0-827392df09f8
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Value of the indicator chosen in the Province indicator field parameter (default:
+	/// companies per 1,000 residents), with that indicator's format.
+	measure 'Province indicator value' =
+			SWITCH (
+			    SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ),
+			    0, [Population change 5y %],
+			    1, [Share aged 65+],
+			    2, [Crude death rate per 1,000],
+			    3, [Companies per 1,000 residents],
+			    4, [GDP per inhabitant (EUR)]
+			)
+		displayFolder: Report visuals
+		lineageTag: 38aa3eb1-06b8-4d90-9374-ae41559dd67d
+
+		formatStringDefinition = SWITCH ( SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ), 0, "+0.0%;-0.0%;0.0%", 1, "0.0%", 4, "#,0", "0.0" )
+
+	/// Province indicator value as text, as the map and the headlines print it.
+	measure 'Province indicator label' =
+			VAR v = [Province indicator value]
+			RETURN
+			    IF (
+			        NOT ISBLANK ( v ),
+			        SWITCH (
+			            SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ),
+			            0, IF ( v < 0, "−", "+" ) & FORMAT ( ABS ( v ) * 100, "0.0" ) & " %",
+			            1, FORMAT ( v * 100, "0.0" ) & " %",
+			            4, "€" & FORMAT ( v / 1000, "0.0" ) & "K",
+			            FORMAT ( v, "0.0" )
+			        )
+			    )
+		displayFolder: Report text
+		lineageTag: 7982a746-b8ff-494e-953b-6547980bec11
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Gap between the province and the focus region for the chosen indicator. GDP compares
+	/// the same year: provincial GDP lags the regional series.
+	measure 'Province gap to region' =
+			VAR Ind = SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 )
+			VAR Region = [Focus region name]
+			VAR v = [Province indicator value]
+			VAR d = [_Ref date GDP]
+			VAR r =
+			    IF (
+			        Ind = 4,
+			        CALCULATE ( SUM ( GDP[Value] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", GDP[Date] = d, GDP[UnitCode] = "EUR_HAB" ),
+			        CALCULATE ( [Province indicator value], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
+			    )
+			VAR Gap = v - r
+			RETURN
+			    IF (
+			        NOT ISBLANK ( v ) && NOT ISBLANK ( r ),
+			        SWITCH (
+			            Ind,
+			            0, IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ) * 100, "0.0" ) & " pp vs " & Region,
+			            1, IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ) * 100, "0.0" ) & " pp vs " & Region,
+			            4, IF ( Gap < 0, "−€", "+€" ) & FORMAT ( ABS ( Gap ), "#,0" ) & " vs " & Region & " · " & YEAR ( d ),
+			            IF ( Gap < 0, "−", "+" ) & FORMAT ( ABS ( Gap ), "0.0" ) & " vs " & Region
+			        )
+			    )
+		displayFolder: Report text
+		lineageTag: c2418b88-8f7c-4342-aff5-56db8f4c27dd
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Background of the Provinces table column when its indicator is the one on the map.
+	measure 'Highlight population change' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ) = 0, "#D0E3D7" )
+		displayFolder: Report visuals
+		lineageTag: d16f53ca-d4ff-4bdf-bfd6-1bc2578dbb88
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Background of the Provinces table column when its indicator is the one on the map.
+	measure 'Highlight aged 65+' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ) = 1, "#D0E3D7" )
+		displayFolder: Report visuals
+		lineageTag: 29854286-481e-40b4-b60a-f04bfb8cefbd
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Background of the Provinces table column when its indicator is the one on the map.
+	measure 'Highlight death rate' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ) = 2, "#D0E3D7" )
+		displayFolder: Report visuals
+		lineageTag: 9184d033-6063-4632-b5d9-d5ee67de0929
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Background of the Provinces table column when its indicator is the one on the map.
+	measure 'Highlight companies' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ) = 3, "#D0E3D7" )
+		displayFolder: Report visuals
+		lineageTag: 6f74e692-07b9-4389-bc92-1c831c4f8a93
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Background of the Provinces table column when its indicator is the one on the map.
+	measure 'Highlight GDP' = IF ( SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 ) = 4, "#D0E3D7" )
+		displayFolder: Report visuals
+		lineageTag: 84a7ab90-bd04-4c76-8f31-f8ca2ea09f84
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// SVG map of the provinces for the indicator chosen in Province indicator: four equal
+	/// classes between the lowest and highest province, each province labelled with its name
+	/// and value, legend on the right. Shown in an Image visual (data category Image URL).
+	measure 'Map SVG' =
+			VAR Ind = SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 )
+			VAR IndName = [Province indicator name]
+			VAR ProvinceRows =
+			    CALCULATETABLE (
+			        ADDCOLUMNS (
+			            VALUES ( Geo[Code] ),
+			            "@name", CALCULATE ( SELECTEDVALUE ( Geo[Name] ) ),
+			            "@v", [Province indicator value],
+			            "@label", [Province indicator label],
+			            "@path", LOOKUPVALUE ( ProvinceShape[Path], ProvinceShape[GeoCode], Geo[Code] ),
+			            "@x", LOOKUPVALUE ( ProvinceShape[LabelX], ProvinceShape[GeoCode], Geo[Code] ),
+			            "@y", LOOKUPVALUE ( ProvinceShape[LabelY], ProvinceShape[GeoCode], Geo[Code] )
+			        ),
+			        REMOVEFILTERS ( Geo ),
+			        Geo[Role] = "Province"
+			    )
+			VAR Lo = MINX ( ProvinceRows, [@v] )
+			VAR Hi = MAXX ( ProvinceRows, [@v] )
+			VAR Step = ( Hi - Lo ) / 4
+			VAR Classes =
+			    ADDCOLUMNS (
+			        ProvinceRows,
+			        "@class", IF ( ISBLANK ( [@v] ), 0, IF ( Step = 0, 4, MIN ( 4, INT ( ( [@v] - Lo ) / Step ) + 1 ) ) )
+			    )
+			VAR Painted =
+			    ADDCOLUMNS (
+			        Classes,
+			        "@fill", SWITCH ( [@class], 0, "#ECEEEA", 1, "#D0E3D7", 2, "#7AB696", 3, "#4A9C72", "#00753A" ),
+			        "@ink", IF ( [@class] = 4, "#F5F6F3", "#15201A" )
+			    )
+			VAR Shapes =
+			    CONCATENATEX (
+			        Painted,
+			        "<path d='" & [@path] & "' fill='" & [@fill] & "' stroke='#F5F6F3' stroke-width='3' fill-rule='evenodd'/>",
+			        ""
+			    )
+			VAR Labels =
+			    CONCATENATEX (
+			        Painted,
+			        "<text x='" & [@x] & "' y='" & [@y] - 4 & "' text-anchor='middle' font-size='22' fill='" & [@ink] & "'>" & [@name] & "</text>"
+			            & "<text x='" & [@x] & "' y='" & [@y] + 22 & "' text-anchor='middle' font-size='22' font-weight='600' fill='" & [@ink] & "'>" & [@label] & "</text>",
+			        ""
+			    )
+			VAR Bounds = GENERATESERIES ( 1, 4, 1 )
+			VAR Legend =
+			    "<text x='424' y='40' font-size='22' fill='#4F5A53'>" & IndName & "</text>"
+			        & CONCATENATEX (
+			            Bounds,
+			            VAR i = [Value]
+			            VAR a = Lo + ( i - 1 ) * Step
+			            VAR b = Lo + i * Step
+			            VAR Fmt =
+			                SWITCH (
+			                    Ind,
+			                    0, IF ( a < 0, "−", "" ) & FORMAT ( ABS ( a ) * 100, "0.0" ) & " to " & IF ( b < 0, "−", "" ) & FORMAT ( ABS ( b ) * 100, "0.0" ) & " %",
+			                    1, IF ( a < 0, "−", "" ) & FORMAT ( ABS ( a ) * 100, "0.0" ) & " to " & IF ( b < 0, "−", "" ) & FORMAT ( ABS ( b ) * 100, "0.0" ) & " %",
+			                    4, IF ( a < 0, "−", "" ) & "€" & FORMAT ( ABS ( a ) / 1000, "0.0" ) & "K to " & IF ( b < 0, "−", "" ) & "€" & FORMAT ( ABS ( b ) / 1000, "0.0" ) & "K",
+			                    IF ( a < 0, "−", "" ) & FORMAT ( ABS ( a ), "0.0" ) & " to " & IF ( b < 0, "−", "" ) & FORMAT ( ABS ( b ), "0.0" )
+			                )
+			            VAR y = 72 + ( 4 - i ) * 40
+			            RETURN
+			                "<rect x='424' y='" & y & "' width='32' height='24' fill='" & SWITCH ( i, 1, "#D0E3D7", 2, "#7AB696", 3, "#4A9C72", "#00753A" ) & "' stroke='#6B746E'/>"
+			                    & "<text x='468' y='" & y + 19 & "' font-size='22' fill='#15201A'>" & Fmt & "</text>",
+			            ""
+			        )
+			VAR Svg =
+			    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 780 400' font-family='Segoe UI, sans-serif'>"
+			        & Shapes & Labels & Legend & "</svg>"
+			RETURN IF ( NOT ISBLANK ( Lo ), "data:image/svg+xml;utf8," & SUBSTITUTE ( SUBSTITUTE ( Svg, "%", "%25" ), "#", "%23" ) )
+		displayFolder: Report visuals
+		lineageTag: 702ada45-6fe0-4442-95b1-3ce155708247
+		dataCategory: ImageUrl
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Value of the indicator on the row of Benchmark point, for the area of that row.
+	measure 'Dot value' =
+			VAR r = SELECTEDVALUE ( 'Benchmark point'[Row] )
+			VAR c = SELECTEDVALUE ( 'Benchmark point'[Code] )
+			RETURN
+			    CALCULATE (
+			        SWITCH ( r, 1, [Population change 5y %], 2, [Share aged 65+], 3, [Crude death rate per 1,000], 4, [GDP per inhabitant (EUR)], 5, [Unemployment rate], 6, [Tertiary students per 1,000 residents] ),
+			        REMOVEFILTERS ( Geo ),
+			        Geo[Code] = c
+			    )
+		formatString: #,0.00
+		displayFolder: Report visuals
+		lineageTag: 0412b527-a091-4da8-aca6-fa29b5a31b6c
+
+	/// Position of the area between the lowest (0) and the highest (1) area for the indicator.
+	measure 'Dot position' =
+			VAR r = SELECTEDVALUE ( 'Benchmark point'[Row] )
+			VAR v = [Dot value]
+			VAR Others = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( 'Benchmark point'[Code] ), "@v", [Dot value] ), REMOVEFILTERS ( 'Benchmark point' ), 'Benchmark point'[Row] = r )
+			VAR Lo = MINX ( Others, [@v] )
+			VAR Hi = MAXX ( Others, [@v] )
+			RETURN IF ( NOT ISBLANK ( v ), DIVIDE ( v - Lo, Hi - Lo ) )
+		formatString: 0.00
+		displayFolder: Report visuals
+		lineageTag: bf1e97d6-4034-4d27-b3c4-9794a8b7d712
+
+	/// Row of the dot plot, negative so the first indicator is on top.
+	measure 'Dot row' = - SELECTEDVALUE ( 'Benchmark point'[Row] )
+		formatString: 0
+		displayFolder: Report visuals
+		lineageTag: 90645b5f-aa33-4eeb-9054-4a461594c6aa
+
+	/// Label of the Benchmark rank row, e.g. "Marche rank of 6".
+	measure 'Rank row label' =
+			[Focus region name] & " rank of "
+			    & COUNTROWS ( CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] IN { "Focus", "Peer" } ) )
+		displayFolder: Report text
+		lineageTag: a8992e3d-e095-405f-b0d9-a8bbe57c2057
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Years compared on the Benchmark page (the latest year common to the areas); the rank
+	/// direction is in the rank table's title.
+	measure 'Benchmark years' =
+			VAR yp = YEAR ( CALCULATE ( [_Ref date Population], REMOVEFILTERS ( Geo ), REMOVEFILTERS ( Calendar ) ) )
+			VAR yo = YEAR ( CALCULATE ( [_Ref date Population], REMOVEFILTERS ( Geo ), REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "65+" ) )
+			VAR yd = YEAR ( CALCULATE ( [_Ref date Deaths], REMOVEFILTERS ( Geo ), REMOVEFILTERS ( Calendar ) ) )
+			VAR yg = YEAR ( CALCULATE ( [_Ref date GDP], REMOVEFILTERS ( Geo ), REMOVEFILTERS ( Calendar ) ) )
+			VAR yu = YEAR ( CALCULATE ( [_Ref date Unemployment], REMOVEFILTERS ( Geo ), REMOVEFILTERS ( Calendar ) ) )
+			VAR ye = YEAR ( CALCULATE ( [_Ref date Enrolment], REMOVEFILTERS ( Geo ), REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( ISCED ), ISCED[Group] = "ISCED 5-8" ) )
+			RETURN
+			    "Years: population change " & yp - 5 & "–" & yp & " · aged 65+ " & yo & " · deaths " & yd & " · GDP " & yg
+			        & " · unemployment " & yu & " · tertiary " & ye & "."
+		displayFolder: Report text
+		lineageTag: 5f4fe24a-7adf-4631-b1cc-b1f7ea92d14e
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Number of areas ranked on Benchmark: the focus region and its peers.
+	measure '_Peer count' = COUNTROWS ( CALCULATETABLE ( VALUES ( Geo[Code] ), REMOVEFILTERS ( Geo ), Geo[Role] IN { "Focus", "Peer" } ) )
+		isHidden
+		displayFolder: _Helpers
+		lineageTag: fd34ae21-5dd7-41f0-a17c-7fb4a2ef8576
+
+	/// Rank of the focus region among its peers (1 = highest) for the five-year population change.
+	measure '_Rank population change' = CALCULATE ( [Population change 5y %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among neighbours" )
+		isHidden
+		displayFolder: _Helpers
+		lineageTag: d763f909-0644-4e2b-b77b-3e6ddb41eb58
+
+	/// Rank of the focus region among its peers (1 = highest) for the share aged 65+.
+	measure '_Rank aged 65+' = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among neighbours" )
+		isHidden
+		displayFolder: _Helpers
+		lineageTag: 3fce5ba2-2a13-4211-b1d3-ec132016fe41
+
+	/// Rank of the focus region among its peers (1 = highest) for the crude death rate.
+	measure '_Rank death rate' = CALCULATE ( [Crude death rate per 1,000], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among neighbours" )
+		isHidden
+		displayFolder: _Helpers
+		lineageTag: b4d9566e-e12d-4f2a-80d1-a0b7d18a341e
+
+	/// Rank of the focus region among its peers (1 = highest) for GDP per inhabitant.
+	measure '_Rank GDP' = CALCULATE ( [GDP per inhabitant (EUR)], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among neighbours" )
+		isHidden
+		displayFolder: _Helpers
+		lineageTag: 3b3592ea-d710-4525-b88a-d8676854e383
+
+	/// Rank of the focus region among its peers (1 = highest) for the unemployment rate.
+	measure '_Rank unemployment' = CALCULATE ( [Unemployment rate], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among neighbours" )
+		isHidden
+		displayFolder: _Helpers
+		lineageTag: 2478ecce-6df3-4bbf-a82e-679cf1b40223
+
+	/// Rank of the focus region among its peers (1 = highest) for tertiary students per 1,000 residents.
+	measure '_Rank tertiary' = CALCULATE ( [Tertiary students per 1,000 residents], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "Rank among neighbours" )
+		isHidden
+		displayFolder: _Helpers
+		lineageTag: e4fb4d66-bbf7-4c05-9fca-90c515ab739e
+
+	/// TRUE when the Overview claim holds: population falling over five years, a larger share
+	/// aged 65+ than the country, fewer active companies than in the first December.
+	measure '_Overview claim' =
+			VAR Pop = CALCULATE ( [Population change 5y %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR Old = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR OldCountry = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Country", REMOVEFILTERS ( Calendar ) )
+			VAR Firms = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			RETURN Pop < 0 && Old > OldCountry && Firms < 0
+		isHidden
+		displayFolder: _Helpers
+		lineageTag: f3f569bf-3984-4ede-ac55-c8ec3ea68b56
+
+	/// TRUE when trade, agriculture and manufacturing (ATECO G, A, C) all lost active companies
+	/// and at least one of professional, real-estate and financial services (M, L, K) grew.
+	measure '_Business claim' =
+			VAR T = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Sector[Code] ), "@c", [Active companies change %] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Sector ), REMOVEFILTERS ( Calendar ) )
+			RETURN MAXX ( FILTER ( T, Sector[Code] IN { "G", "A", "C" } ), [@c] ) < 0 && MAXX ( FILTER ( T, Sector[Code] IN { "M", "L", "K" } ), [@c] ) > 0
+		isHidden
+		displayFolder: _Helpers
+		lineageTag: c94762f4-a71d-400d-b76a-98e41eac1b46
+
+	/// Overview headline, first part. Claim in _Overview claim; neutral title otherwise.
+	measure 'Overview headline lead' = IF ( [_Overview claim], "An older, smaller region with", "The " & [Focus region name] & " at a" )
+		displayFolder: Report text
+		lineageTag: 79eb3049-cbce-48ab-a801-d80eb0a21812
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Overview headline, accent part.
+	measure 'Overview headline accent' = IF ( [_Overview claim], "fewer firms", "glance" )
+		displayFolder: Report text
+		lineageTag: 53aa2648-1acf-473f-81c0-b5c339fa44a0
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Overview paragraph: population from the first to the latest year, share aged 65+,
+	/// change in active companies.
+	measure 'Overview paragraph' =
+			VAR PopFirstDate = CALCULATE ( MIN ( Population[Date] ), REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
+			VAR PopFirst = CALCULATE ( SUM ( Population[Residents] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), Population[Date] = PopFirstDate, REMOVEFILTERS ( Sex ), Sex[Code] = "T", REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] = "TOTAL" )
+			VAR PopLast = CALCULATE ( [Population], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR LastYear = YEAR ( CALCULATE ( [_Ref date Population], REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" ) )
+			VAR Old = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR Firms = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR FirstDec = YEAR ( CALCULATE ( MIN ( Companies[Date] ), REMOVEFILTERS (), Calendar[MonthNumber] = 12 ) )
+			RETURN
+			    "Residents " & IF ( PopLast < PopFirst, "fell", "rose" ) & " from " & FORMAT ( PopFirst / 1000000, "0.00" ) & " million in " & YEAR ( PopFirstDate )
+			        & " to " & FORMAT ( PopLast / 1000000, "0.00" ) & " million in " & LastYear & ". "
+			        & FORMAT ( Old * 100, "0.0" ) & " % are aged 65 or over. Active companies are "
+			        & FORMAT ( ABS ( Firms ) * 100, "0.0" ) & " % " & IF ( Firms < 0, "fewer", "more" ) & " than in December " & FirstDec & "."
+		displayFolder: Report text
+		lineageTag: cf0cb80d-0cfb-444f-9a44-fc0db9471942
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Population & Health headline, first part: "One resident in N is".
+	measure 'Population headline lead' =
+			VAR s = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR n = ROUND ( DIVIDE ( 1, s ), 0 )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( s ),
+			        "One resident in " & SWITCH ( n, 2, "two", 3, "three", 4, "four", 5, "five", 6, "six", 7, "seven", 8, "eight", 9, "nine", FORMAT ( n, "0" ) ) & " is"
+			    )
+		displayFolder: Report text
+		lineageTag: e856f324-3ec4-40cf-86de-2579eb93a25e
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Population & Health headline, accent part.
+	measure 'Population headline accent' = "65 or over"
+		displayFolder: Report text
+		lineageTag: 3364c9a9-ad46-473c-9514-5774c43dbed9
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Population & Health paragraph: share aged 65+ against the country and the EU, women per
+	/// man among the over-85s.
+	measure 'Population paragraph' =
+			VAR d = CALCULATE ( [_Ref date Population], REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( AgeGroup ), AgeGroup[BroadGroup] = "65+" )
+			VAR s = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR sc = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "Country", REMOVEFILTERS ( Calendar ) )
+			VAR se = CALCULATE ( [Share aged 65+], REMOVEFILTERS ( Geo ), Geo[Role] = "EU", REMOVEFILTERS ( Calendar ) )
+			VAR Women = CALCULATE ( SUM ( Population[Residents] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), Population[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "F", REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] IN { "Y85-89", "Y_GE90" } )
+			VAR Men = CALCULATE ( SUM ( Population[Residents] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), Population[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "M", REMOVEFILTERS ( AgeGroup ), AgeGroup[Code] IN { "Y85-89", "Y_GE90" } )
+			RETURN
+			    FORMAT ( s * 100, "0.0" ) & " % on 1 January " & YEAR ( d ) & ", against " & FORMAT ( sc * 100, "0.0" ) & " % in " & [Country name]
+			        & " and " & FORMAT ( se * 100, "0.0" ) & " % in the EU. Among the over-85s there are "
+			        & FORMAT ( DIVIDE ( Women, Men ), "0.0" ) & " women for every man."
+		displayFolder: Report text
+		lineageTag: 6cb91801-0ab8-4cdd-a3fe-2418e151a233
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Gap in GDP per inhabitant between the focus region and the country, latest common year.
+	measure '_Economy GDP gap' = CALCULATE ( [GDP per inhabitant (EUR)], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), 'Compare to'[Comparison] = "vs Country" )
+		isHidden
+		displayFolder: _Helpers
+		lineageTag: 756e41b4-60ac-4d96-a943-493d5bc1e179
+
+	/// Economy & Labour headline, first part.
+	measure 'Economy headline lead' = "GDP per inhabitant is"
+		displayFolder: Report text
+		lineageTag: 7740acd9-2ebb-478f-8689-3ae7881ca7bf
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Economy & Labour headline, accent part: the gap to the country, rounded to €100.
+	measure 'Economy headline accent' =
+			VAR Gap = [_Economy GDP gap]
+			RETURN IF ( NOT ISBLANK ( Gap ), "€" & FORMAT ( ROUND ( ABS ( Gap ), -2 ), "#,0" ) & IF ( Gap < 0, " below ", " above " ) & [Country name] )
+		displayFolder: Report text
+		lineageTag: 9053a1df-8f00-4e40-96bc-bbf7ff05ec16
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Economy & Labour paragraph: GDP per inhabitant and its PPS index; unemployment from its
+	/// peak to the latest year, against the country.
+	measure 'Economy paragraph' =
+			VAR g = CALCULATE ( [GDP per inhabitant (EUR)], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR pps = CALCULATE ( [GDP per inhabitant (PPS, EU = 100)], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR gy = YEAR ( CALCULATE ( [_Ref date GDP], REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" ) )
+			VAR Years = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Calendar[Year] ), "@u", [Unemployment rate] ), REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" )
+			VAR Peak = TOPN ( 1, FILTER ( Years, NOT ISBLANK ( [@u] ) ), [@u], DESC )
+			VAR PeakRate = MAXX ( Peak, [@u] )
+			VAR PeakYear = MAXX ( Peak, Calendar[Year] )
+			VAR u = CALCULATE ( [Unemployment rate], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR uy = YEAR ( CALCULATE ( [_Ref date Unemployment], REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" ) )
+			VAR uc = CALCULATE ( [Unemployment rate], REMOVEFILTERS ( Geo ), Geo[Role] = "Country", REMOVEFILTERS ( Calendar ) )
+			RETURN
+			    "€" & FORMAT ( g, "#,0" ) & " in " & gy & ", " & FORMAT ( pps, "0" ) & " % of the EU average in purchasing power. Unemployment "
+			        & IF ( PeakYear < uy && PeakRate > u, "fell from " & FORMAT ( PeakRate * 100, "0.0" ) & " % in " & PeakYear & " to ", "is " )
+			        & FORMAT ( u * 100, "0.0" ) & " % in " & uy & ", against " & FORMAT ( uc * 100, "0.0" ) & " % in " & [Country name] & "."
+		displayFolder: Report text
+		lineageTag: 91c439db-4c4e-45c5-9fe0-2be2f8917d80
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Education headline, first part, from the focus region's rank among its peers for
+	/// tertiary students per 1,000 residents.
+	measure 'Education headline lead' =
+			VAR r = [_Rank tertiary]
+			VAR n = [_Peer count]
+			RETURN SWITCH ( TRUE (), ISBLANK ( r ), "University students", r = n, "Fewer university students than", r = 1, "More university students than", "University students per resident:" )
+		displayFolder: Report text
+		lineageTag: 6848f639-c806-4a38-8967-8ad6c158cd27
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Education headline, accent part.
+	measure 'Education headline accent' =
+			VAR r = [_Rank tertiary]
+			VAR n = [_Peer count]
+			RETURN SWITCH ( TRUE (), ISBLANK ( r ), "per 1,000 residents", r = n || r = 1, "every neighbouring region", "rank " & r & " of " & n )
+		displayFolder: Report text
+		lineageTag: 00a46f42-203d-408d-a722-ccca9c63b940
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Education paragraph: tertiary students per 1,000 residents against the country and the
+	/// EU; share of women among tertiary students.
+	measure 'Education paragraph' =
+			VAR d = CALCULATE ( [_Ref date Enrolment], REMOVEFILTERS ( Calendar ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( ISCED ), ISCED[Group] = "ISCED 5-8" )
+			VAR t = CALCULATE ( [Tertiary students per 1,000 residents], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR tc = CALCULATE ( [Tertiary students per 1,000 residents], REMOVEFILTERS ( Geo ), Geo[Role] = "Country", REMOVEFILTERS ( Calendar ) )
+			VAR te = CALCULATE ( [Tertiary students per 1,000 residents], REMOVEFILTERS ( Geo ), Geo[Role] = "EU", REMOVEFILTERS ( Calendar ) )
+			VAR Women = CALCULATE ( SUM ( Enrolment[Students] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), Enrolment[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "F", REMOVEFILTERS ( ISCED ), ISCED[Group] = "ISCED 5-8" )
+			VAR Everyone = CALCULATE ( SUM ( Enrolment[Students] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ), Enrolment[Date] = d, REMOVEFILTERS ( Sex ), Sex[Code] = "T", REMOVEFILTERS ( ISCED ), ISCED[Group] = "ISCED 5-8" )
+			RETURN
+			    FORMAT ( t, "0.0" ) & " tertiary students per 1,000 residents in " & YEAR ( d ) & ", against " & FORMAT ( tc, "0.0" ) & " in " & [Country name]
+			        & " and " & FORMAT ( te, "0.0" ) & " in the EU. Women are " & FORMAT ( DIVIDE ( Women, Everyone ) * 100, "0" ) & " % of them."
+		displayFolder: Report text
+		lineageTag: ddffb61c-2656-4304-9e61-4126a299c286
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Provinces headline, first part: the indicator on the map.
+	measure 'Provinces headline lead' = [Province indicator name] & " is highest in"
+		displayFolder: Report text
+		lineageTag: 1677d51b-db6d-49ec-8f11-43574c66e4b3
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Provinces headline, accent part: the province with the highest value.
+	measure 'Provinces headline accent' =
+			VAR ProvinceRows = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Geo[Name] ), "@v", [Province indicator value] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Province", REMOVEFILTERS ( Calendar ) )
+			RETURN MAXX ( TOPN ( 1, FILTER ( ProvinceRows, NOT ISBLANK ( [@v] ) ), [@v], DESC ), Geo[Name] )
+		displayFolder: Report text
+		lineageTag: 887792e5-043f-43c2-9a5f-6884474d2318
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Provinces paragraph: highest and lowest province and the regional value.
+	measure 'Provinces paragraph' =
+			VAR ProvinceRows = CALCULATETABLE ( ADDCOLUMNS ( VALUES ( Geo[Name] ), "@v", [Province indicator value], "@label", [Province indicator label] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Province", REMOVEFILTERS ( Calendar ) )
+			VAR Valid = FILTER ( ProvinceRows, NOT ISBLANK ( [@v] ) )
+			VAR Highest = TOPN ( 1, Valid, [@v], DESC )
+			VAR Lowest = TOPN ( 1, Valid, [@v], ASC )
+			VAR Region = CALCULATE ( [Province indicator label], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			RETURN
+			    MAXX ( Highest, Geo[Name] ) & " " & CONCATENATEX ( Highest, [@label] ) & ", against " & CONCATENATEX ( Lowest, [@label] ) & " in " & MAXX ( Lowest, Geo[Name] )
+			        & ". The regional figure is " & Region & "."
+		displayFolder: Report text
+		lineageTag: ed716638-531d-4bd7-b411-a5e62a4472ff
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Business headline, first part. Claim in _Business claim.
+	measure 'Business headline lead' = IF ( [_Business claim], "Shops, farms and factories shrink;", "Active companies by sector:" )
+		displayFolder: Report text
+		lineageTag: a596e582-f258-479b-b73b-0568cd88f230
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Business headline, accent part.
+	measure 'Business headline accent' =
+			VAR Total = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Sector ), REMOVEFILTERS ( Calendar ) )
+			RETURN IF ( [_Business claim], "services grow", IF ( Total < 0, "−", "+" ) & FORMAT ( ABS ( Total ) * 100, "0.0" ) & " % in total" )
+		displayFolder: Report text
+		lineageTag: db24a0b5-6a04-441b-891e-7e251b950175
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Business paragraph: total change and the best and worst of the ten largest sections.
+	measure 'Business paragraph' =
+			VAR T =
+			    CALCULATETABLE (
+			        ADDCOLUMNS ( FILTER ( VALUES ( Sector[Code] ), Sector[Code] <> "X" ), "@name", CALCULATE ( SELECTEDVALUE ( Sector[ShortName] ) ), "@size", [Active companies], "@c", [Active companies change %] ),
+			        REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Sector ), REMOVEFILTERS ( Calendar )
+			    )
+			VAR Largest = TOPN ( 10, T, [@size], DESC )
+			VAR Best = TOPN ( 1, Largest, [@c], DESC )
+			VAR Worst = TOPN ( 1, Largest, [@c], ASC )
+			VAR b = MAXX ( Best, [@c] )
+			VAR w = MAXX ( Worst, [@c] )
+			VAR Total = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Sector ), REMOVEFILTERS ( Calendar ) )
+			VAR FirstYear = YEAR ( CALCULATE ( MIN ( Companies[Date] ), REMOVEFILTERS (), Calendar[MonthNumber] = 12 ) )
+			VAR LastYear = YEAR ( CALCULATE ( MAX ( Companies[Date] ), REMOVEFILTERS (), Calendar[MonthNumber] = 12 ) )
+			RETURN
+			    FORMAT ( ABS ( Total ) * 100, "0.0" ) & " % " & IF ( Total < 0, "fewer", "more" ) & " active companies in December " & LastYear & " than in December " & FirstYear & ". "
+			        & MAXX ( Best, [@name] ) & " did best (" & IF ( b < 0, "−", "+" ) & FORMAT ( ABS ( b ) * 100, "0.0" ) & " %); "
+			        & MAXX ( Worst, [@name] ) & " did worst (" & IF ( w < 0, "−", "+" ) & FORMAT ( ABS ( w ) * 100, "0.0" ) & " %)."
+		displayFolder: Report text
+		lineageTag: 06c11e81-9745-4141-a830-5b77eb616db3
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Benchmark headline, first part.
+	measure 'Benchmark headline lead' =
+			VAR n = [_Peer count]
+			VAR R = { [_Rank population change], [_Rank aged 65+], [_Rank death rate], [_Rank GDP], [_Rank unemployment], [_Rank tertiary] }
+			VAR MidCount = COUNTROWS ( FILTER ( R, [Value] > 1 && [Value] < n ) )
+			VAR Extremes = COUNTROWS ( FILTER ( R, [Value] = 1 || [Value] = n ) )
+			RETURN IF ( Extremes > 0 && MidCount >= 3, "Mid-table, but", "Among its neighbours," )
+		displayFolder: Report text
+		lineageTag: e962c6dc-7c07-4d89-8545-b1561f1ace01
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Benchmark headline, accent part: the indicators where the focus region is lowest, else
+	/// highest, among its peers.
+	measure 'Benchmark headline accent' =
+			VAR n = [_Peer count]
+			VAR R =
+			    {
+			        ( "population change", [_Rank population change] ),
+			        ( "the share aged 65+", [_Rank aged 65+] ),
+			        ( "the death rate", [_Rank death rate] ),
+			        ( "GDP per inhabitant", [_Rank GDP] ),
+			        ( "unemployment", [_Rank unemployment] ),
+			        ( "university students", [_Rank tertiary] )
+			    }
+			VAR Lowest = FILTER ( R, [Value2] = n )
+			VAR Highest = FILTER ( R, [Value2] = 1 )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        NOT ISEMPTY ( Lowest ), "lowest for " & CONCATENATEX ( Lowest, [Value1], " and " ),
+			        NOT ISEMPTY ( Highest ), "highest for " & CONCATENATEX ( Highest, [Value1], " and " ),
+			        "mid-table on every indicator"
+			    )
+		displayFolder: Report text
+		lineageTag: 63d29414-2aa1-4bda-a70a-7ae9edbd1872
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Benchmark paragraph: the focus region's rank for each indicator.
+	measure 'Benchmark paragraph' =
+			"Rank among the " & [_Peer count] & " regions, 1 = highest: population change " & [_Rank population change]
+			    & ", aged 65+ " & [_Rank aged 65+] & ", deaths " & [_Rank death rate] & ", GDP " & [_Rank GDP]
+			    & ", unemployment " & [_Rank unemployment] & ", tertiary students " & [_Rank tertiary] & "."
+		displayFolder: Report text
+		lineageTag: 8cee9d09-a949-4555-81d0-d4fca9579636
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// About headline, first part.
+	measure 'About headline lead' = "How this report is"
+		displayFolder: Report text
+		lineageTag: 20427957-30d7-499e-8c29-0881029db707
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// About headline, accent part.
+	measure 'About headline accent' = "built and checked"
+		displayFolder: Report text
+		lineageTag: 2def5644-d962-4e3c-b5fc-137fa1997411
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// About paragraph, with the reconciliation result.
+	measure 'About paragraph' =
+			"Public data from Eurostat, GISCO and the Chamber of Commerce. A Python pipeline adds the SARIMA forecast and the totals to check: "
+			    & CALCULATE ( [Reconciliation status], REMOVEFILTERS ( Reconciliation ) ) & "."
+		displayFolder: Report text
+		lineageTag: 0a3affca-24dc-4237-a5f7-62a1f2637d6c
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Province detail headline, first part: the province from the drill-through.
+	measure 'Province detail headline lead' =
+			VAR p = SELECTEDVALUE ( Geo[Name] )
+			RETURN IF ( SELECTEDVALUE ( Geo[Role] ) = "Province", p & " against", "Right-click a province on" )
+		displayFolder: Report text
+		lineageTag: dc76d4ce-a112-4678-af94-84738e3a1280
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Province detail headline, accent part.
+	measure 'Province detail headline accent' = IF ( SELECTEDVALUE ( Geo[Role] ) = "Province", "the " & [Focus region name], "the Provinces page" )
+		displayFolder: Report text
+		lineageTag: 98a3aaee-e036-4184-92fc-4eb4935b5ded
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Province detail paragraph: population and its five-year change, companies per 1,000
+	/// residents and their change since the first December.
+	measure 'Province detail paragraph' =
+			VAR Pop = CALCULATE ( [Population], REMOVEFILTERS ( Calendar ) )
+			VAR Change = CALCULATE ( [Population change 5y %], REMOVEFILTERS ( Calendar ) )
+			VAR Firms = CALCULATE ( [Active companies change %], REMOVEFILTERS ( Calendar ) )
+			VAR PerThousand = CALCULATE ( [Companies per 1,000 residents], REMOVEFILTERS ( Calendar ) )
+			VAR RefYear = YEAR ( CALCULATE ( [_Ref date Population], REMOVEFILTERS ( Calendar ) ) )
+			VAR FirstYear = YEAR ( CALCULATE ( MIN ( Companies[Date] ), REMOVEFILTERS (), Calendar[MonthNumber] = 12 ) )
+			RETURN
+			    IF (
+			        SELECTEDVALUE ( Geo[Role] ) = "Province",
+			        "Population on 1 January " & RefYear & ": " & FORMAT ( Pop, "#,0" ) & " (" & IF ( Change < 0, "−", "+" ) & FORMAT ( ABS ( Change ) * 100, "0.0" )
+			            & " % in 5 years). Active companies: " & FORMAT ( PerThousand, "0.0" ) & " per 1,000 residents, "
+			            & IF ( Firms < 0, "−", "+" ) & FORMAT ( ABS ( Firms ) * 100, "0.0" ) & " % since December " & FirstYear & "."
+			    )
+		displayFolder: Report text
+		lineageTag: 6dab6c61-15c6-48b7-a653-abed35f32857
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Name of the indicator chosen for the Provinces map. The field parameter's name column
+	/// cannot be read alone (it is grouped by the Fields column), so it is looked up by Order.
+	measure 'Province indicator name' =
+			VAR Ind = SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 )
+			RETURN MAXX ( FILTER ( ALL ( 'Province indicator' ), 'Province indicator'[Province indicator Order] = Ind ), 'Province indicator'[Province indicator] )
+		displayFolder: Report text
+		lineageTag: 3a1c8f28-8d83-498b-92d8-a19770549ad6
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Men in the age bands aged 65 and over (accent bars of the pyramid).
+	measure 'Population (men aged 65+, negative)' = CALCULATE ( [Population (men, negative)], KEEPFILTERS ( AgeGroup[BroadGroup] = "65+" ) )
+		formatString: #,0;#,0
+		displayFolder: Report visuals
+		lineageTag: 4e21dd0a-70f4-40ab-bd8e-f10e964521e2
+
+	/// Men in the age bands under 65 (grey bars of the pyramid).
+	measure 'Population (men under 65, negative)' = CALCULATE ( [Population (men, negative)], KEEPFILTERS ( AgeGroup[BroadGroup] <> "65+" ) )
+		formatString: #,0;#,0
+		displayFolder: Report visuals
+		lineageTag: b18dad97-9229-4225-a7a0-e0f93d19f366
+
+	/// Women in the age bands aged 65 and over (accent bars of the pyramid).
+	measure 'Population (women aged 65+)' = CALCULATE ( [Population (women)], KEEPFILTERS ( AgeGroup[BroadGroup] = "65+" ) )
+		formatString: #,0
+		displayFolder: Report visuals
+		lineageTag: 80f9a5c9-662f-4502-98e6-fcb724e5951c
+
+	/// Women in the age bands under 65 (grey bars of the pyramid).
+	measure 'Population (women under 65)' = CALCULATE ( [Population (women)], KEEPFILTERS ( AgeGroup[BroadGroup] <> "65+" ) )
+		formatString: #,0
+		displayFolder: Report visuals
+		lineageTag: d2e4caf0-f630-4be8-960c-cf4fefa5bf2c
+
+	/// Women enrolled at the tertiary levels (accent bars of the butterfly chart).
+	measure 'Students (women, tertiary, negative)' = CALCULATE ( [Students (women, negative)], KEEPFILTERS ( ISCED[Group] = "ISCED 5-8" ) )
+		formatString: #,0;#,0
+		displayFolder: Report visuals
+		lineageTag: 1a82e21b-5ee1-4c1c-9375-065ad9559352
+
+	/// Women enrolled below the tertiary levels (grey bars of the butterfly chart).
+	measure 'Students (women, other levels, negative)' = CALCULATE ( [Students (women, negative)], KEEPFILTERS ( ISCED[Group] <> "ISCED 5-8" ) )
+		formatString: #,0;#,0
+		displayFolder: Report visuals
+		lineageTag: 4c6881f5-427a-4f15-9f41-edd49bc998fc
+
+	/// Men enrolled at the tertiary levels (accent bars of the butterfly chart).
+	measure 'Students (men, tertiary)' = CALCULATE ( [Students (men)], KEEPFILTERS ( ISCED[Group] = "ISCED 5-8" ) )
+		formatString: #,0
+		displayFolder: Report visuals
+		lineageTag: 4cc8eab3-9871-4394-a435-812ee1c48577
+
+	/// Men enrolled below the tertiary levels (grey bars of the butterfly chart).
+	measure 'Students (men, other levels)' = CALCULATE ( [Students (men)], KEEPFILTERS ( ISCED[Group] <> "ISCED 5-8" ) )
+		formatString: #,0
+		displayFolder: Report visuals
+		lineageTag: dfab47a5-f9c1-4d25-b811-12256c68ddbb
+
+	/// Tooltip value for the area of the tooltip, or for the focus region when the tooltip gets
+	/// several areas: a line chart hovered between its points passes only the year.
+	measure 'Tooltip value' = IF ( HASONEVALUE ( Geo[Code] ), [_Tooltip value], CALCULATE ( [_Tooltip value], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" ) )
+		displayFolder: Report text
+		lineageTag: 38299eba-1e09-4807-9077-ec5927248650
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Benchmark dot plot as one SVG image, one row per indicator of Benchmark point: the label,
+	/// a strip from the lowest area (left, x 158) to the highest (right, x 318) with the marks of
+	/// _Dot strip marks, and the focus region's value; a header and a two-line legend. Rows,
+	/// positions, values and names come from the model, so the image follows every refresh.
+	measure 'Dot plot SVG' =
+			VAR Focus = SUBSTITUTE ( [Focus region name], "&", "&amp;" )
+			VAR Country = SUBSTITUTE ( [Country name], "&", "&amp;" )
+			VAR EU = SUBSTITUTE ( CALCULATE ( SELECTEDVALUE ( Geo[Name] ), REMOVEFILTERS ( Geo ), Geo[Role] = "EU" ), "&", "&amp;" )
+			VAR IndicatorRows = SUMMARIZE ( ALL ( 'Benchmark point' ), 'Benchmark point'[Row], 'Benchmark point'[Indicator] )
+			VAR Body =
+			    CONCATENATEX (
+			        IndicatorRows,
+			        VAR cy = 8 + 32 * 'Benchmark point'[Row]
+			        VAR L = SUBSTITUTE ( 'Benchmark point'[Indicator], "&", "&amp;" )
+			        // Labels longer than 20 characters break at the last space within the first 19.
+			        VAR Cut = IF ( LEN ( L ) > 20, MAXX ( FILTER ( GENERATESERIES ( 1, 19 ), MID ( L, [Value], 1 ) = " " ), [Value] ) )
+			        VAR Label =
+			            IF (
+			                ISBLANK ( Cut ),
+			                "<text x='0' y='" & cy + 5 & "'>" & L & "</text>",
+			                "<text x='0' y='" & cy - 3 & "'>" & LEFT ( L, Cut - 1 ) & "</text><text x='0' y='" & cy + 13 & "'>" & MID ( L, Cut + 1, 100 ) & "</text>"
+			            )
+			        VAR v = [Dot focus value]
+			        RETURN
+			            Label
+			                & "<line x1='158' y1='" & cy & "' x2='318' y2='" & cy & "' stroke='#C9CEC9'/>"
+			                & [_Dot strip marks]
+			                & "<text x='384' y='" & cy + 5 & "' text-anchor='end' fill='#15201A'>" & IF ( ISBLANK ( v ), "–", v ) & "</text>",
+			        "",
+			        'Benchmark point'[Row], ASC
+			    )
+			VAR Header =
+			    "<text x='158' y='14' fill='#6B746E'>Lowest</text>"
+			        & "<text x='318' y='14' text-anchor='end' fill='#6B746E'>Highest</text>"
+			        & "<text x='384' y='14' text-anchor='end' fill='#6B746E'>" & Focus & "</text>"
+			VAR Legend =
+			    "<line x1='0' y1='220' x2='384' y2='220' stroke='#ECEEEA'/>"
+			        & "<text y='238'><tspan x='0' fill='#00753A'>●</tspan><tspan dx='5'>" & Focus & "</tspan>"
+			        & "<tspan dx='16' fill='#6B746E'>○</tspan><tspan dx='5'>Neighbouring regions</tspan></text>"
+			        & "<text y='258'><tspan x='0' fill='#6B746E'>□</tspan><tspan dx='5'>" & Country & "</tspan>"
+			        & "<tspan dx='16' fill='#6B746E'>▲</tspan><tspan dx='5'>" & EU & "</tspan></text>"
+			VAR Svg =
+			    "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 264' font-family='Segoe UI, sans-serif' font-size='14' fill='#4F5A53'>"
+			        & Header & Body & Legend & "</svg>"
+			RETURN "data:image/svg+xml;utf8," & SUBSTITUTE ( SUBSTITUTE ( Svg, "%", "%25" ), "#", "%23" )
+		displayFolder: Report visuals
+		lineageTag: 9e16b09c-b7f9-4db9-88b4-4517abd32dcc
+		dataCategory: ImageUrl
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Value of the focus region for the Benchmark point indicator, as text in the indicator's format.
+	measure 'Dot focus value' =
+			VAR r = SELECTEDVALUE ( 'Benchmark point'[Row] )
+			VAR v = CALCULATE ( [Dot value], 'Benchmark point'[Role] = "Focus" )
+			RETURN IF ( NOT ISBLANK ( v ), FORMAT ( v, SWITCH ( r, 1, "+0.0%;-0.0%;0.0%", 2, "0.0%", 3, "0.0", 4, "#,0", 5, "0.0%", "0.0" ) ) )
+		displayFolder: Report visuals
+		lineageTag: 0f8d8149-8896-4606-8ff1-61b93f99f6ae
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Benchmark matrix subtitle: the neighbouring regions (role Peer), the regions bordering the focus region.
+	measure 'Peer regions note' =
+			VAR Peers = CALCULATETABLE ( SUMMARIZE ( Geo, Geo[Name], Geo[SortOrder] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Peer" )
+			RETURN
+			    "Neighbouring regions: "
+			        & CONCATENATEX ( Peers, Geo[Name], ", ", Geo[SortOrder], ASC )
+		displayFolder: Report text
+		lineageTag: b3849916-cf57-4a6a-ba32-cf303d2205d6
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Value of the Tooltip indicator row as text. A dash when the indicator has no value; for
+	/// the five-year population change before the data allow it, also the first year it has.
+	measure '_Tooltip value' =
+			VAR r = SELECTEDVALUE ( 'Tooltip indicator'[Row] )
+			VAR v =
+			    SWITCH (
+			        r,
+			        1, [Population change 5y %],
+			        2, [Share aged 65+],
+			        3, [Crude death rate per 1,000],
+			        4, [Companies per 1,000 residents],
+			        5, [GDP per inhabitant (EUR)],
+			        6, [Unemployment rate],
+			        7, [Tertiary students per 1,000 residents]
+			    )
+			VAR Fmt = SWITCH ( r, 1, "+0.0%;-0.0%;0.0%", 2, "0.0%", 3, "0.0", 4, "0.0", 5, "#,0", 6, "0.0%", "0.0" )
+			VAR FirstYear = YEAR ( CALCULATE ( MIN ( Population[Date] ), REMOVEFILTERS ( Calendar ) ) ) + 5
+			VAR TooEarly = r = 1 && NOT ISBLANK ( [Population] ) && YEAR ( [_Ref date Population] ) < FirstYear
+			RETURN
+			    IF (
+			        NOT ISBLANK ( r ),
+			        IF ( NOT ISBLANK ( v ), FORMAT ( v, Fmt ), IF ( TooEarly, "– (from " & FirstYear & ")", "–" ) )
+			    )
+		isHidden
+		displayFolder: _Helpers
+		lineageTag: 4a0be898-d118-4d23-8d46-c504053787fa
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Area tooltip title: the area, or the focus region when there are several, and the year.
+	measure 'Tooltip title' =
+			VAR Area = IF ( HASONEVALUE ( Geo[Code] ), SELECTEDVALUE ( Geo[Name] ), [Focus region name] )
+			RETURN Area & IF ( HASONEVALUE ( Calendar[Year] ), " · " & SELECTEDVALUE ( Calendar[Year] ) )
+		displayFolder: Report text
+		lineageTag: ab5dacce-345d-49b9-bf3c-be1886bd57c3
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Eurostat flags for the area of the tooltip, or for the focus region when there are several.
+	measure 'Tooltip flags' = IF ( HASONEVALUE ( Geo[Code] ), [Flags text], CALCULATE ( [Flags text], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus" ) )
+		displayFolder: Report text
+		lineageTag: cb629f81-53e4-4f70-b009-f0708a8bdd27
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
+
+	/// Marks of one dot plot row, on the row's line (y = 8 + 32 x row): neighbouring regions as
+	/// hollow circles, the country as a hollow square, the EU as a filled triangle and the focus
+	/// region as a green dot, drawn last. x runs from 158 (lowest area) to 318 (highest) by
+	/// Dot position; an area without a value for the indicator gets no mark.
+	measure '_Dot strip marks' =
+			VAR cy = 8 + 32 * SELECTEDVALUE ( 'Benchmark point'[Row] )
+			VAR Pts =
+			    FILTER (
+			        ADDCOLUMNS ( SUMMARIZE ( 'Benchmark point', 'Benchmark point'[Code], 'Benchmark point'[Role] ), "@p", [Dot position] ),
+			        NOT ISBLANK ( [@p] )
+			    )
+			RETURN
+			    CONCATENATEX (
+			        Pts,
+			        VAR x = 158 + 160 * [@p]
+			        RETURN
+			            SWITCH (
+			                'Benchmark point'[Role],
+			                "Focus", "<circle cx='" & FORMAT ( x, "0.0" ) & "' cy='" & cy & "' r='6' fill='#00753A'/>",
+			                "Country", "<rect x='" & FORMAT ( x - 4.5, "0.0" ) & "' y='" & cy - 4.5 & "' width='9' height='9' fill='#F5F6F3' stroke='#6B746E' stroke-width='1.5'/>",
+			                "EU", "<polygon points='" & FORMAT ( x, "0.0" ) & "," & cy - 6 & " " & FORMAT ( x + 5.5, "0.0" ) & "," & cy + 4 & " " & FORMAT ( x - 5.5, "0.0" ) & "," & cy + 4 & "' fill='#6B746E'/>",
+			                "<circle cx='" & FORMAT ( x, "0.0" ) & "' cy='" & cy & "' r='4' fill='#F5F6F3' stroke='#6B746E' stroke-width='1.5'/>"
+			            ),
+			        "",
+			        SWITCH ( 'Benchmark point'[Role], "Peer", 1, "Country", 2, "EU", 3, 4 ), ASC
+			    )
+		isHidden
+		displayFolder: _Helpers
+		lineageTag: 777195d7-b518-4f44-963a-8760d7b1f883
+
+		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
 
 	column Placeholder
 		dataType: string

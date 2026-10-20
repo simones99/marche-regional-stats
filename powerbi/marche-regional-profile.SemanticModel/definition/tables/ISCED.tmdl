@@ -38,22 +38,29 @@ table ISCED
 		summarizeBy: none
 		sourceColumn: IsTotal
 
+	column ShortName
+		dataType: string
+		lineageTag: 004f20db-fcb3-43a9-8aae-6bffeda8068e
+		summarizeBy: none
+		sourceColumn: ShortName
+		sortByColumn: SortOrder
+
 	partition ISCED = m
 		mode: import
 		source =
 				#table(
-				    type table [Code = text, Name = text, SortOrder = Int64.Type, Group = text, IsTotal = logical],
+				    type table [Code = text, Name = text, ShortName = text, SortOrder = Int64.Type, Group = text, IsTotal = logical],
 				    {
-				        {"ED0", "Early childhood education", 0, "ISCED 0-3", false},
-				        {"ED1", "Primary education", 1, "ISCED 0-3", false},
-				        {"ED2", "Lower secondary education", 2, "ISCED 0-3", false},
-				        {"ED3", "Upper secondary education", 3, "ISCED 0-3", false},
-				        {"ED4", "Post-secondary non-tertiary education", 4, "ISCED 4", false},
-				        {"ED5", "Short-cycle tertiary education", 5, "ISCED 5-8", false},
-				        {"ED6", "Bachelor's or equivalent", 6, "ISCED 5-8", false},
-				        {"ED7", "Master's or equivalent", 7, "ISCED 5-8", false},
-				        {"ED8", "Doctoral or equivalent", 8, "ISCED 5-8", false},
-				        {"ED02-8", "All levels", 9, "All", true}
+				        {"ED0", "Early childhood education", "Early childhood", 0, "ISCED 0-3", false},
+				        {"ED1", "Primary education", "Primary", 1, "ISCED 0-3", false},
+				        {"ED2", "Lower secondary education", "Lower secondary", 2, "ISCED 0-3", false},
+				        {"ED3", "Upper secondary education", "Upper secondary", 3, "ISCED 0-3", false},
+				        {"ED4", "Post-secondary non-tertiary education", "Post-secondary", 4, "ISCED 4", false},
+				        {"ED5", "Short-cycle tertiary education", "Short tertiary", 5, "ISCED 5-8", false},
+				        {"ED6", "Bachelor's or equivalent", "Bachelor's", 6, "ISCED 5-8", false},
+				        {"ED7", "Master's or equivalent", "Master's", 7, "ISCED 5-8", false},
+				        {"ED8", "Doctoral or equivalent", "Doctoral", 8, "ISCED 5-8", false},
+				        {"ED02-8", "All levels", "All levels", 9, "All", true}
 				    }
 				)
 
