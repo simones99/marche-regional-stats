@@ -680,7 +680,8 @@ def economy() -> Page:
             SLOT_H,
             "GDP per inhabitant, euro",
             "GDP per inhabitant (EUR)",
-            "Bar chart of GDP per inhabitant for the focus region, its neighbouring regions, the country and the EU",
+            "Bar chart of GDP per inhabitant for the focus region, its neighbouring regions,"
+            " the country and the EU",
         )
     )
     v.append(source("Eurostat nama_10r_2gdp, lfst_r_lfu3rt"))
@@ -987,8 +988,8 @@ def benchmark() -> Page:
             },
             title="Where the focus region sits, lowest to highest",
             alt=(
-                "Dot plot of the focus region, its neighbouring regions, the country and the EU for six"
-                " indicators, from the lowest value on the left to the highest on the right"
+                "Dot plot of the focus region, its neighbouring regions, the country and the EU"
+                " for six indicators, from the lowest value on the left to the highest on the right"
             ),
         )
     )
@@ -1005,7 +1006,8 @@ def benchmark() -> Page:
             "Show values or differences from a benchmark",
             filters=(
                 in_filter(
-                    C("Compare to", "Comparison"), ["Value", "vs Country", "vs EU", "vs Neighbours avg"]
+                    C("Compare to", "Comparison"),
+                    ["Value", "vs Country", "vs EU", "vs Neighbours avg"],
                 ),
             ),
             horizontal=True,
@@ -1021,7 +1023,10 @@ def benchmark() -> Page:
             432,
             roles={"Rows": [C("Geo", "Name")], "Values": [M(m) for m in BENCHMARK_MEASURES]},
             title="Indicators by area",
-            alt="Matrix of six indicators for the focus region, its neighbouring regions, the country and the EU",
+            alt=(
+                "Matrix of six indicators for the focus region, its neighbouring regions,"
+                " the country and the EU"
+            ),
             filters=[AREAS],
         )
     )
