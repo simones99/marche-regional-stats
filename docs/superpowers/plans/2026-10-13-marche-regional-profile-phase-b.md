@@ -4009,9 +4009,9 @@ Carried over from Phase A, Task 18. Record the outcome either way.
 
 ### Task 21: PDF and PNG exports
 
-- [ ] **Step 1 (user): Export the PDF.** In Desktop: *File → Export → Export to PDF*, current values, without hidden pages. Save it as `powerbi/exports/marche-regional-profile.pdf`. Expected: 8 pages.
+- [x] **Step 1 (user): Export the PDF.** In Desktop: *File → Export → Export to PDF*, current values, without hidden pages. Save it as `powerbi/exports/marche-regional-profile.pdf`. Expected: 8 pages.
 
-- [ ] **Step 2: Render the PNGs.**
+- [x] **Step 2: Render the PNGs.**
 
 ```bash
 marche-stats export-pngs
@@ -4019,7 +4019,7 @@ marche-stats export-pngs
 
 Expected: eight files `powerbi/exports/png/01-overview.png` … `08-about.png`, 1600 px wide. Open two of them: the text is sharp, the map and the photos are present (the map SVG and the photos must survive the export, spec "Risks").
 
-- [ ] **Step 3: Commit.**
+- [x] **Step 3: Commit.**
 
 ```bash
 git add powerbi/exports
