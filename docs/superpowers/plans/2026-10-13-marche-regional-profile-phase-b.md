@@ -4071,7 +4071,7 @@ git commit -m "Document the Phase B pages, design system, map and photo credits"
 
 ### Task 23: Final checks and hand-over
 
-- [ ] **Step 1: Run everything.**
+- [x] **Step 1: Run everything.**
 
 ```bash
 pytest -q
@@ -4081,7 +4081,7 @@ ruff format --check src tests
 
 Expected: all pass. `grep -n "RepoRawBase =" powerbi/marche-regional-profile.SemanticModel/definition/expressions.tmdl` shows `…/main`.
 
-- [ ] **Step 2: Tick this plan and record the outcome.** Tick every finished step in this file. Append a section "## Outcome (recorded <date>)" with:
+- [x] **Step 2: Tick this plan and record the outcome.** Tick every finished step in this file. Append a section "## Outcome (recorded <date>)" with:
   - what Task 15 changed in the PBIR writer;
   - the result of Task 20;
   - any measure fixed in Desktop in Task 10 and its final DAX;
@@ -4103,3 +4103,29 @@ Expected: all pass. `grep -n "RepoRawBase =" powerbi/marche-regional-profile.Sem
 - `powerbi/exports/` holds the PDF and eight PNGs, with the map and photos visible.
 - The READMEs and `sources.md` describe the pages, the design system, the map and the photo credits.
 - After the merge, `marche-stats check-sources` reports every source as OK.
+
+## Outcome (recorded 2026-10-20)
+
+Tasks 1–22 are done, as are Steps 1 and 2 of Task 23. The pull request (Task 23, Step 3) is not open yet.
+
+Final checks (Task 23, Step 1): `pytest -q` passes 104 tests, `ruff check src tests` and `ruff format --check src tests` pass, and `RepoRawBase` points at `…/main`. Two fixes were needed first:
+- three alt texts in `report_layout.py` and one line in `tests/test_powerbi_model.py`, committed after Task 19, were over 100 characters: the alt texts are split into adjacent literals (same text, so the PBIR files do not change) and `ruff format` wrapped the rest;
+- on this machine the two tests in `tests/test_tmdl_check.py` pass only with `MSBuildEnableWorkloadResolver=false`: dotnet SDK 10.0.301 fails to resolve its workloads (manifest `Microsoft.NET.Workload.Emscripten.Current` 10.0.109 is older than the 10.0.112 that `microsoft.net.workload.mono.toolchain.current` requires) before it builds `tools/tmdl-check`. The fault is in the .NET installation, not in the model.
+
+Task 15, PBIR writer. Desktop rendered every Overview and Spike visual. The helpers in `report_layout.py` now write the forms Desktop saves:
+- a shape's fill has a second `fill` entry with the "All" selector `{"id": "default"}`, or Desktop paints the first data colour;
+- a visual left out of the tab order has a negative `tabOrder`;
+- the page navigator sets `pages.showHiddenPages` to false;
+- the first field of the Category, Rows, Columns and X roles, and of a slicer's Values, carries `"active": true`;
+- integers are `L` literals (`pbir.integer`).
+
+The KPI gap lines use the new card (`cardVisual`, `text_card`), 64 px high, because the classic card cut them off. `chrome()` and `source()` write the story header as the user reshaped it (headline and accent 27 pt).
+
+Task 20, Best Practice Analyzer. Tabular Editor 2.27.2 loads the TMDL folder. The `bpa` job in `ci.yml` runs the 71 rules with `-G`: errors fail the job, warnings do not. The 59 text measures and the `Province indicator` field parameter ignore the two rules that cannot apply to them (`BestPracticeAnalyzer_IgnoreRules`), and `Dot value` got a format string.
+
+Task 10, measures fixed in Desktop. 14 measures failed in the engine and were fixed in the repository: variables named `Item`, `Rows`, `Top` and `Bottom` became `CompareItem`, `ProvinceRows`, `Highest` and `Lowest`; measures that read `'Province indicator'[Province indicator]` read its Order column and look the name up through `Province indicator name`; `Provinces paragraph` uses `CONCATENATEX` instead of `MAXX` over a text column. The final DAX is in the code blocks of Tasks 8 and 9; two tests in `tests/test_powerbi_model.py` guard the first two fixes.
+
+Spec rules that Desktop could not meet:
+- **Accessibility rule 4** (values on bars and at line ends) holds only for the ranked bars, the sector bars, the seasonal columns and the MAPE bars. The pyramid and the butterfly are stacked bars without data labels: Desktop puts the labels inside the fill, where the theme's dark label colour fails rule 2 (contrast). The line charts have no values at the line ends: their series labels are off, and a legend names the lines instead (a key text box on Economy & Labour, Desktop's legend on Population & Health and on the Business province index). Exact values are in the tooltips, and the latest ones also appear in the KPI cards, the ranked bars and the paragraphs, so rule 9 still holds.
+- **Encoding of areas:** Italy and the EU-27 bars are filled in the text colour `#15201A` instead of grey outlined, the fallback of Task 19, Step 2, for when *Bars → Border* cannot be set per bar. The pyramid and the butterfly cannot take an fx colour on a chart with two measures, so each side is split into an accent measure and a grey measure, each with a fixed series colour.
+- **Type:** headlines are 27 pt instead of 30 pt (`HEADLINE_PT`), because 30 pt did not fit the Overview headline.
