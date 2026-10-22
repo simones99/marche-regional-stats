@@ -11,13 +11,13 @@ from pathlib import Path
 
 from marche_stats.pngs import PAGE_SLUGS
 
-PDF = "marche-regional-profile.pdf"
+PDF_NAME = "marche-regional-profile.pdf"
 
 
 def _report_copies(exports: Path) -> dict[str, Path]:
     """Path in the showcase -> report export it is copied from."""
     copies = {f"report/{slug}.png": exports / "png" / f"{slug}.png" for slug in PAGE_SLUGS}
-    copies[f"report/{PDF}"] = exports / PDF
+    copies[f"report/{PDF_NAME}"] = exports / PDF_NAME
     return copies
 
 
@@ -26,8 +26,8 @@ def build(source: Path, exports: Path, out: Path) -> list[Path]:
 
     Raises FileNotFoundError, before writing anything, if a report export is missing.
     """
-    report = _report_copies(exports)
-    missing = [path for path in report.values() if not path.is_file()]
+    exports_by_target = _report_copies(exports)
+    missing = [path for path in exports_by_target.values() if not path.is_file()]
     if missing:
         raise FileNotFoundError(
             "missing report exports: "
@@ -39,7 +39,7 @@ def build(source: Path, exports: Path, out: Path) -> list[Path]:
         for path in sorted(source.rglob("*"))
         if path.is_file()
     }
-    copies.update(report)
+    copies.update(exports_by_target)
     written = []
     for name, path in copies.items():
         target = out / name
