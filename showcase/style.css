@@ -9,7 +9,6 @@
   color-scheme: light;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   color: var(--text);
-  background: var(--background);
 }
 
 * {
@@ -22,9 +21,13 @@ body {
   line-height: 1.5;
 }
 
-main {
+main,
+.credits-inner {
   max-width: 72rem;
   margin: 0 auto;
+}
+
+main {
   padding: 2.5rem 1rem 4rem;
 }
 
@@ -85,23 +88,22 @@ h1 {
   filter: brightness(0.92);
 }
 
-.button:focus-visible {
-  outline: 3px solid var(--text);
-  outline-offset: 2px;
-}
-
 .page {
   margin: 1rem 0 0;
 }
 
-.page img {
+.page img,
+.pages img {
   display: block;
   width: 100%;
   height: auto;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--surface);
-  box-shadow: 0 1px 3px rgb(21 32 26 / 0.08);
+}
+
+.page img {
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--text) 8%, transparent);
 }
 
 /* Sections below the hero. */
@@ -159,13 +161,6 @@ a:focus-visible {
   display: block;
 }
 
-@media (min-width: 52rem) {
-  .groups {
-    grid-template-columns: 3fr 2fr;
-    gap: 3rem;
-  }
-}
-
 /* Gallery: each page links to its full-size export. */
 .pages {
   display: grid;
@@ -181,15 +176,6 @@ a:focus-visible {
   display: block;
   border-radius: 6px;
   cursor: zoom-in;
-}
-
-.pages img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--surface);
 }
 
 .pages a:hover img {
@@ -243,8 +229,6 @@ a:focus-visible {
 .credits-inner {
   display: grid;
   gap: 2rem;
-  max-width: 72rem;
-  margin: 0 auto;
   padding: 2.5rem 1rem;
 }
 
@@ -281,6 +265,11 @@ a:focus-visible {
 }
 
 @media (min-width: 52rem) {
+  .groups {
+    grid-template-columns: 3fr 2fr;
+    gap: 3rem;
+  }
+
   .credits-inner {
     grid-template-columns: 1fr 1fr;
     column-gap: 3rem;
