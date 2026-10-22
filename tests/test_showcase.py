@@ -118,6 +118,31 @@ def test_the_preview_image_is_the_overview_on_the_pages_domain(tmp_path):
     assert (out / "report" / "01-overview.png").is_file()
 
 
+def test_visits_are_counted_on_the_authors_goatcounter_site(tmp_path):
+    out = _build(tmp_path)
+    counters = [
+        (attrs["data-goatcounter"], attrs.get("src"))
+        for tag, attrs in _tags(out / "index.html")
+        if tag == "script" and "data-goatcounter" in attrs
+    ]
+    assert counters == [("https://halfhit.goatcounter.com/count", "https://gc.zgo.at/count.js")]
+
+
+def test_only_the_pdf_and_repository_buttons_are_counted_as_clicks(tmp_path):
+    out = _build(tmp_path)
+    clicks = {
+        attrs.get("href"): attrs["data-goatcounter-click"]
+        for _, attrs in _tags(out / "index.html")
+        if "data-goatcounter-click" in attrs
+    }
+    assert set(clicks) == {
+        "report/marche-regional-profile.pdf",
+        "https://github.com/simones99/marche-regional-stats",
+    }
+    assert all((name or "").strip() for name in clicks.values())
+    assert len(set(clicks.values())) == 2
+
+
 def test_a_missing_report_export_stops_the_build(tmp_path, capsys):
     exports = tmp_path / "exports"
     shutil.copytree(cli.ROOT / "powerbi" / "exports", exports)
