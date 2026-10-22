@@ -103,3 +103,190 @@ h1 {
   background: var(--surface);
   box-shadow: 0 1px 3px rgb(21 32 26 / 0.08);
 }
+
+/* Sections below the hero. */
+section {
+  margin-top: 4rem;
+}
+
+h2 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(1.375rem, 1.1rem + 1.2vw, 1.875rem);
+  line-height: 1.2;
+}
+
+h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.125rem;
+  line-height: 1.3;
+}
+
+a {
+  color: var(--accent);
+}
+
+a:focus-visible {
+  outline: 3px solid var(--text);
+  outline-offset: 2px;
+}
+
+.lead {
+  margin: -0.75rem 0 1.25rem;
+  color: var(--muted);
+}
+
+/* What it shows: data quality first, Power BI second. */
+.groups {
+  display: grid;
+  gap: 2rem;
+}
+
+.points {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.points li {
+  max-width: 38em;
+  padding-left: 1rem;
+  border-left: 3px solid var(--accent);
+}
+
+.points strong {
+  display: block;
+}
+
+@media (min-width: 52rem) {
+  .groups {
+    grid-template-columns: 3fr 2fr;
+    gap: 3rem;
+  }
+}
+
+/* Gallery: each page links to its full-size export. */
+.pages {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 30rem), 1fr));
+  gap: 2rem 1.5rem;
+}
+
+.pages figure {
+  margin: 0;
+}
+
+.pages a {
+  display: block;
+  border-radius: 6px;
+  cursor: zoom-in;
+}
+
+.pages img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+}
+
+.pages a:hover img {
+  border-color: var(--accent);
+}
+
+.pages figcaption {
+  margin-top: 0.75rem;
+  max-width: 38em;
+  color: var(--muted);
+}
+
+.pages figcaption strong {
+  display: block;
+  color: var(--text);
+}
+
+/* How it's built: pipeline, model, report, checks, in that order. */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+.steps li {
+  padding-top: 0.75rem;
+  border-top: 3px solid var(--accent);
+  counter-increment: step;
+}
+
+.steps h3::before {
+  content: counter(step) ". ";
+  color: var(--accent);
+}
+
+.steps p {
+  margin: 0;
+}
+
+/* Footer: the dark band of the report's navigation. */
+.credits {
+  color: var(--background);
+  background: var(--text);
+  font-size: 0.9375rem;
+}
+
+.credits-inner {
+  display: grid;
+  gap: 2rem;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2.5rem 1rem;
+}
+
+.credits h2 {
+  margin-bottom: 0.75rem;
+  font-size: 1.125rem;
+}
+
+.credits ul {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.credits p {
+  margin: 0.75rem 0 0;
+}
+
+.credits a {
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+
+.credits a:focus-visible {
+  outline-color: var(--background);
+}
+
+.credits .privacy {
+  margin: 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--muted);
+}
+
+@media (min-width: 52rem) {
+  .credits-inner {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 3rem;
+  }
+
+  .credits .privacy {
+    grid-column: 1 / -1;
+  }
+}

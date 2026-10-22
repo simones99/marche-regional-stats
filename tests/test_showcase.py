@@ -7,6 +7,17 @@ from urllib.parse import urlsplit
 
 from marche_stats import cli
 
+PAGES = (
+    "01-overview.png",
+    "02-population-health.png",
+    "03-economy-labour.png",
+    "04-education.png",
+    "05-provinces.png",
+    "06-business.png",
+    "07-benchmark.png",
+    "08-about.png",
+)
+
 
 class _Tags(HTMLParser):
     """Every start tag of a page, with its attributes."""
@@ -54,17 +65,16 @@ def test_every_local_reference_resolves_to_a_written_file(tmp_path):
 def test_the_eight_pages_and_the_pdf_are_published(tmp_path):
     out = _build(tmp_path)
     published = {path.name for path in out.rglob("*") if path.is_file()}
-    assert {
-        "01-overview.png",
-        "02-population-health.png",
-        "03-economy-labour.png",
-        "04-education.png",
-        "05-provinces.png",
-        "06-business.png",
-        "07-benchmark.png",
-        "08-about.png",
-        "marche-regional-profile.pdf",
-    } <= published
+    assert {*PAGES, "marche-regional-profile.pdf"} <= published
+
+
+def test_every_report_page_is_shown_and_opens_at_full_size(tmp_path):
+    out = _build(tmp_path)
+    tags = _tags(out / "index.html")
+    shown = {Path(attrs["src"]).name for tag, attrs in tags if tag == "img" and attrs.get("src")}
+    linked = {Path(attrs["href"]).name for tag, attrs in tags if tag == "a" and attrs.get("href")}
+    assert set(PAGES) <= shown
+    assert set(PAGES) <= linked
 
 
 def test_every_image_has_a_text_alternative(tmp_path):

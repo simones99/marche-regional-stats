@@ -23,6 +23,121 @@
              alt="Overview page of the report. Headline: An older, smaller region with fewer firms. Six cards compare the Marche with Italy: population 1.48 million, 26.6 % aged 65 or over, 11.8 deaths per 1,000, unemployment 5.1 %, GDP per inhabitant 34 thousand euros, 131 thousand active companies. A photo shows the Valadier temple in its cave. Two line charts show the population falling from 1.55 million in 2014 to 1.48 million, and active companies falling from about 159 thousand around 2011 to 131 thousand.">
       </figure>
     </header>
+
+    <section class="shows" aria-labelledby="shows-title">
+      <h2 id="shows-title">What it shows</h2>
+      <div class="groups">
+        <div>
+          <h3>Numbers that can be trusted</h3>
+          <ul class="points">
+            <li><strong>Checked twice.</strong> The company counts in the report match those of an independent Python pipeline at 12 checkpoints, and the report shows the check on its About page.</li>
+            <li><strong>Constant boundaries.</strong> Nine municipalities moved to Emilia-Romagna in 2010 and 2021. They are left out of every month, so their departure does not look like companies closing.</li>
+            <li><strong>Sources watched every week.</strong> An automated job requests every source the report uses each Monday, so a changed or missing file is caught before the next refresh.</li>
+            <li><strong>A forecast tested fairly.</strong> The forecast of active companies is scored on 24 months it never saw: an average error of 1.1 %, against 3.3 % for repeating the last value.</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Power BI craft</h3>
+          <ul class="points">
+            <li><strong>One model for every comparison.</strong> A star schema keyed on the EU's region codes, with a calculation group that compares any indicator with Italy, the EU or the neighbouring regions, and a field parameter that lets one map show five indicators.</li>
+            <li><strong>Text written by the data, and checked in CI.</strong> Headlines and paragraphs are DAX measures that state a claim only when the numbers support it, and the Best Practice Analyzer checks the model on every pull request.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="gallery" aria-labelledby="gallery-title">
+      <h2 id="gallery-title">The eight pages</h2>
+      <p class="lead">Tap a page to open it at full size.</p>
+      <div class="pages">
+        <figure>
+          <a href="report/01-overview.png"><img src="report/01-overview.png" width="1600" height="926" loading="lazy"
+             alt="Overview page of the report, the same page shown at the top: six headline indicators against Italy, a photo of the Valadier temple, and line charts of population and active companies."></a>
+          <figcaption><strong>Overview</strong> Where does the region stand on six headline indicators, against Italy, the EU or its neighbours?</figcaption>
+        </figure>
+        <figure>
+          <a href="report/02-population-health.png"><img src="report/02-population-health.png" width="1600" height="926" loading="lazy"
+             alt="Population and Health page. Headline: One resident in four is 65 or over. Text: 26.6 % on 1 January 2025, against 24.7 % in Italy and 22.0 % in the EU; among the over-85s there are 1.8 women for every man. A bar chart ranks the share aged 65 or over: Umbria 27.4 %, Toscana 26.8 %, Marche 26.6 %, Abruzzo 26.1 %, Emilia-Romagna 24.9 %, Italy 24.7 %, Lazio 23.8 %, EU 22.0 %. An age pyramid shows residents by five-year age group, men left and women right, with the groups from 65 up highlighted. A line chart shows deaths per 1,000 residents from 2014 to 2024, the Marche above Italy and the EU, from about 11 to about 13 in 2020 to 2022 and 11.8 in 2024."></a>
+          <figcaption><strong>Population &amp; Health</strong> How old is the population, and how does its death rate compare with Italy and the EU?</figcaption>
+        </figure>
+        <figure>
+          <a href="report/03-economy-labour.png"><img src="report/03-economy-labour.png" width="1600" height="926" loading="lazy"
+             alt="Economy and Labour page. Headline: GDP per inhabitant is 3,200 euros below Italy. Text: 34,100 euros in 2024, 89 % of the EU average in purchasing power; unemployment fell from 11.0 % in 2013 to 5.1 % in 2025, against 6.1 % in Italy. A bar chart ranks GDP per inhabitant in thousand euros: Emilia-Romagna 45, Lazio 43, EU 40, Toscana 39, Italy 37, Marche 34, Umbria 33, Abruzzo 32. A line chart shows GDP per inhabitant since 2009, the Marche below Italy and the EU in recent years. A line chart shows the unemployment rate for ages 15 to 74 since 2009, the Marche below Italy in most years."></a>
+          <figcaption><strong>Economy &amp; Labour</strong> How far is income below Italy and the EU, and how has unemployment moved since 2009?</figcaption>
+        </figure>
+        <figure>
+          <a href="report/04-education.png"><img src="report/04-education.png" width="1600" height="926" loading="lazy"
+             alt="Education page. Headline: Fewer university students than every neighbouring region. Text: 34.7 tertiary students per 1,000 residents in 2024, against 39.2 in Italy and 42.4 in the EU; women are 58 % of them. A photo shows Urbino on its hill. Buttons choose a group of education levels. A chart shows students enrolled by level and sex, from early childhood to doctoral, with the university levels highlighted. A bar chart ranks tertiary students per 1,000 residents: Lazio 71.6, Emilia-Romagna 43.4, EU 42.4, Italy 39.2, Umbria 38.8, Abruzzo 38.7, Toscana 38.0, Marche 34.7."></a>
+          <figcaption><strong>Education</strong> How many residents study at university, compared with every neighbouring region?</figcaption>
+        </figure>
+        <figure>
+          <a href="report/05-provinces.png"><img src="report/05-provinces.png" width="1600" height="926" loading="lazy"
+             alt="Provinces page. Headline: Population change over 5 years is highest in Ancona. Text: Ancona −1.3 %, against −2.8 % in Macerata; the regional figure is −2.1 %. Option buttons choose one of five indicators for the map. A map of the five provinces in four shades of green shows the population change: Pesaro e Urbino −1.9 %, Ancona −1.3 %, Macerata, Fermo and Ascoli Piceno −2.8 %. A table lists all five indicators by province. A note says to right-click a province to drill through to its detail page."></a>
+          <figcaption><strong>Provinces</strong> How do the five provinces compare on the indicator chosen for the map, and what does each one look like in detail?</figcaption>
+        </figure>
+        <figure>
+          <a href="report/06-business.png"><img src="report/06-business.png" width="1600" height="926" loading="lazy"
+             alt="Business deep dive page. Headline: Shops, farms and factories shrink; services grow. Text: 17.1 % fewer active companies in December 2024 than in December 2009; Administrative did best (+48.0 %), Agriculture did worst (−35.2 %). A line chart indexes active companies by province to December 2009 = 100; all five fall to between about 82 and 88. A line chart shows the last 24 months, falling from about 139 thousand to 130 thousand, and a 12-month SARIMA forecast to January 2026 with its interval. Bars show the change by sector since December 2009, from +48.0 % for Administrative to −35.2 % for Agriculture. Bars show the seasonal effect by month, about −0.9 thousand in January. Bars compare the forecast error on the 24-month test: SARIMA 1.13 %, naive 3.31 %."></a>
+          <figcaption><strong>Business deep dive</strong> Which sectors grew and which shrank since 2009, and where is the number of companies heading? The company series ends in March 2025, when ATECO 2025 replaced ATECO 2007.</figcaption>
+        </figure>
+        <figure>
+          <a href="report/07-benchmark.png"><img src="report/07-benchmark.png" width="1600" height="926" loading="lazy"
+             alt="Benchmark page. Headline: Mid-table, but lowest for university students. Text: rank among the 6 regions, 1 = highest: population change 5, aged 65 or over 3, deaths 3, GDP 4, unemployment 3, tertiary students 6. A dot plot places the Marche among its neighbouring regions, Italy and the EU on six indicators, lowest to highest. Buttons switch the table between values and the gap to Italy, the EU or the neighbours' average, with Value selected. A table lists the six indicators for the Marche, Abruzzo, Emilia-Romagna, Lazio, Toscana, Umbria, Italy and the EU, and a second table gives the Marche's rank among the six regions."></a>
+          <figcaption><strong>Benchmark</strong> Where does the Marche rank among its five neighbouring regions, Italy and the EU on six indicators?</figcaption>
+        </figure>
+        <figure>
+          <a href="report/08-about.png"><img src="report/08-about.png" width="1600" height="926" loading="lazy"
+             alt="About page. Headline: How this report is built and checked. Text: public data from Eurostat, GISCO and the Chamber of Commerce; a Python pipeline adds the SARIMA forecast and the totals to check, and all 12 match. Lists of sources, limits, neighbouring regions, refresh and photo credits. Two tables show the 12 reconciliation checkpoints, each province in December 2009 and December 2024 and the region's first and last modelled month, all marked Match. A table gives the latest period per source, from 2023 for provincial GDP to March 2025 for active companies. A photo shows the Due Sorelle beach on the Conero coast."></a>
+          <figcaption><strong>About</strong> Where do the data come from, how recent are they, and do the report's totals match the Python pipeline?</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="built" aria-labelledby="built-title">
+      <h2 id="built-title">How it's built</h2>
+      <ol class="steps">
+        <li>
+          <h3>Pipeline</h3>
+          <p>A Python package downloads the business register, removes double counts and moved municipalities, fits the SARIMA forecast and exports the forecast, its accuracy, the check totals and the province outlines as CSV files that Power BI reads from GitHub.</p>
+        </li>
+        <li>
+          <h3>Model</h3>
+          <p>Power BI reads Eurostat directly through one reusable Power Query function, and cleans the register with the same rules as the pipeline. Facts and dimensions form a star schema keyed on NUTS codes, with a calculation group for every comparison.</p>
+        </li>
+        <li>
+          <h3>Report</h3>
+          <p>Eight pages on one grid, in three colours, with a province drill-through and tooltip pages. The province map is an SVG drawn by a DAX measure, so it needs no map service and survives the PDF export.</p>
+        </li>
+        <li>
+          <h3>Checks</h3>
+          <p>Tests on synthetic data and on the model files, and the Best Practice Analyzer, run on every pull request; a weekly job requests every source; the About page reconciles the report with the pipeline.</p>
+        </li>
+      </ol>
+    </section>
   </main>
+
+  <footer class="credits">
+    <div class="credits-inner">
+      <div>
+        <h2>Sources and licences</h2>
+        <ul>
+          <li>Population, deaths, GDP, unemployment and enrolment: Eurostat, © European Union, reused under the <a href="https://ec.europa.eu/eurostat/about-us/policies/copyright">Eurostat copyright notice</a>.</li>
+          <li>Active companies by municipality and sector, 2009 to March 2025: Camera di Commercio delle Marche, <a href="https://opendata.marche.camcom.it">Open Data Imprese Italia</a>, from the business register with Unioncamere as rights holder, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.</li>
+          <li>NUTS codes and province boundaries: GISCO, © EuroGeographics.</li>
+          <li>Code: MIT licence, in the <a href="https://github.com/simones99/marche-regional-stats">repository</a>.</li>
+        </ul>
+      </div>
+      <div>
+        <h2>Photos in the report</h2>
+        <ul>
+          <li>Overview: <a href="https://commons.wikimedia.org/wiki/File:Tempio_del_Valadier_dall%27eremo.jpg">Tempio del Valadier dall'eremo</a>, Kimahri88, <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a>.</li>
+          <li>Education: <a href="https://commons.wikimedia.org/wiki/File:Panorama_(Urbino)_-_panoramio.jpg">Panorama (Urbino)</a>, Fabio Poggi, <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a>.</li>
+          <li>About: <a href="https://commons.wikimedia.org/wiki/File:Spiaggia_due_sorelle.jpg">Spiaggia due sorelle</a>, Gaspa, <a href="https://creativecommons.org/licenses/by/2.0/">CC BY 2.0</a>.</li>
+        </ul>
+        <p>The photos are cropped and compressed; nothing else is changed.</p>
+      </div>
+      <p class="privacy">No cookies; visits are counted with GoatCounter.</p>
+    </div>
+  </footer>
 </body>
 </html>
