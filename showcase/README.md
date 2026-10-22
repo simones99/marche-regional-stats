@@ -49,7 +49,7 @@ In Desktop a slicer reacts to a plain click, while buttons (the Back button, the
 ### (b) Provinces: the indicator selector recolouring the map
 
 - **Page:** Provinces.
-- **Starting state:** `Population change 5y %` selected in the *Province indicator* slicer. The headline reads "Population change 5y % is highest in Ancona" and the map is shaded by population change.
+- **Starting state:** `Population change 5y %` selected in the *Province indicator* slicer. The headline reads "Population fell least in Ancona" and the map is shaded by population change.
 - **Actions:**
   1. Hold on the starting state for 2 seconds.
   2. Click `Share aged 65+`. The map is recoloured and its legend and labels change. The headline names the province with the highest value, and the matching column of *All Indicators by Province* is shaded. Hold 2 seconds.
