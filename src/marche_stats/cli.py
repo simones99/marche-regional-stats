@@ -15,6 +15,7 @@ from marche_stats import (
     powerbi_export,
     report,
     report_layout,
+    showcase,
     sources,
 )
 
@@ -53,6 +54,7 @@ def main(argv: list[str] | None = None) -> int:
             "export-pngs",
             "check-sources",
             "scaffold-report",
+            "build-showcase",
         ],
     )
     parser.add_argument(
@@ -75,6 +77,18 @@ def main(argv: list[str] | None = None) -> int:
         default=ROOT / "powerbi" / "exports" / "marche-regional-profile.pdf",
         help="PDF exported from Power BI Desktop (export-pngs)",
     )
+    parser.add_argument(
+        "--exports",
+        type=Path,
+        default=ROOT / "powerbi" / "exports",
+        help="report exports: the PDF and png/ (build-showcase)",
+    )
+    parser.add_argument(
+        "--out",
+        type=Path,
+        default=ROOT / "build" / "showcase",
+        help="folder the showcase is assembled into (build-showcase)",
+    )
     parser.add_argument("--holdout", type=int, default=24, help="test months for SARIMA")
     parser.add_argument(
         "--force",
@@ -93,6 +107,14 @@ def main(argv: list[str] | None = None) -> int:
     if args.step == "export-pngs":
         for path in pngs.export(args.pdf, args.pdf.parent / "png"):
             print(path)
+        return 0
+    if args.step == "build-showcase":
+        try:
+            written = showcase.build(ROOT / "showcase", args.exports, args.out)
+        except FileNotFoundError as error:
+            print(f"error: {error}", file=sys.stderr)
+            return 1
+        print("\n".join(str(path) for path in written))
         return 0
     if args.step == "scaffold-report":
         if _desktop_running():
