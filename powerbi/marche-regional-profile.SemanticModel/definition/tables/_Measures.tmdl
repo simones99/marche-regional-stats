@@ -1150,8 +1150,12 @@ table _Measures
 
 		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
 
-	/// Provinces headline, first part: the indicator on the map.
-	measure 'Provinces headline lead' = [Province indicator name] & " is highest in"
+	/// Provinces headline, first part: the indicator on the map. Population change can be
+	/// negative everywhere, and then "highest" reads as the biggest fall: say fell least instead.
+	measure 'Provinces headline lead' =
+			VAR Ind = SELECTEDVALUE ( 'Province indicator'[Province indicator Order], 3 )
+			VAR Highest = CALCULATE ( MAXX ( VALUES ( Geo[Name] ), [Province indicator value] ), REMOVEFILTERS ( Geo ), Geo[Role] = "Province", REMOVEFILTERS ( Calendar ) )
+			RETURN IF ( Ind = 0, IF ( Highest < 0, "Population fell least in", "Population grew most in" ), [Province indicator name] & " is highest in" )
 		displayFolder: Report text
 		lineageTag: 1677d51b-db6d-49ec-8f11-43574c66e4b3
 
