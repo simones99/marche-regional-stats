@@ -1,0 +1,50 @@
+name: showcase
+
+# Assembles the showcase with build-showcase and publishes it on GitHub Pages, so the public
+# page always shows the latest report exports. Run it by hand to recover a failed deployment.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "showcase/**"
+      - "powerbi/exports/**"
+      - "src/marche_stats/showcase.py"
+      - ".github/workflows/showcase.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install
+        run: pip install -r requirements.txt -e .
+      - name: Build the showcase
+        run: marche-stats build-showcase --out build/showcase
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/showcase
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,12 +1,33 @@
 # marche-regional-stats
 
-Regional statistics for the Marche region (Italy) and its five provinces. The project brings together three pieces of work:
+Regional statistics for the Marche region (Italy) and its five provinces: an eight-page **Power BI report** and the Python pipeline behind it.
+
+## Power BI report
+
+**[See the showcase](https://simones99.github.io/marche-regional-stats/)**: the eight pages, what they show and how they are built, on one page.
+
+![Overview page](powerbi/exports/png/01-overview.png)
+
+Eight pages on the region's demography, health, economy, education, provinces and businesses: [PDF](powerbi/exports/marche-regional-profile.pdf), [pages and design](powerbi/README.md). The report is built on the Eurostat API and the outputs of the pipeline below.
+
+**What this demonstrates:**
+- a reusable M function for the Eurostat API;
+- a star schema keyed on NUTS codes;
+- a calculation group with dynamic format strings;
+- a field parameter;
+- an SVG map drawn in DAX;
+- data-driven headlines;
+- Python → Power BI integration;
+- in-report reconciliation;
+- an accessible three-colour design.
+
+## Python pipeline
+
+The pipeline brings together three pieces of work:
 
 - **Business demography.** Monthly active companies by municipality and economic sector, from 2009 to 2025, after source checks and a boundary correction.
 - **Provincial indicators on NUTS 3 maps.** Companies per resident, population ageing and mortality, from Eurostat.
 - **Forecasting.** A SARIMA model of active companies, compared out of sample with naive baselines.
-
-It also contains a **Power BI report** on the region's demography, education, GDP, unemployment and active companies, built on the Eurostat API and the outputs of this pipeline.
 
 ![Indicators by province](docs/figures/nuts3_maps.png)
 
@@ -19,23 +40,6 @@ The latest figures and every check are in [docs/results.md](docs/results.md).
 - On the last 24 months, held out from model selection, SARIMA has a mean absolute percentage error of about 1 %. The naive baseline reaches about 3 % and the seasonal naive baseline about 6 %.
 
 ![Test period and forecast](docs/figures/forecast.png)
-
-## Power BI report
-
-![Overview page](powerbi/exports/png/01-overview.png)
-
-Eight pages on the region's demography, health, economy, education, provinces and businesses: [PDF](powerbi/exports/marche-regional-profile.pdf), [pages and design](powerbi/README.md).
-
-**What this demonstrates:**
-- a reusable M function for the Eurostat API;
-- a star schema keyed on NUTS codes;
-- a calculation group with dynamic format strings;
-- a field parameter;
-- an SVG map drawn in DAX;
-- data-driven headlines;
-- Python → Power BI integration;
-- in-report reconciliation;
-- an accessible three-colour design.
 
 ## What the analysis takes care of
 
@@ -51,6 +55,7 @@ The source file has several traps, and each one is handled explicitly. See the [
 src/marche_stats/   source checks, Eurostat download, time series, figures, report
 docs/               results, methodology note, figures
 powerbi/            Power BI project, its exported data and sources
+showcase/           the showcase page, published on GitHub Pages with the report exports
 notebooks/          the first exploratory notebook (kept for reference)
 tests/              pytest suite on synthetic data in the same layout as the source
 ```
@@ -65,6 +70,7 @@ marche-stats download   # business register file, Eurostat population and deaths
 marche-stats report     # checks, indicators, SARIMA, figures -> docs/results.md
 marche-stats export-powerbi   # forecast, accuracy and reconciliation CSVs -> powerbi/data/
 marche-stats check-sources    # request every source the Power BI model uses
+marche-stats build-showcase   # showcase page + report exports -> build/showcase/
 marche-stats run        # download + report + export-powerbi
 pytest -q
 ```
