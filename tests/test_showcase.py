@@ -68,6 +68,11 @@ def test_the_eight_pages_and_the_pdf_are_published(tmp_path):
     assert {*PAGES, "marche-regional-profile.pdf"} <= published
 
 
+def test_the_clip_recording_notes_are_not_published(tmp_path):
+    out = _build(tmp_path)
+    assert not (out / "README.md").exists()
+
+
 def test_every_report_page_is_shown_and_opens_at_full_size(tmp_path):
     out = _build(tmp_path)
     tags = _tags(out / "index.html")

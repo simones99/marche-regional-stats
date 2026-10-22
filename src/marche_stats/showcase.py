@@ -12,6 +12,8 @@ from pathlib import Path
 from marche_stats.pngs import PAGE_SLUGS
 
 PDF_NAME = "marche-regional-profile.pdf"
+# The clip recording notes live next to the page but are not part of it.
+NOTES_NAME = "README.md"
 
 
 def _report_copies(exports: Path) -> dict[str, Path]:
@@ -22,7 +24,9 @@ def _report_copies(exports: Path) -> dict[str, Path]:
 
 
 def build(source: Path, exports: Path, out: Path) -> list[Path]:
-    """Copy the showcase folder and the report exports into out; return the written paths.
+    """Copy the showcase folder (except its notes) and the report exports into out.
+
+    Returns the written paths.
 
     Raises FileNotFoundError, before writing anything, if a report export is missing.
     """
@@ -37,7 +41,7 @@ def build(source: Path, exports: Path, out: Path) -> list[Path]:
     copies = {
         path.relative_to(source).as_posix(): path
         for path in sorted(source.rglob("*"))
-        if path.is_file()
+        if path.is_file() and path.name != NOTES_NAME
     }
     copies.update(exports_by_target)
     written = []
