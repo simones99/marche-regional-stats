@@ -1,12 +1,14 @@
-# Showcase clips
+# Showcase
 
-The showcase shows four short clips of the report's interactions, each next to the page it belongs to. This file is the recording script for all four, so they can be recorded in one Power BI Desktop session and any of them redone later, plus the commands that turn a recording into the clip and poster the page uses.
+This folder holds the showcase page, `index.html` and `style.css`. `marche-stats build-showcase` assembles it with the report exports into `build/showcase/`; this README stays out of the build.
 
-The clips are muted MP4 files (H.264, 1280 px wide, under 2 MB each), tracked in git without LFS. The page plays them muted, in a loop and inline; with reduced motion it shows the poster and the controls instead.
+The rest of this file is the recording script for the four clips of the report's interactions, which will sit next to the pages they belong to. With it, all four can be recorded in one Power BI Desktop session and any of them redone later. It ends with the commands that turn a recording into a clip and its poster.
+
+The clips will be muted MP4 files (H.264, 1280 px wide, under 2 MB each), tracked in git without LFS. The page will play them muted, in a loop and inline. With reduced motion it will show the poster and the controls instead.
 
 ## File names
 
-Paths are relative to this folder. The page references exactly these names, and the showcase test fails if a referenced file is missing.
+Paths are relative to this folder. The page will reference exactly these names, so the showcase test will fail if one of the files is missing.
 
 | Clip | Video | Poster |
 |---|---|---|
@@ -50,7 +52,7 @@ In Desktop a slicer reacts to a plain click, while buttons (the Back button, the
 - **Starting state:** `Population change 5y %` selected in the *Province indicator* slicer. The headline reads "Population change 5y % is highest in Ancona" and the map is shaded by population change.
 - **Actions:**
   1. Hold on the starting state for 2 seconds.
-  2. Click `Share aged 65+`: the map is recoloured, its legend and labels change, the headline names the province with the highest value and the matching column of *All Indicators by Province* is shaded. Hold 2 seconds.
+  2. Click `Share aged 65+`. The map is recoloured and its legend and labels change. The headline names the province with the highest value, and the matching column of *All Indicators by Province* is shaded. Hold 2 seconds.
   3. Click `Companies per 1,000 residents`. Hold 2 seconds.
   4. Click `GDP per inhabitant (EUR)`. Hold 2 seconds.
   5. Click `Population change 5y %` to return to the starting state.
@@ -100,14 +102,18 @@ Recordings land in `%USERPROFILE%\Videos\Captures` (the folder is shown, and can
 
 ## Compressing a clip
 
-The commands use [ffmpeg](https://ffmpeg.org/). If it is not installed, it can be installed with `winget install Gyan.FFmpeg`, only with the author's approval; open a new terminal afterwards so `ffmpeg` is on the path.
+The commands use [ffmpeg](https://ffmpeg.org/). If it is not installed, install it with `winget install Gyan.FFmpeg`, then open a new terminal so `ffmpeg` is on the path.
 
-Run them from this folder (`showcase/`). The examples are for clip (a); change the input recording and the output names for the others.
+Run them from this folder (`showcase/`). The examples are for clip (a). For the others, change the recording in `$rec` and the output names:
+
+```powershell
+$rec = "$env:USERPROFILE\Videos\Captures\Power BI Desktop 2026-10-22 15-04-11.mp4"
+```
 
 **1. Find the trim points and the canvas.** Play the recording and note the second where the clip should start and end. To crop away the Desktop ribbon and panes, save one frame and read the report canvas's top-left corner, width and height in Paint (the pixel position is shown in the status bar):
 
 ```powershell
-ffmpeg -ss 1 -i "$env:USERPROFILE\Videos\Captures\Power BI Desktop 2026-10-22 15-04-11.mp4" -frames:v 1 frame.png
+ffmpeg -ss 1 -i $rec -frames:v 1 frame.png
 ```
 
 Delete `frame.png` afterwards.
@@ -115,7 +121,7 @@ Delete `frame.png` afterwards.
 **2. Compress.** H.264, 1280 px wide, no audio track, `yuv420p` so every browser can play it, and `+faststart` so playback starts before the file has finished downloading:
 
 ```powershell
-ffmpeg -i "$env:USERPROFILE\Videos\Captures\Power BI Desktop 2026-10-22 15-04-11.mp4" -ss 1.5 -to 13.5 -an -vf "crop=W:H:X:Y,scale=1280:-2:flags=lanczos,fps=30" -c:v libx264 -preset slow -crf 26 -profile:v high -pix_fmt yuv420p -movflags +faststart clips/benchmark-compare.mp4
+ffmpeg -i $rec -ss 1.5 -to 13.5 -an -vf "crop=W:H:X:Y,scale=1280:-2:flags=lanczos,fps=30" -c:v libx264 -preset slow -crf 26 -profile:v high -pix_fmt yuv420p -movflags +faststart clips/benchmark-compare.mp4
 ```
 
 - `-ss` and `-to` are the start and end seconds in the recording.
