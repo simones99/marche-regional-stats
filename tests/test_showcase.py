@@ -74,6 +74,40 @@ def test_every_image_has_a_text_alternative(tmp_path):
     assert [img["src"] for img in images if not (img.get("alt") or "").strip()] == []
 
 
+def _meta(page: Path) -> dict[str, str | None]:
+    """Content of each meta tag, by its property or name."""
+    return {
+        attrs.get("property") or attrs.get("name"): attrs.get("content")
+        for tag, attrs in _tags(page)
+        if tag == "meta" and (attrs.get("property") or attrs.get("name"))
+    }
+
+
+def test_the_link_preview_tags_are_declared(tmp_path):
+    meta = _meta(_build(tmp_path) / "index.html")
+    for key in (
+        "og:title",
+        "og:description",
+        "og:image",
+        "og:image:alt",
+        "twitter:title",
+        "twitter:description",
+        "twitter:image",
+    ):
+        assert (meta.get(key) or "").strip(), key
+    assert meta.get("twitter:card") == "summary_large_image"
+
+
+def test_the_preview_image_is_the_overview_on_the_pages_domain(tmp_path):
+    out = _build(tmp_path)
+    meta = _meta(out / "index.html")
+    pages = "https://simones99.github.io/marche-regional-stats/"
+    assert meta.get("og:url") == pages
+    assert meta.get("og:image") == pages + "report/01-overview.png"
+    assert meta.get("twitter:image") == meta.get("og:image")
+    assert (out / "report" / "01-overview.png").is_file()
+
+
 def test_a_missing_report_export_stops_the_build(tmp_path, capsys):
     exports = tmp_path / "exports"
     shutil.copytree(cli.ROOT / "powerbi" / "exports", exports)
