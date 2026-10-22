@@ -19,5 +19,8 @@ data/
 tools/tmdl-check/bin/
 tools/tmdl-check/obj/
 
+# The showcase as build-showcase assembles it
+/build/
+
 # Local screenshots taken while refining the report
 .screenshots/
