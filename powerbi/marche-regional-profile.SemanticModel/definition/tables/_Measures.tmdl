@@ -1201,7 +1201,8 @@ table _Measures
 
 		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
 
-	/// Business paragraph: total change and the best and worst of the ten largest sections.
+	/// Business paragraph: total change and the best and worst of the ten largest sections. When
+	/// even the best section shrank, "did best" becomes "fell least".
 	measure 'Business paragraph' =
 			VAR T =
 			    CALCULATETABLE (
@@ -1218,7 +1219,7 @@ table _Measures
 			VAR LastYear = YEAR ( CALCULATE ( MAX ( Companies[Date] ), REMOVEFILTERS (), Calendar[MonthNumber] = 12 ) )
 			RETURN
 			    FORMAT ( ABS ( Total ) * 100, "0.0" ) & " % " & IF ( Total < 0, "fewer", "more" ) & " active companies in December " & LastYear & " than in December " & FirstYear & ". "
-			        & MAXX ( Best, [@name] ) & " did best (" & IF ( b < 0, "−", "+" ) & FORMAT ( ABS ( b ) * 100, "0.0" ) & " %); "
+			        & MAXX ( Best, [@name] ) & IF ( b < 0, " fell least (", " did best (" ) & IF ( b < 0, "−", "+" ) & FORMAT ( ABS ( b ) * 100, "0.0" ) & " %); "
 			        & MAXX ( Worst, [@name] ) & " did worst (" & IF ( w < 0, "−", "+" ) & FORMAT ( ABS ( w ) * 100, "0.0" ) & " %)."
 		displayFolder: Report text
 		lineageTag: 06c11e81-9745-4141-a830-5b77eb616db3
@@ -1238,9 +1239,12 @@ table _Measures
 		annotation BestPracticeAnalyzer_IgnoreRules = {"RuleIDs":["PROVIDE_FORMAT_STRING_FOR_MEASURES"]}
 
 	/// Benchmark headline, accent part: the indicators where the focus region is lowest, else
-	/// highest, among its peers.
+	/// highest, among its peers. First for a negative population change means every peer shrank
+	/// more, and "highest" would read as the biggest fall: say the smallest population fall instead.
 	measure 'Benchmark headline accent' =
 			VAR n = [_Peer count]
+			VAR Pop = CALCULATE ( [Population change 5y %], REMOVEFILTERS ( Geo ), Geo[Role] = "Focus", REMOVEFILTERS ( Calendar ) )
+			VAR SmallestFall = Pop < 0 && [_Rank population change] = 1
 			VAR R =
 			    {
 			        ( "population change", [_Rank population change] ),
@@ -1252,10 +1256,12 @@ table _Measures
 			    }
 			VAR Lowest = FILTER ( R, [Value2] = n )
 			VAR Highest = FILTER ( R, [Value2] = 1 )
+			VAR HighestOthers = FILTER ( Highest, [Value1] <> "population change" )
 			RETURN
 			    SWITCH (
 			        TRUE (),
 			        NOT ISEMPTY ( Lowest ), "lowest for " & CONCATENATEX ( Lowest, [Value1], " and " ),
+			        SmallestFall, "the smallest population fall" & IF ( NOT ISEMPTY ( HighestOthers ), " and highest for " & CONCATENATEX ( HighestOthers, [Value1], " and " ) ),
 			        NOT ISEMPTY ( Highest ), "highest for " & CONCATENATEX ( Highest, [Value1], " and " ),
 			        "mid-table on every indicator"
 			    )
