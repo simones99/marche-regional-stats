@@ -9,6 +9,9 @@ on:
       - "showcase/**"
       - "powerbi/exports/**"
       - "src/marche_stats/showcase.py"
+      - "src/marche_stats/pngs.py"
+      - "src/marche_stats/cli.py"
+      - "requirements.txt"
       - ".github/workflows/showcase.yml"
   workflow_dispatch:
 
