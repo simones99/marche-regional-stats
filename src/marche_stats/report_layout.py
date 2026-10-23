@@ -267,7 +267,6 @@ def chart(
     values: list[Field],
     alt: str,
     series: Field | None = None,
-    tooltips: list[Field] | None = None,
     filters: tuple[dict, ...] = (),
     sort: tuple[Field, str] | None = None,
     objects: dict | None = None,
@@ -275,8 +274,6 @@ def chart(
     roles: dict[str, list[Field]] = {"Category": [category], "Y": values}
     if series:
         roles["Series"] = [series]
-    if tooltips:
-        roles["Tooltips"] = tooltips
     return Visual(
         key,
         kind,
@@ -900,7 +897,6 @@ def business() -> Page:
             [M("Forecast chart actual"), M("Forecast chart forecast")],
             "Line chart of active companies in the last 24 months and the SARIMA forecast for the"
             " next 12, with its 95 % interval",
-            tooltips=[M("Forecast lower 95"), M("Forecast upper 95")],
         )
     )
     v.append(

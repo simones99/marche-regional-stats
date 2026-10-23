@@ -84,7 +84,7 @@ In Desktop a slicer reacts to a plain click, while buttons (the Back button, the
   3. Move right along the dashed line, pausing on two or three months (for example June 2025 and October 2025): the tooltip shows the month, the forecast and its lower and upper 95 % bounds.
   4. Stop on January 2026, where the interval is widest (about 124,700 to 131,000 against a forecast of about 127,800). Hold 3 seconds.
   5. Move the pointer off the chart so the tooltip closes and the loop joins up.
-- The tooltip is the default one: the chart carries `Forecast lower 95` and `Forecast upper 95` in its Tooltips well, next to `Forecast chart actual` and `Forecast chart forecast`.
+- The tooltip is the default one: next to `Forecast chart actual` and `Forecast chart forecast`, the error bars of the forecast add its 95 % bounds as `Upper` and `Lower`.
 - **Length:** about 12 seconds.
 - **Poster:** the frame with the tooltip open on January 2026.
 

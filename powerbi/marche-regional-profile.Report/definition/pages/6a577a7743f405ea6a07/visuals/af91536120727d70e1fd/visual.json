@@ -32,38 +32,6 @@
             }
           ]
         },
-        "Tooltips": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Forecast lower 95"
-                }
-              },
-              "queryRef": "_Measures.Forecast lower 95",
-              "nativeQueryRef": "Forecast lower 95"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "_Measures"
-                    }
-                  },
-                  "Property": "Forecast upper 95"
-                }
-              },
-              "queryRef": "_Measures.Forecast upper 95",
-              "nativeQueryRef": "Forecast upper 95"
-            }
-          ]
-        },
         "Y": {
           "projections": [
             {
