@@ -17,6 +17,12 @@ PAGES = (
     "07-benchmark.png",
     "08-about.png",
 )
+CLIPS = (
+    "benchmark-compare",
+    "provinces-indicator",
+    "provinces-drillthrough",
+    "business-forecast",
+)
 
 
 class _Tags(HTMLParser):
@@ -87,6 +93,29 @@ def test_every_image_has_a_text_alternative(tmp_path):
     images = [attrs for tag, attrs in _tags(out / "index.html") if tag == "img"]
     assert images
     assert [img["src"] for img in images if not (img.get("alt") or "").strip()] == []
+
+
+def _videos(page: Path) -> list[dict[str, str | None]]:
+    return [attrs for tag, attrs in _tags(page) if tag == "video"]
+
+
+def test_the_four_clips_are_published_with_their_posters(tmp_path):
+    out = _build(tmp_path)
+    videos = _videos(out / "index.html")
+    assert {Path(video["src"]).name for video in videos} == {f"{clip}.mp4" for clip in CLIPS}
+    assert {Path(video["poster"]).name for video in videos} == {f"{clip}.jpg" for clip in CLIPS}
+
+
+def test_every_clip_has_a_text_alternative(tmp_path):
+    videos = _videos(_build(tmp_path) / "index.html")
+    assert videos
+    assert [video["src"] for video in videos if not (video.get("aria-label") or "").strip()] == []
+
+
+def test_clips_are_muted_looping_and_inline_and_keep_their_controls_without_script(tmp_path):
+    for video in _videos(_build(tmp_path) / "index.html"):
+        assert {"muted", "loop", "playsinline", "controls"} <= video.keys(), video["src"]
+        assert "autoplay" not in video, video["src"]
 
 
 def _meta(page: Path) -> dict[str, str | None]:

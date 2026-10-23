@@ -62,7 +62,7 @@
 
     <section class="gallery" aria-labelledby="gallery-title">
       <h2 id="gallery-title">The eight pages</h2>
-      <p class="lead">Tap a page to open it at full size.</p>
+      <p class="lead">Tap a page to open it at full size. The clips under Provinces, Business deep dive and Benchmark show the report in use.</p>
       <div class="pages">
         <figure>
           <a href="report/01-overview.png"><img src="report/01-overview.png" width="1600" height="926" loading="lazy"
@@ -84,21 +84,51 @@
              alt="Education page. Headline: Fewer university students than every neighbouring region. Text: 34.7 tertiary students per 1,000 residents in 2024, against 39.2 in Italy and 42.4 in the EU; women are 58 % of them. A photo shows Urbino on its hill. Buttons choose a group of education levels. A chart shows students enrolled by level and sex, from early childhood to doctoral, with the university levels highlighted. A bar chart ranks tertiary students per 1,000 residents: Lazio 71.6, Emilia-Romagna 43.4, EU 42.4, Italy 39.2, Umbria 38.8, Abruzzo 38.7, Toscana 38.0, Marche 34.7."></a>
           <figcaption><strong>Education</strong> How many residents study at university, compared with every neighbouring region?</figcaption>
         </figure>
-        <figure>
-          <a href="report/05-provinces.png"><img src="report/05-provinces.png" width="1600" height="926" loading="lazy"
-             alt="Provinces page. Headline: Population fell least in Ancona. Text: Ancona −1.3 %, against −2.8 % in Macerata; the regional figure is −2.1 %. Option buttons choose one of five indicators for the map. A map of the five provinces in four shades of green shows the population change: Pesaro e Urbino −1.9 %, Ancona −1.3 %, Macerata, Fermo and Ascoli Piceno −2.8 %. A table lists all five indicators by province. A note says to right-click a province to drill through to its detail page."></a>
-          <figcaption><strong>Provinces</strong> How do the five provinces compare on the indicator chosen for the map, and what does each one look like in detail?</figcaption>
-        </figure>
-        <figure>
-          <a href="report/06-business.png"><img src="report/06-business.png" width="1600" height="926" loading="lazy"
-             alt="Business deep dive page. Headline: Shops, farms and factories shrink; services grow. Text: 17.1 % fewer active companies in December 2024 than in December 2009; Administrative did best (+48.0 %), Agriculture did worst (−35.2 %). A line chart indexes active companies by province to December 2009 = 100; all five fall to between about 82 and 88. A line chart shows the last 24 months, falling from about 139 thousand to 130 thousand, and a 12-month SARIMA forecast to January 2026 with its interval. Bars show the change by sector since December 2009, from +48.0 % for Administrative to −35.2 % for Agriculture. Bars show the seasonal effect by month, about −0.9 thousand in January. Bars compare the forecast error on the 24-month test: SARIMA 1.13 %, naive 3.31 %."></a>
-          <figcaption><strong>Business deep dive</strong> Which sectors grew and which shrank since 2009, and where is the number of companies heading? The company series ends in March 2025, when ATECO 2025 replaced ATECO 2007.</figcaption>
-        </figure>
-        <figure>
-          <a href="report/07-benchmark.png"><img src="report/07-benchmark.png" width="1600" height="926" loading="lazy"
-             alt="Benchmark page. Headline: Mid-table, but lowest for university students. Text: rank among the 6 regions, 1 = highest: population change 5, aged 65 or over 3, deaths 3, GDP 4, unemployment 3, tertiary students 6. A dot plot places the Marche among its neighbouring regions, Italy and the EU on six indicators, lowest to highest. Buttons switch the table between values and the gap to Italy, the EU or the neighbours' average, with Value selected. A table lists the six indicators for the Marche, Abruzzo, Emilia-Romagna, Lazio, Toscana, Umbria, Italy and the EU, and a second table gives the Marche's rank among the six regions."></a>
-          <figcaption><strong>Benchmark</strong> How does the Marche rank against its five neighbouring regions on six indicators, and how far is it from Italy, the EU and the neighbours' average?</figcaption>
-        </figure>
+        <div class="entry">
+          <figure>
+            <a href="report/05-provinces.png"><img src="report/05-provinces.png" width="1600" height="926" loading="lazy"
+               alt="Provinces page. Headline: Population fell least in Ancona. Text: Ancona −1.3 %, against −2.8 % in Macerata; the regional figure is −2.1 %. Option buttons choose one of five indicators for the map. A map of the five provinces in four shades of green shows the population change: Pesaro e Urbino −1.9 %, Ancona −1.3 %, Macerata, Fermo and Ascoli Piceno −2.8 %. A table lists all five indicators by province. A note says to right-click a province to drill through to its detail page."></a>
+            <figcaption><strong>Provinces</strong> How do the five provinces compare on the indicator chosen for the map, and what does each one look like in detail?</figcaption>
+          </figure>
+          <figure class="clip">
+            <video src="clips/provinces-indicator.mp4" poster="clips/provinces-indicator.jpg" width="1280" height="718"
+                   muted loop playsinline controls preload="none"
+                   aria-label="Clip of the Provinces page. The Province indicator buttons are clicked in turn and the map is recoloured each time, with its legend, its labels and the headline: share aged 65 or over, highest in Ascoli Piceno; crude death rate, highest in Macerata; companies per 1,000 residents, highest in Macerata; GDP per inhabitant, highest in Ancona; then back to the population change, which fell least in Ancona."></video>
+            <figcaption><strong>Choosing the indicator</strong> Five buttons drive one map through a field parameter: the map, its legend, the headline and the shaded column of the table all follow.</figcaption>
+          </figure>
+          <figure class="clip">
+            <video src="clips/provinces-drillthrough.mp4" poster="clips/provinces-drillthrough.jpg" width="1280" height="716"
+                   muted loop playsinline controls preload="none"
+                   aria-label="Clip of the drill-through. On the Provinces page the Macerata row of the table is right-clicked, and Drill through, Province detail is chosen. The Province detail page opens for Macerata: its five indicators with the gap to the Marche, active companies since December 2009 and the change by sector. The Back button returns to Provinces."></video>
+            <figcaption><strong>Drilling through to a province</strong> Right-click a province in the table to open its own page, then go back.</figcaption>
+          </figure>
+        </div>
+        <div class="entry">
+          <figure>
+            <a href="report/06-business.png"><img src="report/06-business.png" width="1600" height="926" loading="lazy"
+               alt="Business deep dive page. Headline: Shops, farms and factories shrink; services grow. Text: 17.1 % fewer active companies in December 2024 than in December 2009; Administrative did best (+48.0 %), Agriculture did worst (−35.2 %). A line chart indexes active companies by province to December 2009 = 100; all five fall to between about 82 and 88. A line chart shows the last 24 months, falling from about 139 thousand to 130 thousand, and a 12-month SARIMA forecast to January 2026 with its interval. Bars show the change by sector since December 2009, from +48.0 % for Administrative to −35.2 % for Agriculture. Bars show the seasonal effect by month, about −0.9 thousand in January. Bars compare the forecast error on the 24-month test: SARIMA 1.13 %, naive 3.31 %."></a>
+            <figcaption><strong>Business deep dive</strong> Which sectors grew and which shrank since 2009, and where is the number of companies heading? The company series ends in March 2025, when ATECO 2025 replaced ATECO 2007.</figcaption>
+          </figure>
+          <figure class="clip">
+            <video src="clips/business-forecast.mp4" poster="clips/business-forecast.jpg" width="1280" height="718"
+                   muted loop playsinline controls preload="none"
+                   aria-label="Clip of the Business deep dive page. The pointer moves along the 12-month SARIMA forecast of active companies, and the tooltip gives each month's forecast with its 95 % interval, up to January 2026: 127,833, between 124,700 and 130,965."></video>
+            <figcaption><strong>Reading the forecast</strong> The tooltip gives each forecast month with the bounds of its 95 % interval.</figcaption>
+          </figure>
+        </div>
+        <div class="entry">
+          <figure>
+            <a href="report/07-benchmark.png"><img src="report/07-benchmark.png" width="1600" height="926" loading="lazy"
+               alt="Benchmark page. Headline: Mid-table, but lowest for university students. Text: rank among the 6 regions, 1 = highest: population change 5, aged 65 or over 3, deaths 3, GDP 4, unemployment 3, tertiary students 6. A dot plot places the Marche among its neighbouring regions, Italy and the EU on six indicators, lowest to highest. Buttons switch the table between values and the gap to Italy, the EU or the neighbours' average, with Value selected. A table lists the six indicators for the Marche, Abruzzo, Emilia-Romagna, Lazio, Toscana, Umbria, Italy and the EU, and a second table gives the Marche's rank among the six regions."></a>
+            <figcaption><strong>Benchmark</strong> How does the Marche rank against its five neighbouring regions on six indicators, and how far is it from Italy, the EU and the neighbours' average?</figcaption>
+          </figure>
+          <figure class="clip">
+            <video src="clips/benchmark-compare.mp4" poster="clips/benchmark-compare.jpg" width="1280" height="720"
+                   muted loop playsinline controls preload="none"
+                   aria-label="Clip of the Benchmark page. The four buttons above the Indicators by Area table are clicked in turn: Value, vs Country, vs EU and vs Neighbours avg. The table switches from the values to the gap from Italy, from the EU and from the average of the neighbouring regions, then back to the values."></video>
+            <figcaption><strong>Comparing to Italy, the EU or the neighbours</strong> One calculation group turns every cell of the table into the gap from the chosen benchmark.</figcaption>
+          </figure>
+        </div>
         <figure>
           <a href="report/08-about.png"><img src="report/08-about.png" width="1600" height="926" loading="lazy"
              alt="About page. Headline: How this report is built and checked. Text: public data from Eurostat, GISCO and the Chamber of Commerce; a Python pipeline adds the SARIMA forecast and the totals to check, and all 12 match. Lists of sources, limits, neighbouring regions, refresh and photo credits. Two tables show the 12 reconciliation checkpoints, each province in December 2009 and December 2024 and the region's first and last modelled month, all marked Match. A table gives the latest period per source, from 2023 for provincial GDP to March 2025 for active companies. A photo shows the Due Sorelle beach on the Conero coast."></a>
@@ -153,6 +183,22 @@
       <p class="privacy">No cookies; visits are counted with GoatCounter.</p>
     </div>
   </footer>
+  <script>
+    // Clips play muted in a loop while on screen; with reduced motion, or without
+    // this script, they keep their controls and wait on the poster.
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
+      const observer = new IntersectionObserver((entries) => {
+        for (const { target, isIntersecting } of entries) {
+          if (isIntersecting) target.play().catch(() => { target.controls = true; });
+          else target.pause();
+        }
+      }, { threshold: 0.25 });
+      for (const video of document.querySelectorAll(".clip video")) {
+        video.controls = false;
+        observer.observe(video);
+      }
+    }
+  </script>
   <script data-goatcounter="https://halfhit.goatcounter.com/count"
           async src="https://gc.zgo.at/count.js"></script>
 </body>
