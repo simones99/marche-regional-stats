@@ -128,7 +128,8 @@ a {
   color: var(--accent);
 }
 
-a:focus-visible {
+a:focus-visible,
+.clip video:focus-visible {
   outline: 3px solid var(--text);
   outline-offset: 2px;
 }
@@ -183,6 +184,11 @@ a:focus-visible {
 .pages a {
   display: block;
   border-radius: 6px;
+  cursor: zoom-in;
+}
+
+/* A clip without controls opens full screen on click, like a page. */
+.clip video:not([controls]) {
   cursor: zoom-in;
 }
 
