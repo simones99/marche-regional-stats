@@ -2,13 +2,13 @@
 
 This folder holds the showcase page, `index.html` and `style.css`. `marche-stats build-showcase` assembles it with the report exports into `build/showcase/`; this README stays out of the build.
 
-The rest of this file is the recording script for the four clips of the report's interactions, which will sit next to the pages they belong to. With it, all four can be recorded in one Power BI Desktop session and any of them redone later. It ends with the commands that turn a recording into a clip and its poster.
+The rest of this file is the recording script for the four clips of the report's interactions, which sit under the pages they belong to in the gallery. With it, all four can be recorded in one Power BI Desktop session and any of them redone later. It ends with the commands that turn a recording into a clip and its poster.
 
-The clips will be muted MP4 files (H.264, 1280 px wide, under 2 MB each), tracked in git without LFS. The page will play them muted, in a loop and inline. With reduced motion it will show the poster and the controls instead.
+The clips are muted MP4 files (H.264, 1280 px wide, under 2 MB each), tracked in git without LFS. The page plays them muted, in a loop and inline, while they are on screen. With reduced motion, or without JavaScript, it shows the poster and the controls instead.
 
 ## File names
 
-Paths are relative to this folder. The page will reference exactly these names, so the showcase test will fail if one of the files is missing.
+Paths are relative to this folder. The page references exactly these names, so the showcase test fails if one of the files is missing.
 
 | Clip | Video | Poster |
 |---|---|---|
@@ -70,7 +70,8 @@ In Desktop a slicer reacts to a plain click, while buttons (the Back button, the
   3. In the menu, point to `Drill through` and click `Province detail`.
   4. Province detail opens for Macerata: headline, the five indicator cards with the gap to the region, the line of active companies since December 2009 and the change by sector. Hold 3–4 seconds.
   5. Ctrl+click the `Back` button at the top of the page to return to Provinces.
-- Province detail was last saved drilled to Ascoli Piceno; drilling to Macerata shows that the page follows the province clicked. Any province other than the one on the page works.
+- Province detail is saved drilled to Macerata, but the page always opens on the province clicked, so any province works.
+- The drill-through does not keep the other filters of Provinces (*Keep all filters* is off), so the five cards show their own indicators whatever the *Province indicator* slicer was set to.
 - **Length:** about 12 seconds.
 - **Poster:** the Province detail page for Macerata.
 
@@ -99,6 +100,8 @@ The Xbox Game Bar is built into Windows and records one app window, not the whol
 5. Repeat for the next clip. One recording per clip keeps the trimming simple.
 
 Recordings land in `%USERPROFILE%\Videos\Captures` (the folder is shown, and can be changed, in Settings > Gaming > Captures), named after the window and the time, for example `Power BI Desktop 2026-10-22 15-04-11.mp4`. They are large and full of the window's ribbon and panes; the commands below trim, crop, scale and compress them. Keep the raw recordings out of the repository.
+
+The four clips in `clips/` were recorded with the Snipping Tool instead (Win+Shift+R, then a rectangle drawn around the report canvas). Its recordings land in `%USERPROFILE%\Videos\Screen Recordings` (`Registrazioni dello schermo` with Windows in Italian) and are already cropped to the canvas, so step 2 below only trims them and crops a 3 px border off each side, `crop=iw-6:ih-6:3:3`. At `-crf 22` the four clips came out between 0.3 and 0.6 MB.
 
 ## Compressing a clip
 

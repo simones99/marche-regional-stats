@@ -93,7 +93,8 @@ h1 {
 }
 
 .page img,
-.pages img {
+.pages img,
+.clip video {
   display: block;
   width: 100%;
   height: auto;
@@ -170,6 +171,13 @@ a:focus-visible {
 
 .pages figure {
   margin: 0;
+}
+
+/* A page with its clips, one under the other. */
+.entry {
+  display: grid;
+  align-content: start;
+  gap: 1.5rem;
 }
 
 .pages a {
