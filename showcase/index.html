@@ -62,7 +62,7 @@
 
     <section class="gallery" aria-labelledby="gallery-title">
       <h2 id="gallery-title">The eight pages</h2>
-      <p class="lead">Tap a page to open it at full size. The clips under Provinces, Business deep dive and Benchmark show the report in use.</p>
+      <p class="lead">Tap a page or a clip to open it at full size. The clips under Provinces, Business deep dive and Benchmark show the report in use.</p>
       <div class="pages">
         <figure>
           <a href="report/01-overview.png"><img src="report/01-overview.png" width="1600" height="926" loading="lazy"
@@ -185,7 +185,14 @@
   </footer>
   <script>
     // Clips play muted in a loop while on screen; with reduced motion, or without
-    // this script, they keep their controls and wait on the poster.
+    // this script, they keep their controls and wait on the poster. Without controls,
+    // a click or Enter opens a clip full screen, as a click opens a page at full size.
+    function openFullScreen(video) {
+      if (document.fullscreenElement) return;
+      if (video.requestFullscreen) video.requestFullscreen().catch(() => {});
+      else if (video.webkitEnterFullscreen) video.webkitEnterFullscreen();
+    }
+
     if (!matchMedia("(prefers-reduced-motion: reduce)").matches && "IntersectionObserver" in window) {
       const observer = new IntersectionObserver((entries) => {
         for (const { target, isIntersecting } of entries) {
@@ -195,8 +202,22 @@
       }, { threshold: 0.25 });
       for (const video of document.querySelectorAll(".clip video")) {
         video.controls = false;
+        video.tabIndex = 0;
+        video.addEventListener("click", () => openFullScreen(video));
+        video.addEventListener("keydown", (event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            openFullScreen(video);
+          }
+        });
         observer.observe(video);
       }
+      // Full screen, a clip gets its controls back to pause or scrub it.
+      document.addEventListener("fullscreenchange", () => {
+        for (const video of document.querySelectorAll(".clip video")) {
+          video.controls = document.fullscreenElement === video;
+        }
+      });
     }
   </script>
   <script data-goatcounter="https://halfhit.goatcounter.com/count"
