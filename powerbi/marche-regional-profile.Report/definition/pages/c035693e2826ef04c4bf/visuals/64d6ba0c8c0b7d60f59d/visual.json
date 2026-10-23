@@ -411,6 +411,13 @@
                   "Value": "'f530cbb791cb022499a9'"
                 }
               }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
             }
           }
         }
