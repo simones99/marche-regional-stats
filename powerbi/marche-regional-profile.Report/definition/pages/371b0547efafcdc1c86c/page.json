@@ -81,6 +81,7 @@
   "pageBinding": {
     "name": "55fbabb35e3d9150f772",
     "type": "Drillthrough",
+    "acceptsFilterContext": "None",
     "parameters": [
       {
         "name": "5a6da9cb18322cae1020",
