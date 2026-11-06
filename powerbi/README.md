@@ -2,7 +2,7 @@
 
 `marche-regional-profile.pbip` is a Power BI project on the Marche region (NUTS 2 `ITI3`), its provinces and its neighbouring regions, against Italy and the EU. It replaces the two earlier reports (`marche-regionali-2025`, `marche-demography-education`), which remain in the git history.
 
-The report has eight pages, a province drill-through, two tooltip pages and a hidden model check page. Exports: [PDF](exports/marche-regional-profile.pdf) and one PNG per page in [`exports/png/`](exports/png/). Design: [Phase A spec](../docs/superpowers/specs/2026-10-12-marche-regional-profile-report-design.md), [Phase B spec](../docs/superpowers/specs/2026-10-13-marche-regional-profile-phase-b-design.md).
+The report has eight pages, a province drill-through, two tooltip pages and a hidden model check page. Exports: [PDF](exports/marche-regional-profile.pdf) and one PNG per page in [`exports/png/`](exports/png/).
 
 ## Pages
 
