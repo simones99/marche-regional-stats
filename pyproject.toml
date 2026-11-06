@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "marche-stats"
-version = "0.1.0"
+version = "0.2.0"
 description = "Regional statistics for the Marche region: business demography, NUTS 3 demography and forecasting"
 requires-python = ">=3.11"
 license = { text = "MIT" }
