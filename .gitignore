@@ -24,3 +24,9 @@ tools/tmdl-check/obj/
 
 # Local screenshots taken while refining the report
 .screenshots/
+
+# Agent working files: kept locally, outside the public repository
+CLAUDE.md
+docs/agents/
+docs/superpowers/
+.claude/
