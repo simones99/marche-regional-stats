@@ -30,3 +30,4 @@ CLAUDE.md
 docs/agents/
 docs/superpowers/
 .claude/
+.playwright-mcp/
